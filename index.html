@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Kredytowy - Tomasz Lisiecki</title>
+    <style>
+        :root { --primary: #1a73e8; --secondary: #27ae60; --bg: #f8f9fa; --author-bg: #f0f0f0; --author-text: #e67e22; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); padding: 20px; color: #3c4043; }
+        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { text-align: center; color: var(--primary); margin-bottom: 30px; }
+        h3 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 25px; font-size: 1.1rem; color: #5f6368; }
+        .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .input-group { display: flex; flex-direction: column; }
+        label { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: #5f6368; }
+        input, select { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; outline: none; }
+        .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: 0.2s; margin: 20px 0; }
+        .btn:hover { background: #1557b0; }
+        
+        /* Zaktualizowany pasek autora */
+        .info-bar { display: flex; justify-content: flex-end; align-items: center; background: var(--author-bg); color: var(--author-text); padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 600; border: 1px solid #e0e0e0; }
+        
+        .results { margin-top: 20px; display: none; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
+        .card { padding: 20px; background: #fff; border-radius: 10px; text-align: center; border: 1px solid #e8eaed; }
+        .card h4 { margin: 0 0 10px 0; font-size: 0.7rem; text-transform: uppercase; color: #5f6368; }
+        .card .value { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
+        .tooltip { margin-left: 6px; cursor: help; display: inline-flex; background: #dadce0; color: white; width: 16px; height: 16px; border-radius: 50%; font-size: 10px; align-items: center; justify-content: center; position: relative; vertical-align: middle; }
+        .tooltip:hover::after {
+            content: "Założenie: Nadpłaty są księgowane na początku cyklu, co natychmiast obniża bazę odsetkową.";
+            position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%);
+            background: #333; color: #fff; padding: 8px; border-radius: 4px; width: 220px; font-size: 0.7rem; z-index: 10; font-weight: normal;
+        }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
+        th, td { border: 1px solid #e8eaed; padding: 12px; text-align: center; }
+        th { background-color: #f8f9fa; font-weight: 600; }
+        tr:hover { background-color: #f1f3f4; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Kalkulator Kredytowy</h2>
+    <div class="info-bar"><div>Autor: Tomasz Lisiecki (2026)</div></div>
+
+    <h3>1. Dane Kredytu</h3>
+    <div class="section-grid">
+        <div class="input-group"><label>Kapitał do spłaty (zł)</label><input type="number" id="loanAmount" value="300000"></div>
+        <div class="input-group"><label>Oprocentowanie (%)</label><input type="number" id="interestRate" step="0.01" value="7.5"></div>
+        <div class="input-group"><label>Pozostało rat (msc)</label><input type="number" id="monthsLeft" value="240"></div>
+        <div class="input-group"><label>Twój wiek</label><input type="number" id="currentAge" value="30"></div>
+    </div>
+
+    <h3>2. Plan Nadpłat</h3>
+    <div class="section-grid">
+        <div class="input-group"><label>Jednorazowo (teraz)</label><input type="number" id="oneTimeExtra" value="0"></div>
+        <div class="input-group"><label>Co miesiąc (zł)</label><input type="number" id="monthlyExtra" value="0"></div>
+        <div class="input-group"><label>Raz w roku (np. premia)</label><input type="number" id="yearlyExtra" value="0"></div>
+        <div class="input-group">
+            <label>Strategia po nadpłacie</label>
+            <select id="strategy">
+                <option value="lower">Zmniejszenie raty</option>
+                <option value="shorten">Skrócenie okresu</option>
+            </select>
+        </div>
+    </div>
+
+    <button class="btn" onclick="calculate()">Przelicz i generuj harmonogram</button>
+
+    <div class="results" id="results">
+        <div class="stats">
+            <div class="card"><h4>Najbliższa rata <span class="tooltip">?</span></h4><div class="value" id="resNextRata">-</div></div>
+            <div class="card"><h4>Suma oszczędności</h4><div class="value" style="color:var(--secondary)" id="resSavings">-</div></div>
+            <div class="card"><h4>Wiek po spłacie</h4><div class="value" id="resAge">-</div></div>
+            <div class="card"><h4>Suma oddana ogółem</h4><div class="value" id="resTotalPaid">-</div></div>
+        </div>
+        <table id="scheduleTable">
+            <thead>
+                <tr>
+                    <th>Rok</th>
+                    <th>Wiek</th>
+                    <th>Rata Obowiązkowa</th>
+                    <th>Pozostały Kapitał</th>
+                </tr>
+            </thead>
+            <tbody id="scheduleBody"></tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+window.onload = function() {
+    const saved = JSON.parse(localStorage.getItem('mortgageData_TL'));
+    if (saved) {
+        Object.keys(saved).forEach(key => {
+            const el = document.getElementById(key);
+            if(el) el.value = saved[key];
+        });
+    }
+};
+
+function calculate() {
+    const fields = ['loanAmount', 'interestRate', 'monthsLeft', 'currentAge', 'oneTimeExtra', 'monthlyExtra', 'yearlyExtra', 'strategy'];
+    const data = {};
+    fields.forEach(f => data[f] = document.getElementById(f).value);
+    localStorage.setItem('mortgageData_TL', JSON.stringify(data));
+
+    let P = parseFloat(data.loanAmount);
+    const yearlyRate = parseFloat(data.interestRate) / 100;
+    const N_original = parseInt(data.monthsLeft);
+    const age = parseInt(data.currentAge);
+    const extraOneTime = parseFloat(data.oneTimeExtra) || 0;
+    const extraMonthly = parseFloat(data.monthlyExtra) || 0;
+    const extraYearly = parseFloat(data.yearlyExtra) || 0;
+    const strategy = data.strategy;
+    const r = yearlyRate / 12;
+
+    const standardRataBase = P * (r * Math.pow(1 + r, N_original)) / (Math.pow(1 + r, N_original) - 1);
+    const totalCostBase = standardRataBase * N_original;
+    const hasAnyOverpayment = (extraOneTime > 0 || extraMonthly > 0 || extraYearly > 0);
+
+    let currentBalance = P - extraOneTime - extraMonthly - extraYearly;
+    let totalPaid = extraOneTime + extraMonthly + extraYearly; 
+    let monthCount = 1; 
+    let scheduleHTML = '';
+
+    let firstNewRata = (strategy === 'lower' && hasAnyOverpayment) ? 
+        currentBalance * (r * Math.pow(1 + r, N_original - 1)) / (Math.pow(1 + r, N_original - 1) - 1) : standardRataBase;
+
+    scheduleHTML += `<tr><td>Start (Rok 0)</td><td>${age} lat</td><td>${firstNewRata.toFixed(2)} zł</td><td>${currentBalance.toFixed(0)} zł</td></tr>`;
+
+    while (currentBalance > 0 && monthCount < N_original) {
+        let remainingMonths = N_original - monthCount;
+        let currentRata = (strategy === 'lower' && hasAnyOverpayment) ? 
+            currentBalance * (r * Math.pow(1 + r, remainingMonths)) / (Math.pow(1 + r, remainingMonths) - 1) : standardRataBase;
+
+        let interest = currentBalance * r;
+        let yearlyBonus = (monthCount % 12 === 0 && monthCount > 0) ? extraYearly : 0;
+        let capitalPart = (currentRata + extraMonthly + yearlyBonus) - interest;
+
+        if (currentBalance <= capitalPart) {
+            totalPaid += (currentBalance + interest);
+            currentBalance = 0;
+            monthCount++;
+            break;
+        } else {
+            currentBalance -= capitalPart;
+            totalPaid += (currentRata + extraMonthly + yearlyBonus);
+        }
+
+        if (monthCount % 12 === 0) {
+            let nextYearRata = (strategy === 'lower' && hasAnyOverpayment) ? 
+                currentBalance * (r * Math.pow(1 + r, remainingMonths - 1)) / (Math.pow(1 + r, remainingMonths - 1) - 1) : standardRataBase;
+
+            scheduleHTML += `<tr><td>Rok ${monthCount / 12}</td><td>${age + monthCount/12} lat</td><td>${nextYearRata.toFixed(2)} zł</td><td>${currentBalance.toFixed(0)} zł</td></tr>`;
+        }
+        monthCount++;
+    }
+
+    const finalSavings = hasAnyOverpayment ? (totalCostBase - totalPaid) : 0;
+
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('resNextRata').innerText = firstNewRata.toFixed(2) + " zł";
+    document.getElementById('resSavings').innerText = (finalSavings < 0 ? 0 : finalSavings).toFixed(2) + " zł";
+    document.getElementById('resAge').innerText = (age + (monthCount-1)/12).toFixed(1) + " lat";
+    document.getElementById('resTotalPaid').innerText = (hasAnyOverpayment ? totalPaid : totalCostBase).toFixed(2) + " zł";
+    document.getElementById('scheduleBody').innerHTML = scheduleHTML;
+}
+</script>
+</body>
+</html>
