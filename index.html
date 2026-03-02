@@ -1,170 +1,477 @@
+html
 <!DOCTYPE html>
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kalkulator Kredytowy - Tomasz Lisiecki</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root { --primary: #1a73e8; --secondary: #27ae60; --bg: #f8f9fa; --author-bg: #f0f0f0; --author-text: #e67e22; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); padding: 20px; color: #3c4043; }
-        .container { max-width: 1000px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        h2 { text-align: center; color: var(--primary); margin-bottom: 30px; }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); padding: 20px; color: #3c4043; margin: 0; }
+        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+        h2 { text-align: center; color: var(--primary); margin-bottom: 20px; }
         h3 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 25px; font-size: 1.1rem; color: #5f6368; }
-        .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 15px; }
+        .section-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 15px; }
+        .section-grid-1 { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
         .input-group { display: flex; flex-direction: column; }
         label { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: #5f6368; }
-        input, select { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; outline: none; }
-        .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: 0.2s; margin: 20px 0; }
+        label .hint { font-weight: normal; color: #9aa0a6; font-size: 0.72rem; display: block; margin-top: 1px; }
+        input, select { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; outline: none; width: 100%; }
+        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,0.15); }
+        input.highlight { border-color: var(--secondary); background: #f0faf4; }
+
+        .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.2s; margin: 20px 0; }
         .btn:hover { background: #1557b0; }
-        
-        /* Zaktualizowany pasek autora */
-        .info-bar { display: flex; justify-content: flex-end; align-items: center; background: var(--author-bg); color: var(--author-text); padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 600; border: 1px solid #e0e0e0; }
-        
+        .btn-mail { background: #e67e22; margin-top: 10px; }
+        .btn-mail:hover { background: #ca6a19; }
+        .btn-pdf { background: #34495e; margin-top: 10px; }
+        .btn-pdf:hover { background: #243342; }
+
+        .info-bar { display: flex; justify-content: flex-end; align-items: center; background: var(--author-bg); color: var(--author-text); padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 600; }
+
         .results { margin-top: 20px; display: none; }
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 30px; }
-        .card { padding: 20px; background: #fff; border-radius: 10px; text-align: center; border: 1px solid #e8eaed; }
-        .card h4 { margin: 0 0 10px 0; font-size: 0.7rem; text-transform: uppercase; color: #5f6368; }
-        .card .value { font-size: 1.2rem; font-weight: bold; color: var(--primary); }
-        .tooltip { margin-left: 6px; cursor: help; display: inline-flex; background: #dadce0; color: white; width: 16px; height: 16px; border-radius: 50%; font-size: 10px; align-items: center; justify-content: center; position: relative; vertical-align: middle; }
-        .tooltip:hover::after {
-            content: "Założenie: Nadpłaty są księgowane na początku cyklu, co natychmiast obniża bazę odsetkową.";
-            position: absolute; bottom: 125%; left: 50%; transform: translateX(-50%);
-            background: #333; color: #fff; padding: 8px; border-radius: 4px; width: 220px; font-size: 0.7rem; z-index: 10; font-weight: normal;
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 30px; }
+        .card { padding: 15px; background: #fff; border-radius: 10px; text-align: center; border: 1px solid #e8eaed; }
+        .card h4 { margin: 0 0 5px 0; font-size: 0.65rem; text-transform: uppercase; color: #5f6368; }
+        .card .value { font-size: 1.1rem; font-weight: bold; color: var(--primary); }
+
+        .table-wrapper { overflow-x: auto; overflow-y: auto; max-height: 400px; margin-top: 15px; border: 1px solid #eee; }
+        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; background: white; }
+        th, td { border: 1px solid #e8eaed; padding: 8px; text-align: center; white-space: nowrap; }
+        th { background-color: #f8f9fa; position: sticky; top: 0; z-index: 1; }
+        tr:nth-child(even) { background: #fafafa; }
+
+        .export-section { background: #fdfdfd; padding: 25px; border-radius: 10px; border: 1px dashed #ccc; margin-top: 30px; }
+
+        /* Responsywność dla małych ekranów */
+        @media (max-width: 700px) {
+            .section-grid-5 { grid-template-columns: repeat(2, 1fr); }
         }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 0.9rem; }
-        th, td { border: 1px solid #e8eaed; padding: 12px; text-align: center; }
-        th { background-color: #f8f9fa; font-weight: 600; }
-        tr:hover { background-color: #f1f3f4; }
+        @media (max-width: 420px) {
+            .section-grid-5 { grid-template-columns: 1fr; }
+        }
     </style>
 </head>
 <body>
-
 <div class="container">
+
     <h2>Kalkulator Kredytowy</h2>
-    <div class="info-bar"><div>Autor: Tomasz Lisiecki (2026)</div></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v3.0</span></div>
 
     <h3>1. Dane Kredytu</h3>
     <div class="section-grid">
-        <div class="input-group"><label>Kapitał do spłaty (zł)</label><input type="number" id="loanAmount" value="300000"></div>
+        <div class="input-group"><label>Kapitał (zł)</label><input type="number" id="loanAmount" value="300000"></div>
         <div class="input-group"><label>Oprocentowanie (%)</label><input type="number" id="interestRate" step="0.01" value="7.5"></div>
         <div class="input-group"><label>Pozostało rat (msc)</label><input type="number" id="monthsLeft" value="240"></div>
         <div class="input-group"><label>Twój wiek</label><input type="number" id="currentAge" value="30"></div>
     </div>
 
-    <h3>2. Plan Nadpłat</h3>
-    <div class="section-grid">
-        <div class="input-group"><label>Jednorazowo (teraz)</label><input type="number" id="oneTimeExtra" value="0"></div>
-        <div class="input-group"><label>Co miesiąc (zł)</label><input type="number" id="monthlyExtra" value="0"></div>
-        <div class="input-group"><label>Raz w roku (np. premia)</label><input type="number" id="yearlyExtra" value="0"></div>
+    <h3>2. Plan Nadpłat i Scenariusze</h3>
+
+    <!-- Wiersz 1: pięć opcji nadpłat -->
+    <div class="section-grid-5">
         <div class="input-group">
-            <label>Strategia po nadpłacie</label>
+            <label>Jednorazowo (teraz)
+                <span class="hint">nadpłata od razu</span>
+            </label>
+            <input type="number" id="oneTimeExtra" value="0" min="0">
+        </div>
+        <div class="input-group">
+            <label>Co miesiąc (zł)
+                <span class="hint">stała nadpłata mies.</span>
+            </label>
+            <input type="number" id="monthlyExtra" value="0" min="0">
+        </div>
+        <div class="input-group">
+            <label>Raz w roku (zł)
+                <span class="hint">roczna nadpłata</span>
+            </label>
+            <input type="number" id="yearlyExtra" value="0" min="0">
+        </div>
+        <div class="input-group">
+            <label>Nowa rata (zł)
+                <span class="hint">0 = bez zmian</span>
+            </label>
+            <input type="number" id="newInstalment" value="0" min="0" class="highlight">
+        </div>
+        <div class="input-group">
+            <label>Nowe oprocentowanie (%)
+                <span class="hint">0 = bez zmian</span>
+            </label>
+            <input type="number" id="newRate" step="0.01" value="0" min="0" class="highlight">
+        </div>
+    </div>
+
+    <!-- Wiersz 2: strategia -->
+    <div class="section-grid-1">
+        <div class="input-group">
+            <label>Strategia nadpłat</label>
             <select id="strategy">
-                <option value="lower">Zmniejszenie raty</option>
-                <option value="shorten">Skrócenie okresu</option>
+                <option value="shorten" selected>Skrócenie okresu kredytowania</option>
+                <option value="lower">Zmniejszenie wysokości raty</option>
             </select>
         </div>
     </div>
 
-    <button class="btn" onclick="calculate()">Przelicz i generuj harmonogram</button>
+    <button class="btn" onclick="calculate()">▶ Przelicz i generuj harmonogram</button>
 
     <div class="results" id="results">
         <div class="stats">
-            <div class="card"><h4>Najbliższa rata <span class="tooltip">?</span></h4><div class="value" id="resNextRata">-</div></div>
-            <div class="card"><h4>Suma oszczędności</h4><div class="value" style="color:var(--secondary)" id="resSavings">-</div></div>
+            <div class="card"><h4>Rata</h4><div class="value" id="resNextRata">-</div></div>
+            <div class="card"><h4>Oszczędność</h4><div class="value" style="color:var(--secondary)" id="resSavings">-</div></div>
+            <div class="card"><h4>Czas spłaty</h4><div class="value" id="resYearsLeft">-</div></div>
             <div class="card"><h4>Wiek po spłacie</h4><div class="value" id="resAge">-</div></div>
-            <div class="card"><h4>Suma oddana ogółem</h4><div class="value" id="resTotalPaid">-</div></div>
+            <div class="card"><h4>Suma kosztów</h4><div class="value" id="resTotalPaid">-</div></div>
         </div>
-        <table id="scheduleTable">
-            <thead>
-                <tr>
-                    <th>Rok</th>
-                    <th>Wiek</th>
-                    <th>Rata Obowiązkowa</th>
-                    <th>Pozostały Kapitał</th>
-                </tr>
-            </thead>
-            <tbody id="scheduleBody"></tbody>
-        </table>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rok</th><th>Wiek</th><th>Rata (zł)</th>
+                        <th>Kapitał (zł)</th><th>Odsetki (zł)</th><th>Saldo (zł)</th>
+                    </tr>
+                </thead>
+                <tbody id="scheduleBody"></tbody>
+            </table>
+        </div>
+
+        <div class="export-section">
+            <h3>3. Eksport i Bezpłatna Analiza</h3>
+            <p style="color:#e67e22; font-weight:bold;">Sprawdzimy czy istnieje dla Ciebie tańszy kredyt i za darmo Cię o tym poinformujemy.</p>
+            <div class="section-grid">
+                <div class="input-group"><label>Nazwa Banku</label><input type="text" id="bankName" placeholder="np. PKO BP"></div>
+                <div class="input-group"><label>Twój E-mail</label><input type="email" id="userEmail" placeholder="twoj@email.com"></div>
+                <div class="input-group"><label>Telefon</label><input type="tel" id="userPhone" placeholder="123-456-789"></div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+                <button class="btn btn-mail" onclick="sendToTomasz()">📧 Wyślij do analizy</button>
+                <button class="btn btn-pdf"  onclick="generatePDF()">📄 Pobierz Raport PDF</button>
+            </div>
+        </div>
     </div>
 </div>
 
 <script>
-window.onload = function() {
-    const saved = JSON.parse(localStorage.getItem('mortgageData_TL'));
-    if (saved) {
-        Object.keys(saved).forEach(key => {
-            const el = document.getElementById(key);
-            if(el) el.value = saved[key];
-        });
-    }
-};
+let globalResults = {};
+let globalInputs  = {};
+let tableRows     = [];
 
+/* ===================== OBLICZENIA ===================== */
 function calculate() {
-    const fields = ['loanAmount', 'interestRate', 'monthsLeft', 'currentAge', 'oneTimeExtra', 'monthlyExtra', 'yearlyExtra', 'strategy'];
-    const data = {};
-    fields.forEach(f => data[f] = document.getElementById(f).value);
-    localStorage.setItem('mortgageData_TL', JSON.stringify(data));
+    const data = {
+        loanAmount:    parseFloat(document.getElementById('loanAmount').value)    || 0,
+        interestRate:  parseFloat(document.getElementById('interestRate').value)  || 0,
+        monthsLeft:    parseInt(document.getElementById('monthsLeft').value)      || 0,
+        currentAge:    parseInt(document.getElementById('currentAge').value)      || 0,
+        oneTimeExtra:  parseFloat(document.getElementById('oneTimeExtra').value)  || 0,
+        monthlyExtra:  parseFloat(document.getElementById('monthlyExtra').value)  || 0,
+        yearlyExtra:   parseFloat(document.getElementById('yearlyExtra').value)   || 0,
+        newInstalment: parseFloat(document.getElementById('newInstalment').value) || 0,
+        newRate:       parseFloat(document.getElementById('newRate').value)       || 0,
+        strategy:      document.getElementById('strategy').value
+    };
+    globalInputs = data;
+    tableRows    = [];
 
-    let P = parseFloat(data.loanAmount);
-    const yearlyRate = parseFloat(data.interestRate) / 100;
-    const N_original = parseInt(data.monthsLeft);
-    const age = parseInt(data.currentAge);
-    const extraOneTime = parseFloat(data.oneTimeExtra) || 0;
-    const extraMonthly = parseFloat(data.monthlyExtra) || 0;
-    const extraYearly = parseFloat(data.yearlyExtra) || 0;
-    const strategy = data.strategy;
-    const r = yearlyRate / 12;
+    // Efektywne oprocentowanie: jeśli podano nowe, używamy nowego
+    const effectiveRate = (data.newRate > 0) ? data.newRate : data.interestRate;
+    const r  = (effectiveRate / 100) / 12;
+    const rOrig = (data.interestRate / 100) / 12;
+    const N  = data.monthsLeft;
 
-    const standardRataBase = P * (r * Math.pow(1 + r, N_original)) / (Math.pow(1 + r, N_original) - 1);
-    const totalCostBase = standardRataBase * N_original;
-    const hasAnyOverpayment = (extraOneTime > 0 || extraMonthly > 0 || extraYearly > 0);
+    // Nadpłaty "klasyczne"
+    const hasClassicOver = data.oneTimeExtra > 0 || data.monthlyExtra > 0 || data.yearlyExtra > 0;
 
-    let currentBalance = P - extraOneTime - extraMonthly - extraYearly;
-    let totalPaid = extraOneTime + extraMonthly + extraYearly; 
-    let monthCount = 1; 
-    let scheduleHTML = '';
+    // Bazowa rata przy ORYGINALNYM oprocentowaniu (do obliczenia oszczędności)
+    const baseRataOrig = data.loanAmount * (rOrig * Math.pow(1+rOrig, N)) / (Math.pow(1+rOrig, N) - 1);
+    const totalCostBase = baseRataOrig * N;
 
-    let firstNewRata = (strategy === 'lower' && hasAnyOverpayment) ? 
-        currentBalance * (r * Math.pow(1 + r, N_original - 1)) / (Math.pow(1 + r, N_original - 1) - 1) : standardRataBase;
+    // Saldo po ewentualnej jednorazowej nadpłacie
+    let balance   = data.loanAmount - data.oneTimeExtra;
+    let totalPaid = data.oneTimeExtra;
 
-    scheduleHTML += `<tr><td>Start (Rok 0)</td><td>${age} lat</td><td>${firstNewRata.toFixed(2)} zł</td><td>${currentBalance.toFixed(0)} zł</td></tr>`;
-
-    while (currentBalance > 0 && monthCount < N_original) {
-        let remainingMonths = N_original - monthCount;
-        let currentRata = (strategy === 'lower' && hasAnyOverpayment) ? 
-            currentBalance * (r * Math.pow(1 + r, remainingMonths)) / (Math.pow(1 + r, remainingMonths) - 1) : standardRataBase;
-
-        let interest = currentBalance * r;
-        let yearlyBonus = (monthCount % 12 === 0 && monthCount > 0) ? extraYearly : 0;
-        let capitalPart = (currentRata + extraMonthly + yearlyBonus) - interest;
-
-        if (currentBalance <= capitalPart) {
-            totalPaid += (currentBalance + interest);
-            currentBalance = 0;
-            monthCount++;
-            break;
-        } else {
-            currentBalance -= capitalPart;
-            totalPaid += (currentRata + extraMonthly + yearlyBonus);
-        }
-
-        if (monthCount % 12 === 0) {
-            let nextYearRata = (strategy === 'lower' && hasAnyOverpayment) ? 
-                currentBalance * (r * Math.pow(1 + r, remainingMonths - 1)) / (Math.pow(1 + r, remainingMonths - 1) - 1) : standardRataBase;
-
-            scheduleHTML += `<tr><td>Rok ${monthCount / 12}</td><td>${age + monthCount/12} lat</td><td>${nextYearRata.toFixed(2)} zł</td><td>${currentBalance.toFixed(0)} zł</td></tr>`;
-        }
-        monthCount++;
+    // Wyznacz ratę startową
+    // Priorytet: 1) nowa rata z pola, 2) przeliczona z nowego oprocentowania, 3) bazowa
+    let currentRata;
+    if (data.newInstalment > 0) {
+        // Użytkownik podał konkretną nową ratę
+        currentRata = data.newInstalment;
+    } else if (data.newRate > 0) {
+        // Nowe oprocentowanie, ale bez podania nowej raty — przelicz ratę
+        currentRata = balance * (r * Math.pow(1+r, N)) / (Math.pow(1+r, N) - 1);
+    } else if (data.strategy === 'lower' && hasClassicOver && N > 1) {
+        // Strategia zmniejszenia raty z nadpłatą jednorazową
+        currentRata = balance * (r * Math.pow(1+r, N-1)) / (Math.pow(1+r, N-1) - 1);
+    } else {
+        currentRata = baseRataOrig;
     }
 
-    const finalSavings = hasAnyOverpayment ? (totalCostBase - totalPaid) : 0;
+    let month = 1;
+    let htmlRows = '';
+    let yCap = data.oneTimeExtra;
+    let yInt = 0;
 
-    document.getElementById('results').style.display = 'block';
-    document.getElementById('resNextRata').innerText = firstNewRata.toFixed(2) + " zł";
-    document.getElementById('resSavings').innerText = (finalSavings < 0 ? 0 : finalSavings).toFixed(2) + " zł";
-    document.getElementById('resAge').innerText = (age + (monthCount-1)/12).toFixed(1) + " lat";
-    document.getElementById('resTotalPaid').innerText = (hasAnyOverpayment ? totalPaid : totalCostBase).toFixed(2) + " zł";
-    document.getElementById('scheduleBody').innerHTML = scheduleHTML;
+    // Wiersz startowy
+    htmlRows += rowHtml('Start', data.currentAge, currentRata, yCap, 0, balance);
+    tableRows.push(['Start', String(data.currentAge), f2(currentRata), fi(yCap), '0', fi(balance)]);
+    yCap = 0;
+
+    while (balance > 0.05 && month <= N * 2) { // *2 jako zabezpieczenie przed infinite loop gdy rata za mała
+        // Czy rata pokrywa chociaż odsetki?
+        const interest = balance * r;
+
+        // Dynamiczne przeliczanie raty dla strategii "zmniejszenie raty" + klasyczne nadpłaty
+        if (data.newInstalment === 0 && data.newRate === 0 && data.strategy === 'lower' && hasClassicOver) {
+            const rem = N - month;
+            if (rem > 0) {
+                currentRata = balance * (r * Math.pow(1+r, rem)) / (Math.pow(1+r, rem) - 1);
+            } else {
+                currentRata = balance * (1 + r);
+            }
+        }
+        // Jeśli podano nowe oprocentowanie bez nowej raty i strategia to skrócenie — rata stała (już obliczona)
+        // Jeśli podano nową ratę — rata stała
+
+        const bonus   = (month % 12 === 0) ? data.yearlyExtra : 0;
+        const payment = currentRata + data.monthlyExtra + bonus;
+        const capPart = payment - interest;
+
+        if (capPart <= 0) {
+            // Rata nie pokrywa odsetek — informacja o błędzie
+            alert('Uwaga: podana rata jest niższa niż miesięczne odsetki (' + f2(interest) + ' zł). Zwiększ ratę.');
+            return;
+        }
+
+        if (balance <= capPart) {
+            yCap += balance; yInt += interest;
+            totalPaid += balance + interest;
+            balance = 0;
+        } else {
+            balance   -= capPart;
+            yCap      += capPart;
+            yInt      += interest;
+            totalPaid += payment;
+        }
+
+        if (month % 12 === 0 || balance === 0) {
+            const rok     = 'Rok ' + Math.ceil(month / 12);
+            const wiek    = (data.currentAge + month / 12).toFixed(0);
+            const rataStr = balance > 0 ? f2(currentRata) : '0.00';
+            htmlRows += rowHtml(rok, wiek, balance > 0 ? currentRata : 0, yCap, yInt, balance);
+            tableRows.push([rok, wiek, rataStr, fi(yCap), fi(yInt), fi(balance)]);
+            yCap = 0; yInt = 0;
+        }
+        month++;
+    }
+
+    const diff       = totalCostBase - totalPaid;
+    const finalOszcz = diff > 0 ? diff.toFixed(2) : '0.00';
+    const yearsLeft  = ((month - 1) / 12).toFixed(1);
+    const ageAtEnd   = (data.currentAge + (month - 1) / 12).toFixed(1);
+
+    globalResults = {
+        rata:      f2(currentRata),
+        oszcz:     finalOszcz,
+        lat:       yearsLeft,
+        total:     totalPaid.toFixed(2),
+        age:       ageAtEnd,
+        rateUsed:  effectiveRate
+    };
+
+    document.getElementById('results').style.display  = 'block';
+    document.getElementById('resNextRata').innerText  = f2(currentRata) + ' zł';
+    document.getElementById('resSavings').innerText   = finalOszcz + ' zł';
+    document.getElementById('resYearsLeft').innerText = yearsLeft + ' lat';
+    document.getElementById('resAge').innerText       = ageAtEnd + ' lat';
+    document.getElementById('resTotalPaid').innerText = totalPaid.toFixed(2) + ' zł';
+    document.getElementById('scheduleBody').innerHTML = htmlRows;
+}
+
+function rowHtml(rok, wiek, rata, cap, odsetki, saldo) {
+    return `<tr>
+        <td>${rok}</td><td>${wiek}</td>
+        <td>${f2(rata)}</td><td>${fi(cap)}</td>
+        <td>${fi(odsetki)}</td><td>${fi(saldo)}</td>
+    </tr>`;
+}
+
+function f2(n)   { return parseFloat(n).toFixed(2); }
+function fi(n)   { return Math.round(n).toLocaleString('pl-PL'); }
+function fNum(n) { return Number(n).toLocaleString('pl-PL'); }
+
+/* ===================== EMAIL ===================== */
+function sendToTomasz() {
+    const bank      = document.getElementById('bankName').value.trim()  || 'Nie podano';
+    const userEmail = document.getElementById('userEmail').value.trim();
+    const userPhone = document.getElementById('userPhone').value.trim() || 'Nie podano';
+    if (!userEmail) { alert('Podaj swój e-mail!'); return; }
+
+    const inp = globalInputs, res = globalResults;
+    const strat = inp.strategy === 'shorten' ? 'Skrocenie okresu' : 'Zmniejszenie raty';
+
+    const lines = [
+        'DANE KONTAKTOWE:',
+        `E-mail:                ${userEmail}`,
+        `Telefon:               ${userPhone}`,
+        `Bank:                  ${bank}`,
+        '', '============================', 'DANE KREDYTU:',
+        `Kapital:               ${fNum(inp.loanAmount)} zl`,
+        `Oprocentowanie orig.:  ${inp.interestRate} %`,
+        `Pozostalo rat:         ${inp.monthsLeft} miesiecy`,
+        `Wiek kredytobiorcy:    ${inp.currentAge} lat`,
+        '', 'SCENARIUSZ NADPLAT:',
+        `Jednorazowo:           ${inp.oneTimeExtra || 0} zl`,
+        `Co miesiac:            ${inp.monthlyExtra || 0} zl`,
+        `Raz w roku:            ${inp.yearlyExtra  || 0} zl`,
+        `Nowa rata:             ${inp.newInstalment || 'bez zmian'} zl`,
+        `Nowe oprocentowanie:   ${inp.newRate || 'bez zmian'} %`,
+        `Strategia:             ${strat}`,
+        '', '============================', 'WYNIKI KALKULACJI:',
+        `Rata:                  ${res.rata} zl`,
+        `Czas splaty:           ${res.lat} lat`,
+        `Wiek po splacie:       ${res.age} lat`,
+        `Suma kosztow:          ${res.total} zl`,
+        `Oszczednosc:           ${res.oszcz} zl`,
+        '============================',
+    ];
+
+    const subject = encodeURIComponent(`Analiza Kredytowa - ${bank}`);
+    window.location.href = `mailto:tomasz.lisiecki.007@gmail.com?subject=${subject}&body=${encodeURIComponent(lines.join('\n'))}`;
+}
+
+/* ===================== PDF ===================== */
+function generatePDF() {
+    if (!tableRows.length) { alert('Najpierw przelicz harmonogram!'); return; }
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
+    const W   = doc.internal.pageSize.getWidth();
+
+    const bank  = document.getElementById('bankName').value.trim()  || '—';
+    const email = document.getElementById('userEmail').value.trim() || '—';
+    const phone = document.getElementById('userPhone').value.trim() || '—';
+    const inp   = globalInputs, res = globalResults;
+    const strat = inp.strategy === 'shorten' ? 'Skrocenie okresu' : 'Zmniejszenie raty';
+
+    const C_ORANGE = [230, 126, 34];
+    const C_BLUE   = [26, 115, 232];
+    const C_DARK   = [60, 64, 67];
+    const C_LGRAY  = [248, 249, 250];
+    const C_GRAY   = [95, 99, 104];
+
+    // ---- Nagłówek ----
+    doc.setFillColor(...C_ORANGE);
+    doc.rect(0, 0, W, 22, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(14);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Autor: Tomasz Lisiecki (2026) v3.0  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+
+    let y = 30;
+
+    // ---- Baner CTA ----
+    doc.setFillColor(255, 243, 224);
+    doc.roundedRect(10, y, W - 20, 14, 2, 2, 'F');
+    doc.setDrawColor(...C_ORANGE);
+    doc.roundedRect(10, y, W - 20, 14, 2, 2, 'S');
+    doc.setTextColor(...C_ORANGE);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.text('Wyslij ten plik na: tomasz.lisiecki.007@gmail.com', W / 2, y + 5.5, { align: 'center' });
+    doc.setFont('helvetica', 'normal');
+    doc.text('aby otrzymac bezplatne porownanie ofert innych bankow i sprawdzic czy masz najlepsza rate!', W / 2, y + 10.5, { align: 'center' });
+    y += 20;
+
+    // ---- Dane klienta i kredytu ----
+    sectionTitle(doc, 'Dane klienta i kredytu', y, W, C_BLUE);
+    y += 8;
+
+    doc.autoTable({
+        startY: y,
+        margin: { left: 10, right: 10 },
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 2.5, textColor: C_DARK },
+        headStyles: { fillColor: C_BLUE, textColor: 255, fontStyle: 'bold', fontSize: 8 },
+        alternateRowStyles: { fillColor: C_LGRAY },
+        head: [['Parametr', 'Wartosc', 'Parametr', 'Wartosc']],
+        body: [
+            ['Bank',                 bank,                              'E-mail',              email],
+            ['Telefon',              phone,                             'Kapital',             fNum(inp.loanAmount) + ' zl'],
+            ['Oprocent. oryg.',      inp.interestRate + ' %',           'Pozostalo rat',       inp.monthsLeft + ' msc'],
+            ['Wiek',                 inp.currentAge + ' lat',           'Strategia',           strat],
+            ['Nadplata jednoraz.',   (inp.oneTimeExtra||0) + ' zl',    'Nadplata mies.',      (inp.monthlyExtra||0) + ' zl'],
+            ['Nadplata roczna',      (inp.yearlyExtra||0) + ' zl',     'Nowa rata',           inp.newInstalment > 0 ? inp.newInstalment + ' zl' : 'bez zmian'],
+            ['Nowe oprocent.',       inp.newRate > 0 ? inp.newRate + ' %' : 'bez zmian', '', ''],
+        ],
+        columnStyles: { 0: { fontStyle: 'bold', cellWidth: 38 }, 2: { fontStyle: 'bold', cellWidth: 38 } }
+    });
+    y = doc.lastAutoTable.finalY + 8;
+
+    // ---- Wyniki ----
+    sectionTitle(doc, 'Wyniki kalkulacji', y, W, C_BLUE);
+    y += 8;
+
+    doc.autoTable({
+        startY: y,
+        margin: { left: 10, right: 10 },
+        theme: 'grid',
+        styles: { fontSize: 9, cellPadding: 3, textColor: C_DARK, halign: 'center' },
+        headStyles: { fillColor: C_BLUE, textColor: 255, fontStyle: 'bold' },
+        head: [['Rata (zl)', 'Oszczednosc (zl)', 'Czas splaty', 'Wiek po splacie', 'Suma kosztow (zl)']],
+        body: [[res.rata, res.oszcz, res.lat + ' lat', res.age + ' lat', res.total]],
+        bodyStyles: { fontStyle: 'bold', fontSize: 10 }
+    });
+    y = doc.lastAutoTable.finalY + 8;
+
+    // ---- Harmonogram ----
+    sectionTitle(doc, 'Harmonogram splat (roczny)', y, W, C_BLUE);
+    y += 8;
+
+    doc.autoTable({
+        startY: y,
+        margin: { left: 10, right: 10 },
+        theme: 'striped',
+        styles: { fontSize: 7.5, cellPadding: 2, textColor: C_DARK, halign: 'center' },
+        headStyles: { fillColor: C_DARK, textColor: 255, fontStyle: 'bold', fontSize: 8 },
+        alternateRowStyles: { fillColor: [240, 244, 255] },
+        head: [['Rok', 'Wiek', 'Rata (zl)', 'Kapital (zl)', 'Odsetki (zl)', 'Saldo (zl)']],
+        body: tableRows,
+        showHead: 'everyPage',
+        rowPageBreak: 'avoid',
+        didDrawPage: () => {
+            const pg    = doc.internal.getCurrentPageInfo().pageNumber;
+            const total = doc.internal.getNumberOfPages();
+            doc.setFontSize(7);
+            doc.setTextColor(...C_GRAY);
+            doc.text(
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v3.0 - Tomasz Lisiecki`,
+                W / 2,
+                doc.internal.pageSize.getHeight() - 6,
+                { align: 'center' }
+            );
+        }
+    });
+
+    doc.save(`Kalkulacja_${bank.replace(/[^a-zA-Z0-9]/g, '_')}.pdf`);
+}
+
+function sectionTitle(doc, text, y, W, color) {
+    doc.setFillColor(...color);
+    doc.rect(10, y, W - 20, 7, 'F');
+    doc.setTextColor(255, 255, 255);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'bold');
+    doc.text(text, 14, y + 5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(60, 64, 67);
 }
 </script>
 </body>
