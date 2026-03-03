@@ -3,8 +3,29 @@ html
 <html lang="pl">
 <head>
     <meta charset="UTF-8">
+<title>Kalkulator Nadpłaty Kredytu – Oblicz Oszczędności | nadplacam.com.pl</title>
+<meta name="description" content="Skorzystaj z darmowego kalkulatora nadpłat kredytu hipotecznego. Oblicz, ile zaoszczędzisz na odsetkach i skróć okres spłaty. Pobierz darmowy raport PDF.">
+
+<meta name="keywords" content="kalkulator kredytowy, nadpłata kredytu hipotecznego, oszczędność na kredycie, Tomasz Lisiecki, symulacja kredytu, tańszy kredyt, raport kredytowy PDF">
+
+<meta property="og:title" content="Kalkulator Nadpłat Kredytu - Tomasz Lisiecki">
+<meta property="og:description" content="Oblicz ile możesz zaoszczędzić na swoim kredycie w 2 minuty.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://nadplacam.com.pl/">
+<meta property="og:image" content="https://nadplacam.com.pl/baner_maly.png">
+<meta property="og:locale" content="pl_PL">
+<meta property="og:site_name" content="nadplacam.com.pl">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Kalkulator Nadpłaty Kredytu – nadplacam.com.pl">
+<meta name="twitter:description" content="Oblicz ile zaoszczędzisz nadpłacając kredyt. Bezpłatna analiza.">
+<meta name="twitter:image" content="https://nadplacam.com.pl/baner_maly.png">
+    <link rel="canonical" href="https://nadplacam.com.pl/">
+    <script type="application/ld+json">
+    {"@context":"https://schema.org","@type":"WebApplication","name":"Kalkulator Nadpłaty Kredytu nadplacam.com.pl","url":"https://nadplacam.com.pl","applicationCategory":"FinanceApplication","author":{"@type":"Person","name":"Tomasz Lisiecki","email":"tomasz.lisiecki.007@gmail.com"},"offers":{"@type":"Offer","price":"0","priceCurrency":"PLN"}}
+    </script>
+
+<meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalkulator Kredytowy - Tomasz Lisiecki</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <style>
@@ -56,11 +77,19 @@ html
         }
     </style>
 </head>
+<!-- GoatCounter – statystyki odwiedzin -->
+<script data-goatcounter="https://nadplacam.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 <body>
+<div style="background:#f8f9fa; text-align:center; line-height:0; padding:0; margin:0;">
+    <img src="baner_mały.png"
+         alt="nadplacam.com.pl – kalkulator nadpłaty kredytu"
+         style="width:100%; max-width:1100px; display:inline-block; height:auto;">
+</div>
 <div class="container">
 
-    <h2>Kalkulator Kredytowy</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v4.0</span></div>
+    <h2>Kalkulator Nadpłaty Kredytu</h2>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v4.1</span></div>
 
     <h3>1. Dane Kredytu</h3>
     <div class="section-grid">
@@ -378,7 +407,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v3.0  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v4.1  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -457,7 +486,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v3.0 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v4.1 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
