@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
 <title>Kalkulator Nadpłaty Kredytu – Oblicz Oszczędności | nadplacam.com.pl</title>
 <meta name="description" content="Skorzystaj z darmowego kalkulatora nadpłat kredytu hipotecznego. Oblicz, ile zaoszczędzisz na odsetkach i skróć okres spłaty. Pobierz darmowy raport PDF.">
-<meta name="keywords" content="kalkulator kredytowy, nadpłata kredytu hipotecznego, nadplacam,  oszczędność na kredycie, Tomasz Lisiecki, symulacja kredytu, tańszy kredyt, raport kredytowy PDF">
+<meta name="keywords" content="kalkulator kredytowy, nadpłata kredytu hipotecznego, nadplacam,  oszczędność na kredycie, Tomasz Lisiecki, symulacja kredytu, tańszy kredyt, jak nadplacic kredyt , raport kredytowy PDF">
 
 <meta property="og:title" content="Kalkulator Nadpłat Kredytu - Tomasz Lisiecki">
 <meta property="og:description" content="Oblicz ile możesz zaoszczędzić na swoim kredycie w 2 minuty.">
@@ -84,7 +84,7 @@
 <body>
 <div style="background:#f8f9fa; text-align:center; line-height:0; padding:0; margin:0;">
     <img src="baner_maly.png"
-         alt="nadplacam.com.pl – kalkulator nadpłaty kredytu"
+         alt="Kalkulator nadpłaty kredytu hipotecznego - darmowa analiza Tomasz Lisiecki"
          style="width:100%; max-width:1100px; display:inline-block; height:auto;">
 </div>
 <div class="container">
@@ -340,45 +340,65 @@ function fi(n)   { return Math.round(n).toLocaleString('pl-PL'); }
 function fNum(n) { return Number(n).toLocaleString('pl-PL'); }
 
 /* ===================== EMAIL ===================== */
-function sendToTomasz() {
+
+async function sendToTomasz() {
     const bank      = document.getElementById('bankName').value.trim()  || 'Nie podano';
     const userEmail = document.getElementById('userEmail').value.trim();
     const userPhone = document.getElementById('userPhone').value.trim() || 'Nie podano';
-    if (!userEmail) { alert('Podaj swój e-mail!'); return; }
+    
+    if (!userEmail) { 
+        alert('Podaj swój e-mail, abyśmy mogli przesłać analizę!'); 
+        return; 
+    }
 
-    const inp = globalInputs, res = globalResults;
-    const strat = inp.strategy === 'shorten' ? 'Skrocenie okresu' : 'Zmniejszenie raty';
+    const btn = document.querySelector('.btn-mail');
+    const originalText = btn.innerText;
+    
+    btn.innerText = "Wysyłanie...";
+    btn.disabled = true;
 
-    const lines = [
-        'DANE KONTAKTOWE:',
-        `E-mail:                ${userEmail}`,
-        `Telefon:               ${userPhone}`,
-        `Bank:                  ${bank}`,
-        '', '============================', 'DANE KREDYTU:',
-        `Kapital:               ${fNum(inp.loanAmount)} zl`,
-        `Oprocentowanie orig.:  ${inp.interestRate} %`,
-        `Pozostalo rat:         ${inp.monthsLeft} miesiecy`,
-        `Wiek kredytobiorcy:    ${inp.currentAge} lat`,
-        '', 'SCENARIUSZ NADPLAT:',
-        `Jednorazowo:           ${inp.oneTimeExtra || 0} zl`,
-        `Co miesiac:            ${inp.monthlyExtra || 0} zl`,
-        `Raz w roku:            ${inp.yearlyExtra  || 0} zl`,
-        `Nowa rata:             ${inp.newInstalment || 'bez zmian'} zl`,
-        `Nowe oprocentowanie:   ${inp.newRate || 'bez zmian'} %`,
-        `Strategia:             ${strat}`,
-        '', '============================', 'WYNIKI KALKULACJI:',
-        `Rata:                  ${res.rata} zl`,
-        `Czas splaty:           ${res.lat} lat`,
-        `Wiek po splacie:       ${res.age} lat`,
-        `Suma kosztow:          ${res.total} zl`,
-        `Oszczednosc:           ${res.oszcz} zl`,
-        '============================',
-    ];
+    const inp = globalInputs;
+    const res = globalResults;
+    const strat = inp.strategy === 'shorten' ? 'Skrócenie okresu' : 'Zmniejszenie raty';
 
-    const subject = encodeURIComponent(`Analiza Kredytowa - ${bank}`);
-    window.location.href = `mailto:tomasz.lisiecki.007@gmail.com?subject=${subject}&body=${encodeURIComponent(lines.join('\n'))}`;
+    const formData = {
+        _subject: `Nowa analiza kredytowa: ${bank}`,
+        "E-mail klienta": userEmail,
+        "Telefon": userPhone,
+        "Bank": bank,
+        "Kapitał": inp.loanAmount + " zł",
+        "Oszczędność": res.oszcz + " zł",
+        "Czas spłaty": res.lat + " lat",
+        "Wiek po spłacie": res.age + " lat",
+        "Suma kosztów": res.total + " zł",
+        "Strategia": strat,
+        "Nadpłata jednorazowa": (inp.oneTimeExtra || 0) + " zł",
+        "Nadpłata miesięczna": (inp.monthlyExtra || 0) + " zł"
+    };
+
+    try {
+        const response = await fetch("https://formspree.io/f/xzdannoe", {
+            method: "POST",
+            body: JSON.stringify(formData),
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            alert("Dziękuję! Twoje dane zostały przesłane do analizy. Skontaktuję się z Tobą wkrótce.");
+            btn.innerText = "Wysłano pomyślnie!";
+            btn.style.background = "#27ae60";
+        } else {
+            throw new Error();
+        }
+    } catch (error) {
+        alert("Wystąpił problem z serwerem. Proszę spróbować później lub pobierz raport PDF.");
+        btn.innerText = originalText;
+        btn.disabled = false;
+    }
 }
-
 /* ===================== PDF ===================== */
 function generatePDF() {
     if (!tableRows.length) { alert('Najpierw przelicz harmonogram!'); return; }
