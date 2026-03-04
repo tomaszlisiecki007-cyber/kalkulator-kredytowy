@@ -357,23 +357,21 @@ async function sendToTomasz() {
     btn.innerText = "Wysyłanie...";
     btn.disabled = true;
 
-    const inp = globalInputs;
-    const res = globalResults;
-    const strat = inp.strategy === 'shorten' ? 'Skrócenie okresu' : 'Zmniejszenie raty';
+    // Pobranie tylko kluczowych danych wejściowych
+    const kapital      = document.getElementById('loanAmount').value;
+    const oprocentowanie = document.getElementById('interestRate').value;
+    const pozostaloRat   = document.getElementById('monthsLeft').value;
+    const wiek           = document.getElementById('currentAge').value;
 
     const formData = {
-        _subject: `Nowa analiza kredytowa: ${bank}`,
-        "E-mail klienta": userEmail,
-        "Telefon": userPhone,
-        "Bank": bank,
-        "Kapitał": inp.loanAmount + " zł",
-        "Oszczędność": res.oszcz + " zł",
-        "Czas spłaty": res.lat + " lat",
-        "Wiek po spłacie": res.age + " lat",
-        "Suma kosztów": res.total + " zł",
-        "Strategia": strat,
-        "Nadpłata jednorazowa": (inp.oneTimeExtra || 0) + " zł",
-        "Nadpłata miesięczna": (inp.monthlyExtra || 0) + " zł"
+        _subject: `Nowa analiza: ${bank}`,
+        "1. Bank": bank,
+        "2. E-mail": userEmail,
+        "3. Telefon": userPhone,
+        "4. Kapitał": kapital + " zł",
+        "5. Oprocentowanie": oprocentowanie + " %",
+        "6. Pozostało rat (msc)": pozostaloRat,
+        "7. Wiek": wiek
     };
 
     try {
@@ -387,14 +385,14 @@ async function sendToTomasz() {
         });
 
         if (response.ok) {
-            alert("Dziękuję! Twoje dane zostały przesłane do analizy. Skontaktuję się z Tobą wkrótce.");
+            alert("Dziękuję! Twoje dane zostały przesłane. Skontaktuję się z Tobą wkrótce.");
             btn.innerText = "Wysłano pomyślnie!";
             btn.style.background = "#27ae60";
         } else {
             throw new Error();
         }
     } catch (error) {
-        alert("Wystąpił problem z serwerem. Proszę spróbować później lub pobierz raport PDF.");
+        alert("Błąd serwera. Spróbuj później.");
         btn.innerText = originalText;
         btn.disabled = false;
     }
