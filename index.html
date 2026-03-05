@@ -364,14 +364,13 @@ async function sendToTomasz() {
     btn.innerText = "Wysyłanie...";
     btn.disabled = true;
 
-    // Pobranie kluczowych danych wejściowych
     const kapital        = document.getElementById('loanAmount').value;
     const oprocentowanie = document.getElementById('interestRate').value;
     const pozostaloRat   = document.getElementById('monthsLeft').value;
     const wiek           = document.getElementById('currentAge').value;
 
     const formData = {
-        access_key: "f4db7751-f3f7-4752-86b4-89e0df1278bd", 
+        access_key: "f4db7751-f3f7-4752-86b4-89e0df1278bd",
         subject: `Nowa analiza: ${bank}`,
         from_name: "Kalkulator Nadpłat",
         bank: bank,
@@ -380,7 +379,8 @@ async function sendToTomasz() {
         kapital: kapital + " zł",
         oprocentowanie: oprocentowanie + " %",
         pozostalo_rat_msc: pozostaloRat,
-        wiek_klienta: wiek
+        wiek_klienta: wiek,
+        RODO: "Zaakceptowano zgodę na przetwarzanie danych do celów analizy kredytowej"
     };
 
     try {
@@ -393,18 +393,15 @@ async function sendToTomasz() {
             }
         });
 
-        const result = await response.json();
-
         if (response.status === 200) {
             alert("Dziękuję! Twoje dane zostały przesłane. Skontaktuję się z Tobą wkrótce.");
             btn.innerText = "Wysłano pomyślnie!";
             btn.style.background = "#27ae60";
         } else {
-            console.log(result);
             throw new Error();
         }
     } catch (error) {
-        alert("Wystąpił problem z wysyłką. Proszę sprawdzić poprawność danych lub spróbować później.");
+        alert("Wystąpił problem z wysyłką. Spróbuj później.");
         btn.innerText = originalText;
         btn.disabled = false;
     }
