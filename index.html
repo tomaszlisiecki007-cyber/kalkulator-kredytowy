@@ -29,45 +29,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #1a73e8; --secondary: #27ae60; --bg: #f8f9fa; --author-bg: #f0f0f0; --author-text: #e67e22; }
+        :root {
+            --primary: #0d2c6e;
+            --primary-light: #1a4aad;
+            --gold: #c8a84b;
+            --gold-light: #e8c96a;
+            --secondary: #27ae60;
+            --bg: #f0f3f8;
+            --author-bg: #e8edf5;
+            --author-text: #0d2c6e;
+            --surface: #ffffff;
+            --border: #d0d9eb;
+            --text-main: #1a2540;
+            --text-muted: #5a6480;
+        }
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: var(--bg); padding: 20px; color: #3c4043; margin: 0; }
-        .container { max-width: 1100px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-        h2 { text-align: center; color: var(--primary); margin-bottom: 20px; }
-        h3 { border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 25px; font-size: 1.1rem; color: #5f6368; }
+        body { font-family: 'Open Sans', 'Segoe UI', sans-serif; background-color: var(--bg); padding: 20px; color: var(--text-main); margin: 0; }
+        .container { max-width: 1100px; margin: auto; background: var(--surface); padding: 30px; border-radius: 14px; box-shadow: 0 6px 32px rgba(13,44,110,0.10); border-top: 4px solid var(--gold); }
+        h2 { text-align: center; color: var(--primary); margin-bottom: 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.5px; }
+        h3 { border-bottom: 2px solid var(--gold); padding-bottom: 8px; margin-top: 25px; font-size: 1.05rem; color: var(--primary); font-family: 'Montserrat', sans-serif; font-weight: 700; }
         .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .section-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 15px; }
         .section-grid-1 { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
         .input-group { display: flex; flex-direction: column; }
-        label { font-size: 0.8rem; font-weight: bold; margin-bottom: 5px; color: #5f6368; }
-        label .hint { font-weight: normal; color: #9aa0a6; font-size: 0.72rem; display: block; margin-top: 1px; }
-        input, select { padding: 12px; border: 1px solid #dadce0; border-radius: 8px; font-size: 14px; outline: none; width: 100%; }
-        input:focus, select:focus { border-color: var(--primary); box-shadow: 0 0 0 2px rgba(26,115,232,0.15); }
-        input.highlight { border-color: var(--secondary); background: #f0faf4; }
+        label { font-size: 0.8rem; font-weight: 600; margin-bottom: 5px; color: var(--primary); font-family: 'Montserrat', sans-serif; }
+        label .hint { font-weight: 400; color: #8a95b0; font-size: 0.72rem; display: block; margin-top: 1px; font-family: 'Open Sans', sans-serif; }
+        .input-group > .hint { font-weight: 400; color: #8a95b0; font-size: 0.72rem; margin-top: 2px; margin-bottom: 4px; font-family: 'Open Sans', sans-serif; }
+        input, select { padding: 12px; border: 1.5px solid var(--border); border-radius: 8px; font-size: 14px; outline: none; width: 100%; background: #f8faff; color: var(--text-main); transition: border-color 0.2s, box-shadow 0.2s; }
+        input:focus, select:focus { border-color: var(--primary-light); box-shadow: 0 0 0 3px rgba(26,74,173,0.13); background: #fff; }
+        input.highlight { border-color: var(--gold); background: #fdfaf0; }
+        input.highlight:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(200,168,75,0.18); }
 
-        .btn { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; border-radius: 8px; cursor: pointer; font-size: 1rem; font-weight: bold; transition: background 0.2s; margin: 20px 0; }
-        .btn:hover { background: #1557b0; }
-        .btn-mail { background: #e67e22; margin-top: 10px; }
-        .btn-mail:hover { background: #ca6a19; }
-        .btn-pdf { background: #34495e; margin-top: 10px; }
-        .btn-pdf:hover { background: #243342; }
+        .btn { width: 100%; background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; border: none; padding: 16px; border-radius: 9px; cursor: pointer; font-size: 1rem; font-weight: 700; font-family: 'Montserrat', sans-serif; transition: all 0.2s; margin: 20px 0; letter-spacing: 0.3px; box-shadow: 0 4px 14px rgba(13,44,110,0.25); }
+        .btn:hover { background: linear-gradient(135deg, #0a2256 0%, #1340a0 100%); box-shadow: 0 6px 20px rgba(13,44,110,0.35); transform: translateY(-1px); }
+        .btn-mail { background: linear-gradient(135deg, #c8a84b 0%, #e8c96a 100%); color: #1a2540; margin-top: 0; box-shadow: 0 4px 14px rgba(200,168,75,0.30); }
+        .btn-mail:hover { background: linear-gradient(135deg, #b8983b 0%, #d4b555 100%); box-shadow: 0 6px 20px rgba(200,168,75,0.40); transform: translateY(-1px); }
+        .btn-pdf { background: linear-gradient(135deg, #0d2c6e 0%, #1a4aad 100%); margin-top: 0; box-shadow: 0 4px 14px rgba(13,44,110,0.25); }
+        .btn-pdf:hover { background: linear-gradient(135deg, #0a2256 0%, #1340a0 100%); box-shadow: 0 6px 20px rgba(13,44,110,0.35); transform: translateY(-1px); }
 
-        .info-bar { display: flex; justify-content: flex-end; align-items: center; background: var(--author-bg); color: var(--author-text); padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 0.9rem; font-weight: 600; }
+        .info-bar { display: flex; justify-content: flex-end; align-items: center; background: var(--author-bg); color: var(--author-text); padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; font-weight: 600; font-family: 'Montserrat', sans-serif; border-left: 3px solid var(--gold); }
 
         .results { margin-top: 20px; display: none; }
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 30px; }
-        .card { padding: 15px; background: #fff; border-radius: 10px; text-align: center; border: 1px solid #e8eaed; }
-        .card h4 { margin: 0 0 5px 0; font-size: 0.65rem; text-transform: uppercase; color: #5f6368; }
-        .card .value { font-size: 1.1rem; font-weight: bold; color: var(--primary); }
+        .card { padding: 15px; background: linear-gradient(135deg, #f4f7ff 0%, #eef2fc 100%); border-radius: 10px; text-align: center; border: 1.5px solid var(--border); border-top: 3px solid var(--primary); }
+        .card h4 { margin: 0 0 5px 0; font-size: 0.63rem; text-transform: uppercase; color: var(--text-muted); font-family: 'Montserrat', sans-serif; font-weight: 600; letter-spacing: 0.5px; }
+        .card .value { font-size: 1.1rem; font-weight: 700; color: var(--primary); font-family: 'Montserrat', sans-serif; }
 
-        .table-wrapper { overflow-x: auto; overflow-y: auto; max-height: 400px; margin-top: 15px; border: 1px solid #eee; }
+        .table-wrapper { overflow-x: auto; overflow-y: auto; max-height: 400px; margin-top: 15px; border: 1.5px solid var(--border); border-radius: 8px; }
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; background: white; }
-        th, td { border: 1px solid #e8eaed; padding: 8px; text-align: center; white-space: nowrap; }
-        th { background-color: #f8f9fa; position: sticky; top: 0; z-index: 1; }
-        tr:nth-child(even) { background: #fafafa; }
+        th, td { border: 1px solid #dde3f0; padding: 8px; text-align: center; white-space: nowrap; }
+        th { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; position: sticky; top: 0; z-index: 1; font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 600; }
+        tr:nth-child(even) { background: #f4f7ff; }
+        tr:hover { background: #eaeffa; }
+        .view-toggle { display: flex; align-items: center; gap: 0; background: var(--author-bg); border-radius: 9px; padding: 4px; width: fit-content; border: 1.5px solid var(--border); }
+        .view-toggle button { border: none; background: transparent; padding: 7px 18px; border-radius: 7px; font-family: 'Montserrat', sans-serif; font-size: 0.78rem; font-weight: 600; cursor: pointer; color: var(--text-muted); transition: all 0.2s; }
+        .view-toggle button.active { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; box-shadow: 0 2px 8px rgba(13,44,110,0.22); }
 
-        .export-section { background: #fdfdfd; padding: 25px; border-radius: 10px; border: 1px dashed #ccc; margin-top: 30px; }
+        /* Tooltip */
+        .tip { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: var(--primary-light); color: white; border-radius: 50%; font-size: 10px; font-weight: 700; cursor: pointer; margin-left: 5px; vertical-align: middle; flex-shrink: 0; font-family: 'Montserrat', sans-serif; user-select: none; }
+        .tip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #1a2540; color: #fff; font-size: 11px; font-weight: 400; font-family: 'Open Sans', sans-serif; line-height: 1.5; padding: 9px 13px; border-radius: 8px; width: 240px; white-space: normal; text-align: left; box-shadow: 0 4px 16px rgba(0,0,0,0.22); opacity: 0; pointer-events: none; transition: opacity 0.18s; z-index: 100; }
+        .tip::before { content: ''; position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #1a2540; opacity: 0; pointer-events: none; transition: opacity 0.18s; z-index: 100; }
+        .tip:hover::after, .tip:hover::before { opacity: 1; }
+        .tip.tip-wide::after { width: 320px; }
+
+        /* Savings bar below toggle */
+        .results-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
+        .savings-card { background: linear-gradient(135deg, var(--secondary) 0%, #1e9e55 100%); color: white; border-radius: 10px; padding: 10px 22px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 3px 12px rgba(39,174,96,0.28); min-width: 180px; }
+        .savings-card .s-label { font-size: 0.62rem; text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 600; letter-spacing: 0.5px; opacity: 0.85; }
+        .savings-card .s-value { font-size: 1.35rem; font-weight: 800; font-family: 'Montserrat', sans-serif; }
+
+        /* Card sub-text */
+        .card-sub { font-size: 0.68rem; font-weight: 600; margin-top: 4px; font-family: 'Montserrat', sans-serif; }
+
+        .export-section { background: linear-gradient(135deg, #f4f7ff 0%, #eef2fc 100%); padding: 25px; border-radius: 12px; border: 1.5px solid var(--border); border-left: 4px solid var(--gold); margin-top: 30px; }
+        .export-section h3 { color: var(--primary); border-bottom-color: var(--gold); }
 
         /* Responsywność dla małych ekranów */
         @media (max-width: 700px) {
@@ -83,21 +120,21 @@
         async src="//gc.zgo.at/count.js"></script>
 <body>
 <div style="background:#f8f9fa; text-align:center; line-height:0; padding:0; margin:0;">
-    <img src="baner_maly.png"
+    <img src="baner_maly.jpg"
          alt="Kalkulator nadpłaty kredytu hipotecznego - darmowa analiza Tomasz Lisiecki"
          style="width:100%; max-width:1100px; display:inline-block; height:auto;">
 </div>
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v4.3</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v4.4</span></div>
 
-    <h3>1. Dane Kredytu</h3>
+    <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
-        <div class="input-group"><label>Kapitał (zł)</label><input type="number" id="loanAmount" value="300000"></div>
+        <div class="input-group"><label>Kapitał do spłaty (zł)</label><input type="number" id="loanAmount" value="300000"></div>
         <div class="input-group"><label>Oprocentowanie (%)</label><input type="number" id="interestRate" step="0.01" value="7.5"></div>
         <div class="input-group"><label>Pozostało rat (msc)</label><input type="number" id="monthsLeft" value="240"></div>
-        <div class="input-group"><label>Twój wiek</label><input type="number" id="currentAge" value="30"></div>
+        <div class="input-group"><label style="display:flex;align-items:center;">Twój wiek <span class="tip" data-tip="Podawanie wieku nie jest obowiązkowe, ale pomoże Ci zobrazować sobie ile będziesz mieć lat jak spłacisz kredyt">?</span></label><input type="number" id="currentAge" value="30"></div>
     </div>
 
     <h3>2. Plan Nadpłat i Scenariusze</h3>
@@ -123,13 +160,19 @@
             <input type="number" id="yearlyExtra" value="0" min="0">
         </div>
         <div class="input-group">
-            <label>Nowa rata (zł)
+            <label style="display:flex;align-items:flex-start;flex-direction:column;">
+                <span style="display:flex;align-items:center;">Nowa rata (zł)
+                    <span class="tip" data-tip="W banku możesz mieć możliwość skrócenia okresu kredytowania poprzez zwiększenie swojej raty – nadpłacasz wtedy więcej kapitału">?</span>
+                </span>
                 <span class="hint">0 = bez zmian</span>
             </label>
             <input type="number" id="newInstalment" value="0" min="0" class="highlight">
         </div>
         <div class="input-group">
-            <label>Nowe oprocentowanie (%)
+            <label style="display:flex;align-items:flex-start;flex-direction:column;">
+                <span style="display:flex;align-items:center;">Nowe oprocentowanie (%)
+                    <span class="tip" data-tip="Jeśli możesz przenieść kredyt do innego banku – wprowadź tu nowe oprocentowanie aby sprawdzić ile zaoszczędzisz">?</span>
+                </span>
                 <span class="hint">0 = bez zmian</span>
             </label>
             <input type="number" id="newRate" step="0.01" value="0" min="0" class="highlight">
@@ -139,7 +182,7 @@
     <!-- Wiersz 2: strategia -->
     <div class="section-grid-1">
         <div class="input-group">
-            <label>Strategia nadpłat</label>
+            <label>Strategia nadpłat (wybierz z listy)</label>
             <select id="strategy">
                 <option value="shorten" selected>Skrócenie okresu kredytowania</option>
                 <option value="lower">Zmniejszenie wysokości raty</option>
@@ -151,18 +194,41 @@
 
     <div class="results" id="results">
         <div class="stats">
-            <div class="card"><h4>Rata</h4><div class="value" id="resNextRata">-</div></div>
-            <div class="card"><h4>Oszczędność</h4><div class="value" style="color:var(--secondary)" id="resSavings">-</div></div>
-            <div class="card"><h4>Czas spłaty</h4><div class="value" id="resYearsLeft">-</div></div>
-            <div class="card"><h4>Wiek po spłacie</h4><div class="value" id="resAge">-</div></div>
-            <div class="card"><h4>Suma kosztów</h4><div class="value" id="resTotalPaid">-</div></div>
+            <div class="card">
+                <h4>Rata</h4>
+                <div class="value" id="resNextRata">-</div>
+                <div class="card-sub" id="resRataDiff" style="color:var(--text-muted);"></div>
+            </div>
+            <div class="card">
+                <h4>Czas spłaty</h4>
+                <div class="value" id="resYearsLeft">-</div>
+                <div class="card-sub" id="resYearsSaved" style="color:var(--secondary);"></div>
+            </div>
+            <div class="card">
+                <h4>Twój wiek po spłacie</h4>
+                <div class="value" id="resAge">-</div>
+            </div>
+            <div class="card" style="display:flex;flex-direction:column;justify-content:center;">
+                <h4 style="display:flex;align-items:center;justify-content:center;gap:4px;">Suma kosztów <span class="tip" data-tip="To jest całkowita kwota jaką musisz oddać bankowi przez cały okres kredytowania">?</span></h4>
+                <div class="value" id="resTotalPaid">-</div>
+            </div>
         </div>
 
+        <div class="results-bar">
+            <div class="view-toggle">
+                <button id="btnRoczny" class="active" onclick="setView('roczny')">📅 Widok roczny</button>
+                <button id="btnMiesieczny" onclick="setView('miesieczny')">📆 Widok miesięczny</button>
+            </div>
+            <div class="savings-card">
+                <div class="s-label">💰 Oszczędność</div>
+                <div class="s-value" id="resSavings">-</div>
+            </div>
+        </div>
         <div class="table-wrapper">
             <table>
                 <thead>
                     <tr>
-                        <th>Rok</th><th>Wiek</th><th>Rata (zł)</th>
+                        <th id="thOkres">Rok</th><th>Wiek</th><th>Rata (zł)</th>
                         <th>Kapitał (zł)</th><th>Odsetki (zł)</th><th>Saldo (zł)</th>
                     </tr>
                 </thead>
@@ -171,24 +237,36 @@
         </div>
 
         <div class="export-section">
-            <h3>3. Eksport i Bezpłatna Analiza</h3>
-            <p style="color:#e67e22; font-weight:bold;">Sprawdzimy czy istnieje dla Ciebie tańszy kredyt i za darmo Cię o tym poinformujemy.</p>
-            <div class="section-grid">
-                <div class="input-group"><label>Nazwa Banku</label><input type="text" id="bankName" placeholder="np. PKO BP"></div>
-                <div class="input-group"><label>Twój E-mail</label><input type="email" id="userEmail" placeholder="twoj@email.com"></div>
-               <div class="input-group">
-    <label>Telefon</label>
-    <input type="tel" id="userPhone" placeholder="123-456-789">
-</div>
+            <h3>3. Eksport i Bezpłatna Analiza <span class="tip tip-wide" data-tip="Masz możliwość wysłania danych o Twoim kredycie do certyfikowanego doradcy kredytowego. Nie płacisz mu żadnego wynagrodzenia. Jeśli znajdziemy dla Ciebie tańszy kredyt, to wynagrodzenie doradcy zapłaci nowy bank, a koszty kredytu będą takie same jak przy kredycie zaciągniętym bezpośrednio w tym banku – tak stanowi polskie prawo. Możesz tylko zyskać i nie musisz podejmować żadnych decyzji" style="width:18px;height:18px;font-size:11px;">?</span></h3>
+            <p style="color:var(--gold); font-weight:700; font-family:'Montserrat',sans-serif; margin-bottom:18px;">Sprawdzimy czy istnieje dla Ciebie tańszy kredyt i za darmo Cię o tym poinformujemy.</p>
 
-<p style="font-size: 11px; color: #666; margin-top: 15px; margin-bottom: 10px; text-align: justify; line-height: 1.4; width: 100%;">
-    * Klikając przycisk "Wyślij do analizy", wyrażasz zgodę na przetwarzanie Twoich danych osobowych (e-mail, telefon) przez Lisieccy Sp. z o.o. wyłącznie w celu przygotowania i przedstawienia bezpłatnej analizy nadpłat kredytu oraz kontaktu w celach doradztwa kredytowego. Dane mogą być udostępnione certyfikowanemu doradcy kredytowemu.
-</p>
+            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap:15px; align-items:start;">
+                <div class="input-group">
+                    <label>Nazwa Banku</label>
+                    <input type="text" id="bankName" placeholder="np. PKO BP">
+                </div>
+                <div class="input-group">
+                    <label>Twój E-mail</label>
+                    <input type="email" id="userEmail" placeholder="twoj@email.com">
+                </div>
+                <div class="input-group">
+                    <label>Telefon</label>
+                    <input type="tel" id="userPhone" placeholder="123-456-789">
+                </div>
+                <div>
+                    <button class="btn btn-mail" style="margin:0;" onclick="sendToTomasz()">📧 Wyślij do analizy</button>
+                </div>
+                <div>
+                    <button class="btn btn-pdf" style="margin:0;" onclick="generatePDF()">📄 Pobierz Raport PDF</button>
+                </div>
+            </div>
 
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-    <button class="btn btn-mail" onclick="sendToTomasz()">📧 Wyślij do analizy</button>
-    <button class="btn btn-pdf" onclick="generatePDF()">📄 Pobierz Raport PDF</button>
-			</div>
+            <div style="display:grid; grid-template-columns: 3fr 2fr; gap:15px; margin-top:10px;">
+                <p style="font-size:11px; color:var(--text-muted); margin:0; text-align:justify; line-height:1.5;">
+                    * Klikając przycisk "Wyślij do analizy", wyrażasz zgodę na przetwarzanie Twoich danych osobowych (e-mail, telefon) przez Lisieccy Sp. z o.o. wyłącznie w celu przygotowania i przedstawienia bezpłatnej analizy nadpłat kredytu oraz kontaktu w celach doradztwa kredytowego. Dane mogą być udostępnione certyfikowanemu doradcy kredytowemu.
+                </p>
+                <div></div>
+            </div>
         </div>
     </div>
 </div>
@@ -231,6 +309,7 @@ function calculate() {
     const rOrig         = (data.interestRate / 100) / 12;
     const baseRata      = annuity(data.loanAmount, rOrig, N);
     const totalCostBase = baseRata * N;
+    const baseMonths    = N; // oryginalna liczba rat
 
     // Saldo po nadpłacie jednorazowej
     let balance = data.loanAmount - data.oneTimeExtra;
@@ -252,7 +331,9 @@ function calculate() {
     }
 
     let htmlRows = '';
+    monthlyRowsHtml = '';
     htmlRows += rowHtml('Start', data.currentAge, currentRata, data.oneTimeExtra, 0, balance);
+    monthlyRowsHtml += monthlyRowHtml('Start', data.currentAge, currentRata, data.oneTimeExtra, 0, balance);
     tableRows.push(['Start', String(data.currentAge), f2(currentRata), fi(data.oneTimeExtra), '0', fi(balance)]);
 
     let totalPaid    = data.oneTimeExtra;
@@ -260,7 +341,13 @@ function calculate() {
     let yCap = 0, yInt = 0;
     const firstRata  = currentRata;   // rata do wyświetlenia w karcie
 
-    while (balance > 0.01 && month <= N) {
+    // Wykryj czy rata jest za niska (nie pokrywa odsetek od salda startowego)
+    const minViableRata = balance * r * 1.001;
+    const isLowRata = data.newInstalment > 0 && data.newInstalment < baseRata && data.newInstalment > minViableRata;
+    const isNegAmort = data.newInstalment > 0 && data.newInstalment <= minViableRata;
+    const MAX_MONTHS = 360; // max 30 lat
+
+    while (balance > 0.01 && month <= MAX_MONTHS) {
         const interest  = balance * r;
         let capFromRata = currentRata - interest;
         if (capFromRata < 0) capFromRata = 0;
@@ -270,35 +357,35 @@ function calculate() {
         const totalBonus     = bonusMonthly + bonusYearly;
         const totalCapReduce = capFromRata + totalBonus;
 
+        let capThisMonth;
         if (totalCapReduce >= balance) {
-            // ostatnia rata – spłacamy resztę
-            yCap      += balance;
-            yInt      += interest;
+            capThisMonth = balance;
             totalPaid += balance + interest;
             balance    = 0;
         } else {
+            capThisMonth = totalCapReduce;
             balance   -= totalCapReduce;
-            yCap      += totalCapReduce;
-            yInt      += interest;
             totalPaid += currentRata + totalBonus;
         }
+        yCap += capThisMonth;
+        yInt += interest;
 
-        // Przelicz ratę po nadpłacie:
-        // - "nowa rata" podana ręcznie → zawsze stała (chyba że saldo już zbyt małe)
-        // - "zmniejszenie" → annuity od nowego salda
-        // - "skrócenie" → rata stała, nie przeliczamy
+        // Miesięczny wiersz
+        const miesLabel = 'Mies. ' + month;
+        const wiekMies  = (data.currentAge + month / 12).toFixed(1);
+        const rataM     = balance > 0.01 ? currentRata : 0;
+        monthlyRowsHtml += monthlyRowHtml(miesLabel, wiekMies, rataM, capThisMonth, interest, balance);
+
+        // Przelicz ratę po nadpłacie
         if (balance > 0.01) {
-            const rem = N - month;
+            const rem = MAX_MONTHS - month;
             if (rem > 0) {
                 if (data.newInstalment > 0) {
-                    // rata stała jak podana – nie zmieniamy
-                    // ale pilnuj żeby nie była mniejsza niż odsetki
                     const minRata = balance * r * 1.01;
                     if (currentRata < minRata) currentRata = annuity(balance, r, rem);
                 } else if (data.strategy === 'lower') {
-                    currentRata = annuity(balance, r, rem);
+                    currentRata = annuity(balance, r, N - month > 0 ? N - month : 1);
                 }
-                // strategia 'shorten' – rata bez zmian
             }
         }
 
@@ -314,8 +401,13 @@ function calculate() {
     }
 
     const diff       = totalCostBase - totalPaid;
-    const finalOszcz = diff > 0 ? diff.toFixed(2) : '0.00';
+    const isLoss     = diff < 0;
+    const finalOszcz = Math.abs(diff).toFixed(2);
     const monthsUsed = month - 1;
+
+    const monthsSaved = baseMonths - monthsUsed;
+    const yearsSaved  = (Math.abs(monthsSaved) / 12).toFixed(1);
+    const rataDiff    = firstRata - baseRata;
 
     globalResults = {
         rata:  f2(firstRata),
@@ -325,20 +417,109 @@ function calculate() {
         age:   (data.currentAge + monthsUsed / 12).toFixed(1)
     };
 
-    document.getElementById('results').style.display  = 'block';
-    document.getElementById('resNextRata').innerText  = f2(firstRata) + ' zł';
-    document.getElementById('resSavings').innerText   = finalOszcz + ' zł';
+    // Ostrzeżenie o niskiej racie
+    let warningEl = document.getElementById('lowRataWarning');
+    if (!warningEl) {
+        warningEl = document.createElement('div');
+        warningEl.id = 'lowRataWarning';
+        warningEl.style.cssText = 'display:none;background:#fff3cd;border:1.5px solid #f0a500;border-left:4px solid #e05252;border-radius:9px;padding:13px 18px;margin-bottom:16px;font-size:0.88rem;color:#5a3e00;font-family:Open Sans,sans-serif;line-height:1.6;';
+        document.getElementById('results').prepend(warningEl);
+    }
+    if (isNegAmort) {
+        warningEl.style.display = 'block';
+        warningEl.innerHTML = `⚠️ <strong>Rata zbyt niska!</strong> Kwota ${f2(firstRata)} zł nie pokrywa nawet miesięcznych odsetek (${f2(minViableRata)} zł). Przy takiej racie saldo kredytu będzie rosło – kredyt nigdy nie zostanie spłacony. Wprowadź wyższą wartość.`;
+    } else if (isLowRata) {
+        warningEl.style.display = 'block';
+        warningEl.innerHTML = `⚠️ <strong>Uwaga – rata niższa niż pierwotna!</strong> Obniżenie raty z <strong>${f2(baseRata)} zł</strong> do <strong>${f2(firstRata)} zł</strong> <u>wydłuży</u> Twój kredyt o <strong>${yearsSaved} lat</strong> i będzie Cię kosztować <strong>${finalOszcz} zł więcej</strong>. Rozważ czy to na pewno dobra decyzja.`;
+    } else {
+        warningEl.style.display = 'none';
+    }
+
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('resNextRata').innerText = f2(firstRata) + ' zł';
+
+    // Oszczędność lub strata
+    const savingsEl   = document.getElementById('resSavings');
+    const savingsCard = savingsEl.closest('.savings-card');
+    if (isLoss || isLowRata) {
+        savingsEl.innerText = finalOszcz + ' zł';
+        savingsCard.style.background = 'linear-gradient(135deg, #c0392b 0%, #e05252 100%)';
+        savingsCard.querySelector('.s-label').textContent = '📉 Strata';
+    } else {
+        savingsEl.innerText = finalOszcz + ' zł';
+        savingsCard.style.background = 'linear-gradient(135deg, var(--secondary) 0%, #1e9e55 100%)';
+        savingsCard.querySelector('.s-label').textContent = '💰 Oszczędność';
+    }
+
     document.getElementById('resYearsLeft').innerText = globalResults.lat + ' lat';
     document.getElementById('resAge').innerText       = globalResults.age + ' lat';
     document.getElementById('resTotalPaid').innerText = totalPaid.toFixed(2) + ' zł';
-    document.getElementById('scheduleBody').innerHTML = htmlRows;
+
+    // Skrócenie lub wydłużenie czasu spłaty
+    const elYearsSaved = document.getElementById('resYearsSaved');
+    if (monthsSaved > 0.5) {
+        elYearsSaved.textContent = '⏱ SPŁACISZ ' + yearsSaved + ' LAT SZYBCIEJ';
+        elYearsSaved.style.color = 'var(--secondary)';
+    } else if (monthsSaved < -0.5) {
+        elYearsSaved.textContent = '⏳ SPŁACISZ ' + yearsSaved + ' LAT DŁUŻEJ';
+        elYearsSaved.style.color = '#e05252';
+    } else {
+        elYearsSaved.textContent = '';
+    }
+
+    // Różnica raty
+    const elRataDiff = document.getElementById('resRataDiff');
+    if (Math.abs(rataDiff) > 0.5) {
+        if (rataDiff < 0) {
+            elRataDiff.textContent = '↓ MNIEJ O ' + Math.abs(rataDiff).toFixed(2) + ' ZŁ';
+            elRataDiff.style.color = 'var(--secondary)';
+        } else {
+            elRataDiff.textContent = '↑ WIĘCEJ O ' + rataDiff.toFixed(2) + ' ZŁ';
+            elRataDiff.style.color = '#e05252';
+        }
+    } else {
+        elRataDiff.textContent = '';
+    }
+
+    const tbody = document.getElementById('scheduleBody');
+    tbody.dataset.roczny = htmlRows;
+    tbody.innerHTML = htmlRows;
+    currentView = 'roczny';
+    document.getElementById('btnRoczny').classList.add('active');
+    document.getElementById('btnMiesieczny').classList.remove('active');
+    document.getElementById('thOkres').textContent = 'Rok';
 }
 
-function rowHtml(rok, wiek, rata, cap, odsetki, saldo) {
+let currentView = 'roczny';
+let monthlyRowsHtml = '';
+
+function setView(view) {
+    currentView = view;
+    document.getElementById('btnRoczny').classList.toggle('active', view === 'roczny');
+    document.getElementById('btnMiesieczny').classList.toggle('active', view === 'miesieczny');
+    document.getElementById('thOkres').textContent = view === 'roczny' ? 'Rok' : 'Miesiąc';
+    document.getElementById('scheduleBody').innerHTML = view === 'roczny'
+        ? document.getElementById('scheduleBody').dataset.roczny
+        : monthlyRowsHtml;
+}
+
+function rowHtml(rok, wiek, rata, cap, odsetki, saldo, months) {
     return `<tr>
         <td>${rok}</td><td>${wiek}</td>
-        <td>${f2(rata)}</td><td>${fi(cap)}</td>
-        <td>${fi(odsetki)}</td><td>${fi(saldo)}</td>
+        <td>${f2(rata)}</td>
+        <td>${fi(cap)}</td>
+        <td>${fi(odsetki)}</td>
+        <td>${fi(saldo)}</td>
+    </tr>`;
+}
+
+function monthlyRowHtml(miesiac, wiek, rata, cap, odsetki, saldo) {
+    return `<tr>
+        <td>${miesiac}</td><td>${wiek}</td>
+        <td>${f2(rata)}</td>
+        <td>${fi(cap)}</td>
+        <td>${fi(odsetki)}</td>
+        <td>${fi(saldo)}</td>
     </tr>`;
 }
 
@@ -435,7 +616,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v4.3  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v4.4  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -514,7 +695,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v4.3 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v4.4 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
