@@ -132,6 +132,13 @@
         @media (max-width: 420px) {
             .section-grid-5 { grid-template-columns: 1fr; }
         }
+
+        /* Nasza Misja */
+        .mission-section { margin-top: 40px; padding: 30px 35px; background: linear-gradient(135deg, #f4f7ff 0%, #eef2fc 100%); border-radius: 14px; border: 1.5px solid var(--border); border-left: 4px solid var(--gold); }
+        .mission-title { font-family: 'Montserrat', sans-serif; font-size: 1.15rem; font-weight: 800; color: var(--primary); border-bottom: 2px solid var(--gold); padding-bottom: 8px; margin-top: 0; margin-bottom: 20px; }
+        .mission-body p { font-family: 'Open Sans', sans-serif; font-size: 0.92rem; color: var(--text-main); line-height: 1.8; margin-bottom: 12px; }
+        .mission-signature { font-style: italic; color: var(--primary); border-top: 1px solid var(--border); padding-top: 14px; margin-top: 18px; }
+        .mission-author { font-size: 0.88rem; color: var(--text-muted); margin-top: 6px; margin-bottom: 0; }
     </style>
 </head>
 <!-- GoatCounter – statystyki odwiedzin -->
@@ -146,7 +153,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v4.5</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v4.6</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -295,6 +302,20 @@
             </div>
         </div>
     </div>
+
+    <!-- Nasza Misja -->
+    <div class="mission-section">
+        <h3 class="mission-title">Nasza Misja</h3>
+        <div class="mission-body">
+            <p>Budowa domu to jedna z największych inwestycji w życiu. Wiemy, jak wiele wyrzeczeń, planowania i ciężkiej pracy kosztuje każdy metr kwadratowy — i dokładnie dlatego boli nas myśl, że tak wiele z tych pieniędzy oddajemy bankowi w formie odsetek.</p>
+            <p>W <strong>nadplacam.com.pl</strong> mamy jeden cel: uświadamiać Polaków ile naprawdę kosztuje <strong>kredyt hipoteczny</strong> i pokazywać, że <strong>nadpłata kredytu hipotecznego</strong> — nawet niewielka — może zmienić bardzo wiele. Wystarczy <strong>symulacja kredytu</strong> oparta na Twoich realnych danych, żeby zobaczyć czarno na białym: <strong>jak nadpłacić kredyt</strong>, ile <strong>zaoszczędzić na kredycie</strong> i o ile lat możesz skrócić swoje zobowiązanie wobec banku.</p>
+            <p>Nasz darmowy <strong>kalkulator kredytowy</strong> powstał z przekonania, że każdy zasługuje na dostęp do rzetelnej wiedzy finansowej — bez skomplikowanego języka, bez ukrytych opłat, bez rejestracji. Wpisz swoje dane, uruchom symulację i pobierz <strong>raport kredytowy PDF</strong> — wszystko w dwie minuty.</p>
+            <p>Jeśli chcesz wiedzieć czy istnieje dla Ciebie <strong>tańszy kredyt</strong>, nasi certyfikowani doradcy przeanalizują Twoją sytuację bezpłatnie. Wynagrodzenie doradcy pokrywa nowy bank — Ty możesz tylko zyskać.</p>
+            <p class="mission-signature">Chcemy, żeby jak najwięcej pieniędzy zostało tam, gdzie jest ich miejsce — <strong>w kieszeniach Polaków</strong>, a nie w bankowych bilansach.</p>
+            <p class="mission-author">— <strong>Tomasz Lisiecki</strong>, nadplacam.com.pl</p>
+        </div>
+    </div>
+
 </div>
 
 <script>
@@ -642,7 +663,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v4.5  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v4.6  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -721,7 +742,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v4.5 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v4.6 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
