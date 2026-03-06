@@ -96,9 +96,17 @@
 
         /* Savings bar below toggle */
         .results-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
-        .savings-card { background: linear-gradient(135deg, var(--secondary) 0%, #1e9e55 100%); color: white; border-radius: 10px; padding: 10px 22px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 3px 12px rgba(39,174,96,0.28); min-width: 180px; }
+        .savings-card { background: linear-gradient(135deg, var(--secondary) 0%, #1e9e55 100%); color: white; border-radius: 10px; padding: 10px 28px; display: flex; flex-direction: column; align-items: center; box-shadow: 0 3px 12px rgba(39,174,96,0.28); min-width: 207px; margin-left: auto; margin-right: auto; }
         .savings-card .s-label { font-size: 0.62rem; text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 600; letter-spacing: 0.5px; opacity: 0.85; }
         .savings-card .s-value { font-size: 1.35rem; font-weight: 800; font-family: 'Montserrat', sans-serif; }
+
+        /* Buy Me a Coffee */
+        .bmc-btn { display:flex; align-items:center; gap:10px; background:linear-gradient(135deg, #FFDD00 0%, #FFC200 100%); color:#1a2540; text-decoration:none; border-radius:10px; padding:10px 18px; box-shadow:0 3px 12px rgba(255,194,0,0.35); transition:all 0.2s; margin-left: auto; }
+        .bmc-btn:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(255,194,0,0.50); }
+        .bmc-icon { font-size:1.6rem; line-height:1; }
+        .bmc-text { display:flex; flex-direction:column; }
+        .bmc-top { font-size:0.72rem; font-family:'Open Sans',sans-serif; opacity:0.75; }
+        .bmc-bottom { font-size:0.9rem; font-weight:700; font-family:'Montserrat',sans-serif; white-space:nowrap; }
 
         /* Card sub-text */
         .card-sub { font-size: 0.68rem; font-weight: 600; margin-top: 4px; font-family: 'Montserrat', sans-serif; }
@@ -106,7 +114,18 @@
         .export-section { background: linear-gradient(135deg, #f4f7ff 0%, #eef2fc 100%); padding: 25px; border-radius: 12px; border: 1.5px solid var(--border); border-left: 4px solid var(--gold); margin-top: 30px; }
         .export-section h3 { color: var(--primary); border-bottom-color: var(--gold); }
 
-        /* Responsywność dla małych ekranów */
+        @keyframes pulse-btn {
+            0%, 100% { box-shadow: 0 4px 14px rgba(13,44,110,0.25); }
+            50%       { box-shadow: 0 4px 28px rgba(13,44,110,0.50), 0 0 0 6px rgba(26,74,173,0.12); }
+        }
+        .btn-calculate {
+            animation: pulse-btn 2.4s ease-in-out infinite;
+        }
+        .btn-calculate:hover {
+            animation: none;
+            box-shadow: 0 8px 28px rgba(13,44,110,0.45) !important;
+            transform: translateY(-2px) !important;
+        }
         @media (max-width: 700px) {
             .section-grid-5 { grid-template-columns: repeat(2, 1fr); }
         }
@@ -127,7 +146,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v4.4</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v4.5</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -190,7 +209,7 @@
         </div>
     </div>
 
-    <button class="btn" onclick="calculate()">▶ Przelicz i generuj harmonogram</button>
+    <button class="btn btn-calculate" onclick="calculate()">▶ Przelicz i generuj harmonogram</button>
 
     <div class="results" id="results">
         <div class="stats">
@@ -223,6 +242,13 @@
                 <div class="s-label">💰 Oszczędność</div>
                 <div class="s-value" id="resSavings">-</div>
             </div>
+            <a href="https://buymeacoffee.com/nadplacam" target="_blank" class="bmc-btn">
+                <span class="bmc-icon">☕</span>
+                <span class="bmc-text">
+                    <span class="bmc-top">Udało się zaoszczędzić!</span>
+                    <span class="bmc-bottom">Postawisz mi kawę? 😊</span>
+                </span>
+            </a>
         </div>
         <div class="table-wrapper">
             <table>
@@ -616,7 +642,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v4.4  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v4.5  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -695,7 +721,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v4.4 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v4.5 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
