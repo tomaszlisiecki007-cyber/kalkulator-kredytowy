@@ -28,6 +28,7 @@
 
 <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -193,7 +194,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.0</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.1</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -297,6 +298,12 @@
                 </span>
             </a>
         </div>
+        <div class="chart-wrapper" id="chartWrapper" style="display:none; margin: 18px 0;">
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
+                <h3 style="margin:0; font-size:0.95rem; color:var(--primary); font-family:'Montserrat',sans-serif; font-weight:700;">📈 Wykres spadku salda kredytu</h3>
+            </div>
+            <canvas id="balanceChart" style="width:100%; max-height:260px;"></canvas>
+        </div>
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -383,6 +390,9 @@ function calculate() {
         newRate:       parseFloat(document.getElementById('newRate').value)        || 0,
         strategy:      document.getElementById('strategy').value
     };
+
+    if (!validateInputs(data)) return;
+
     globalInputs = data;
     tableRows = [];
 
@@ -429,6 +439,21 @@ function calculate() {
     // firstRata = rata standardowa po Mies.1 (już po uwzględnieniu nadpłat w saldzie)
     // Liczymy ją po pierwszej iteracji — tymczasowo ustawiamy na standardRata
     let firstRata = standardRata; // zostanie nadpisana po Mies.1
+
+    // Dane do wykresu — saldo co rok
+    const chartLabels = ['Start'];
+    const chartNadp   = [data.loanAmount];
+    // Bazowa linia (bez nadpłat) — przelicz osobno
+    const chartBase   = [data.loanAmount];
+    let baseBalChart  = data.loanAmount;
+    for (let y = 1; y <= Math.ceil(N / 12); y++) {
+        for (let m = 0; m < 12 && baseBalChart > 0; m++) {
+            const i = baseBalChart * rOrig;
+            baseBalChart = Math.max(0, baseBalChart - (baseRata - i));
+        }
+        chartBase.push(Math.round(baseBalChart));
+        chartLabels.push('Rok ' + y);
+    }
 
     while (balance > 0.01 && month <= MAX_MONTHS) {
         const interest   = balance * r;
@@ -493,6 +518,7 @@ function calculate() {
             htmlRows += rowHtml(rok, wiek, f2(rRoczna), yCap, yInt, balance);
             tableRows.push([rok, wiek, f2(rRoczna), fi(yCap), fi(yInt), fi(balance)]);
             yCap = 0; yInt = 0;
+            chartNadp.push(Math.round(balance));
         }
         month++;
     }
@@ -585,6 +611,22 @@ function calculate() {
     document.getElementById('btnRoczny').classList.add('active');
     document.getElementById('btnMiesieczny').classList.remove('active');
     document.getElementById('thOkres').textContent = 'Rok';
+
+    // Wyrównaj długość tablic wykresu
+    const maxLen = Math.max(chartBase.length, chartNadp.length);
+    while (chartNadp.length < maxLen) chartNadp.push(0);
+    while (chartBase.length < maxLen) chartBase.push(0);
+    const hasNadplaty = data.oneTimeExtra > 0 || data.monthlyExtra > 0 ||
+                        data.yearlyExtra > 0   || data.newInstalment > 0 || data.newRate > 0;
+    if (hasNadplaty) {
+        drawChart(chartBase, chartNadp, chartLabels);
+    } else {
+        document.getElementById('chartWrapper').style.display = 'none';
+        if (balanceChartInstance) { balanceChartInstance.destroy(); balanceChartInstance = null; }
+    }
+
+    // Scroll do wyników
+    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 let currentView = 'roczny';
@@ -713,7 +755,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v5.0  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v5.1  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -792,7 +834,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.0 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.1 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -821,6 +863,128 @@ document.addEventListener('keydown', function(e) {
         if (tag === 'INPUT' || tag === 'SELECT') calculate();
     }
 });
+
+/* ===== LOCALSTORAGE — zapis/odczyt danych ===== */
+const LS_KEY = 'nadplacam_inputs';
+const lsFields = ['loanAmount','interestRate','monthsLeft','currentAge',
+                  'oneTimeExtra','monthlyExtra','yearlyExtra','newInstalment','newRate'];
+
+function saveInputs() {
+    const obj = {};
+    lsFields.forEach(id => { obj[id] = document.getElementById(id).value; });
+    obj.strategy = document.getElementById('strategy').value;
+    try { localStorage.setItem(LS_KEY, JSON.stringify(obj)); } catch(e) {}
+}
+
+function loadInputs() {
+    try {
+        const saved = JSON.parse(localStorage.getItem(LS_KEY));
+        if (!saved) return;
+        lsFields.forEach(id => {
+            const el = document.getElementById(id);
+            if (el && saved[id] !== undefined) el.value = saved[id];
+        });
+        if (saved.strategy) document.getElementById('strategy').value = saved.strategy;
+    } catch(e) {}
+}
+
+// Zapis przy każdej zmianie pola
+lsFields.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('input', saveInputs);
+});
+document.getElementById('strategy').addEventListener('change', saveInputs);
+
+// Odczyt przy załadowaniu strony
+document.addEventListener('DOMContentLoaded', loadInputs);
+
+/* ===== WALIDACJA ===== */
+function validateInputs(data) {
+    const errors = [];
+    if (!data.loanAmount || data.loanAmount <= 0)
+        errors.push('Podaj <strong>Kapitał do spłaty</strong> — musi być większy od zera.');
+    if (!data.interestRate || data.interestRate <= 0)
+        errors.push('Podaj <strong>Oprocentowanie</strong> — musi być większe od zera.');
+    if (!data.monthsLeft || data.monthsLeft <= 0)
+        errors.push('Podaj <strong>Pozostałą liczbę rat</strong> — musi być większa od zera.');
+
+    let errEl = document.getElementById('validationError');
+    if (!errEl) {
+        errEl = document.createElement('div');
+        errEl.id = 'validationError';
+        errEl.style.cssText = 'display:none; background:#fff0f0; border:1.5px solid #e05252; border-left:4px solid #c0392b; border-radius:9px; padding:13px 18px; margin-bottom:16px; font-size:0.88rem; color:#5a0000; font-family:Open Sans,sans-serif; line-height:1.8;';
+        document.getElementById('results').before(errEl);
+    }
+
+    if (errors.length) {
+        errEl.style.display = 'block';
+        errEl.innerHTML = '❌ <strong>Uzupełnij dane kredytu:</strong><br>' + errors.join('<br>');
+        // Scroll do błędu
+        errEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return false;
+    }
+    errEl.style.display = 'none';
+    return true;
+}
+
+/* ===== WYKRES ===== */
+let balanceChartInstance = null;
+
+function drawChart(baseBalances, nadpBalances, labels) {
+    document.getElementById('chartWrapper').style.display = 'block';
+    const ctx = document.getElementById('balanceChart').getContext('2d');
+    if (balanceChartInstance) balanceChartInstance.destroy();
+
+    balanceChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: 'Bez nadpłat',
+                    data: baseBalances,
+                    borderColor: '#e05252',
+                    backgroundColor: 'rgba(224,82,82,0.08)',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    fill: true,
+                    tension: 0.3
+                },
+                {
+                    label: 'Z nadpłatami',
+                    data: nadpBalances,
+                    borderColor: '#27ae60',
+                    backgroundColor: 'rgba(39,174,96,0.10)',
+                    borderWidth: 2.5,
+                    pointRadius: 0,
+                    fill: true,
+                    tension: 0.3
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { position: 'top', labels: { font: { family: 'Montserrat', size: 11 }, boxWidth: 14 } },
+                tooltip: {
+                    callbacks: {
+                        label: ctx => ctx.dataset.label + ': ' + Math.round(ctx.parsed.y).toLocaleString('pl-PL') + ' zł'
+                    }
+                }
+            },
+            scales: {
+                x: { ticks: { font: { size: 10 }, maxTicksLimit: 10 } },
+                y: {
+                    ticks: {
+                        callback: v => Math.round(v/1000) + 'k zł',
+                        font: { size: 10 }
+                    }
+                }
+            }
+        }
+    });
+}
 </script>
 </body>
 </html>
