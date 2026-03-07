@@ -127,11 +127,49 @@
             box-shadow: 0 8px 28px rgba(13,44,110,0.45) !important;
             transform: translateY(-2px) !important;
         }
+        /* ===== MOBILE ===== */
         @media (max-width: 700px) {
+            body { padding: 10px; }
+            .container { padding: 16px; border-radius: 10px; }
+
+            /* Sekcja 1 — 2 kolumny */
+            .section-grid { grid-template-columns: repeat(2, 1fr); }
+
+            /* Sekcja 2 — 2 kolumny, strategia pełna szerokość */
             .section-grid-5 { grid-template-columns: repeat(2, 1fr); }
+            .section-grid-1 { grid-template-columns: 1fr; }
+
+            /* Karty wyników — 2 kolumny */
+            .stats { grid-template-columns: repeat(2, 1fr); }
+
+            /* Przełącznik + oszczędność — kolumna */
+            .results-bar { flex-direction: column; align-items: stretch; gap: 10px; }
+            .savings-card { margin: 0; width: 100%; }
+            .bmc-btn { margin-left: 0; width: 100%; justify-content: center; }
+            .view-toggle { width: 100%; justify-content: center; }
+            .view-toggle button { flex: 1; }
+
+            /* Sekcja 3 — pola w kolumnie, przyciski obok siebie */
+            .export-grid { grid-template-columns: 1fr 1fr !important; }
+            .export-grid .input-group { grid-column: span 1; }
+            .export-grid .input-group:first-child { grid-column: span 2; }
+            .export-btn-wrap { grid-column: span 1; }
+
+            /* RODO — pełna szerokość */
+            .rodo-row { grid-template-columns: 1fr !important; }
+            .rodo-row > div:last-child { display: none; }
+
+            /* Misja */
+            .mission-section { padding: 20px 16px; }
+
+            /* Tooltip — nie ucieka poza ekran */
+            .tip::after { left: 0; transform: none; width: 220px; }
+            .tip.tip-wide::after { width: 260px; }
         }
-        @media (max-width: 420px) {
-            .section-grid-5 { grid-template-columns: 1fr; }
+
+        @media (max-width: 400px) {
+            .section-grid { grid-template-columns: 1fr; }
+            .stats { grid-template-columns: 1fr; }
         }
 
         /* Nasza Misja */
@@ -154,7 +192,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v4.9</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.0</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -274,7 +312,7 @@
             <h3>3. Eksport i Bezpłatna Analiza <span class="tip tip-wide" data-tip="Masz możliwość wysłania danych o Twoim kredycie do certyfikowanego doradcy kredytowego. Nie płacisz mu żadnego wynagrodzenia. Jeśli znajdziemy dla Ciebie tańszy kredyt, to wynagrodzenie doradcy zapłaci nowy bank, a koszty kredytu będą takie same jak przy kredycie zaciągniętym bezpośrednio w tym banku – tak stanowi polskie prawo. Możesz tylko zyskać i nie musisz podejmować żadnych decyzji" style="width:18px;height:18px;font-size:11px;">?</span></h3>
             <p style="color:var(--gold); font-weight:700; font-family:'Montserrat',sans-serif; margin-bottom:18px;">Sprawdzimy czy istnieje dla Ciebie tańszy kredyt i za darmo Cię o tym poinformujemy.</p>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap:15px; align-items:start;">
+            <div class="export-grid" style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap:15px; align-items:start;">
                 <div class="input-group">
                     <label>Nazwa Banku</label>
                     <input type="text" id="bankName" placeholder="np. PKO BP">
@@ -287,15 +325,15 @@
                     <label>Telefon</label>
                     <input type="tel" id="userPhone" placeholder="123-456-789">
                 </div>
-                <div>
+                <div class="export-btn-wrap">
                     <button class="btn btn-mail" style="margin:0;" onclick="sendToTomasz()">📧 Wyślij do analizy</button>
                 </div>
-                <div>
+                <div class="export-btn-wrap">
                     <button class="btn btn-pdf" style="margin:0;" onclick="generatePDF()">📄 Pobierz Raport PDF</button>
                 </div>
             </div>
 
-            <div style="display:grid; grid-template-columns: 3fr 2fr; gap:15px; margin-top:10px;">
+            <div class="rodo-row" style="display:grid; grid-template-columns: 3fr 2fr; gap:15px; margin-top:10px;">
                 <p style="font-size:11px; color:var(--text-muted); margin:0; text-align:justify; line-height:1.5;">
                     * Klikając przycisk "Wyślij do analizy", wyrażasz zgodę na przetwarzanie Twoich danych osobowych (e-mail, telefon) przez Lisieccy Sp. z o.o. wyłącznie w celu przygotowania i przedstawienia bezpłatnej analizy nadpłat kredytu oraz kontaktu w celach doradztwa kredytowego. Dane mogą być udostępnione certyfikowanemu doradcy kredytowemu.
                 </p>
@@ -674,7 +712,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v4.9  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v5.0  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -753,7 +791,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v4.9 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.0 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
