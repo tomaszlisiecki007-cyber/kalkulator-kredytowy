@@ -154,7 +154,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v4.6</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v4.9</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -193,7 +193,7 @@
                 </span>
                 <span class="hint">0 = bez zmian</span>
             </label>
-            <input type="number" id="newInstalment" value="0" min="0" class="highlight">
+            <input type="number" id="newInstalment" value="0" min="0" class="highlight" oninput="if(parseFloat(this.value)>0) document.getElementById('strategy').value='shorten';">
         </div>
         <div class="input-group">
             <label style="display:flex;align-items:flex-start;flex-direction:column;">
@@ -222,7 +222,7 @@
     <div class="results" id="results">
         <div class="stats">
             <div class="card">
-                <h4>Rata</h4>
+                <h4>Następna rata</h4>
                 <div class="value" id="resNextRata">-</div>
                 <div class="card-sub" id="resRataDiff" style="color:var(--text-muted);"></div>
             </div>
@@ -353,96 +353,106 @@ function calculate() {
     const effectiveRate = (data.newRate > 0) ? data.newRate : data.interestRate;
     const r = (effectiveRate / 100) / 12;
 
-    // Bazowa rata BEZ żadnych zmian (do liczenia oszczędności)
+    // Bazowa rata BEZ żadnych zmian (do liczenia oszczędności i różnicy)
     const rOrig         = (data.interestRate / 100) / 12;
     const baseRata      = annuity(data.loanAmount, rOrig, N);
     const totalCostBase = baseRata * N;
-    const baseMonths    = N; // oryginalna liczba rat
+    const baseMonths    = N;
 
-    // Saldo po nadpłacie jednorazowej
-    let balance = data.loanAmount - data.oneTimeExtra;
-    if (balance < 0) balance = 0;
+    // Saldo startowe (przed jakąkolwiek spłatą)
+    let balance = data.loanAmount;
 
-    // Wyznacz ratę startową wg priorytetu:
-    // 1. Jeśli użytkownik podał "Nowa rata" > 0 → użyj jej (ale nie mniej niż odsetki)
-    // 2. Strategia "zmniejszenie" → przelicz annuity od nowego salda i nowej stopy
-    // 3. Domyślnie → baseRata (skrócenie okresu lub brak zmian)
-    let currentRata;
+    // Wykryj czy rata jest za niska
+    const minViableRata = balance * r * 1.001;
+    const isNegAmort = data.newInstalment > 0 && data.newInstalment <= minViableRata;
+    const isLowRata  = data.newInstalment > 0 && data.newInstalment < baseRata && data.newInstalment > minViableRata;
+    const MAX_MONTHS = 360;
+
+    let htmlRows      = '';
+    monthlyRowsHtml   = '';
+    tableRows         = [];
+
+    let totalPaid = 0;
+    let month     = 1;
+    let yCap = 0, yInt = 0;
+
+    // Rata standardowa w miesiącu 1 liczona od pełnego salda
+    // (przy strategii "lower" będzie przeliczana co miesiąc od nowego salda)
+    let standardRata;
     if (data.newInstalment > 0) {
-        currentRata = data.newInstalment;
+        standardRata = data.newInstalment;
     } else if (data.strategy === 'lower') {
-        currentRata = annuity(balance, r, N);
+        standardRata = annuity(balance, r, N);
     } else {
-        // skrócenie: rata taka sama jak bazowa (liczona od oryg. stopy),
-        // ale jeśli zmieniła się stopa – przelicz annuity od nowej stopy i pełnego N
-        currentRata = (data.newRate > 0) ? annuity(balance, r, N) : baseRata;
+        standardRata = (data.newRate > 0) ? annuity(balance, r, N) : baseRata;
     }
 
-    let htmlRows = '';
-    monthlyRowsHtml = '';
-    htmlRows += rowHtml('Start', data.currentAge, currentRata, data.oneTimeExtra, 0, balance);
-    monthlyRowsHtml += monthlyRowHtml('Start', data.currentAge, currentRata, data.oneTimeExtra, 0, balance);
-    tableRows.push(['Start', String(data.currentAge), f2(currentRata), fi(data.oneTimeExtra), '0', fi(balance)]);
-
-    let totalPaid    = data.oneTimeExtra;
-    let month        = 1;
-    let yCap = 0, yInt = 0;
-    const firstRata  = currentRata;   // rata do wyświetlenia w karcie
-
-    // Wykryj czy rata jest za niska (nie pokrywa odsetek od salda startowego)
-    const minViableRata = balance * r * 1.001;
-    const isLowRata = data.newInstalment > 0 && data.newInstalment < baseRata && data.newInstalment > minViableRata;
-    const isNegAmort = data.newInstalment > 0 && data.newInstalment <= minViableRata;
-    const MAX_MONTHS = 360; // max 30 lat
+    // firstRata = rata standardowa po Mies.1 (już po uwzględnieniu nadpłat w saldzie)
+    // Liczymy ją po pierwszej iteracji — tymczasowo ustawiamy na standardRata
+    let firstRata = standardRata; // zostanie nadpisana po Mies.1
 
     while (balance > 0.01 && month <= MAX_MONTHS) {
-        const interest  = balance * r;
-        let capFromRata = currentRata - interest;
+        const interest   = balance * r;
+        let capFromRata  = standardRata - interest;
         if (capFromRata < 0) capFromRata = 0;
 
-        const bonusMonthly   = data.monthlyExtra;
-        const bonusYearly    = (month % 12 === 0) ? data.yearlyExtra : 0;
-        const totalBonus     = bonusMonthly + bonusYearly;
-        const totalCapReduce = capFromRata + totalBonus;
+        // Nadpłaty w tym miesiącu
+        const bonusOneTime = (month === 1) ? data.oneTimeExtra : 0;
+        const bonusMonthly = data.monthlyExtra;
+        const bonusYearly  = (month === 1 || month % 12 === 1) ? data.yearlyExtra : 0;
+        const totalBonus   = bonusOneTime + bonusMonthly + bonusYearly;
+
+        const totalCap = capFromRata + totalBonus;
+
+        // Kwota wyświetlana w kolumnie Rata = standardowa + nadpłata
+        const rataDisplay  = standardRata + totalBonus;
+        // Etykieta raty z rozbiciem jeśli jest nadpłata
+        const rataLabel = totalBonus > 0
+            ? `${f2(standardRata)} + ${f2(totalBonus)}`
+            : f2(standardRata);
 
         let capThisMonth;
-        if (totalCapReduce >= balance) {
+        if (totalCap >= balance) {
             capThisMonth = balance;
-            totalPaid += balance + interest;
-            balance    = 0;
+            totalPaid   += balance + interest;
+            balance      = 0;
         } else {
-            capThisMonth = totalCapReduce;
-            balance   -= totalCapReduce;
-            totalPaid += currentRata + totalBonus;
+            capThisMonth = totalCap;
+            balance     -= totalCap;
+            totalPaid   += rataDisplay;
         }
         yCap += capThisMonth;
         yInt += interest;
 
-        // Miesięczny wiersz
-        const miesLabel = 'Mies. ' + month;
-        const wiekMies  = (data.currentAge + month / 12).toFixed(1);
-        const rataM     = balance > 0.01 ? currentRata : 0;
-        monthlyRowsHtml += monthlyRowHtml(miesLabel, wiekMies, rataM, capThisMonth, interest, balance);
-
-        // Przelicz ratę po nadpłacie
+        // Przelicz standardRata na kolejny miesiąc
         if (balance > 0.01) {
-            const rem = MAX_MONTHS - month;
-            if (rem > 0) {
-                if (data.newInstalment > 0) {
-                    const minRata = balance * r * 1.01;
-                    if (currentRata < minRata) currentRata = annuity(balance, r, rem);
-                } else if (data.strategy === 'lower') {
-                    currentRata = annuity(balance, r, N - month > 0 ? N - month : 1);
-                }
+            const rem = N - month > 0 ? N - month : 1;
+            if (data.newInstalment > 0) {
+                const minR = balance * r * 1.01;
+                if (standardRata < minR) standardRata = annuity(balance, r, rem);
+            } else if (data.strategy === 'lower') {
+                standardRata = annuity(balance, r, rem);
             }
+            // strategia 'shorten' — rata stała
         }
 
+        // Po Mies.1 zapisujemy "następną ratę" = rata obowiązująca od Mies.2
+        if (month === 1) firstRata = standardRata;
+
+        // Wiersz miesięczny
+        const miesLabel = 'Mies. ' + month;
+        const wiekMies  = month === 1
+            ? String(data.currentAge)
+            : (data.currentAge + month / 12).toFixed(1);
+        monthlyRowsHtml += monthlyRowHtml(miesLabel, wiekMies, rataLabel, capThisMonth, interest, balance);
+
+        // Wiersz roczny
         if (month % 12 === 0 || balance <= 0.01) {
-            const rok         = 'Rok ' + Math.ceil(month / 12);
-            const wiek        = (data.currentAge + month / 12).toFixed(0);
-            const rataDisplay = balance > 0.01 ? currentRata : 0;
-            htmlRows += rowHtml(rok, wiek, rataDisplay, yCap, yInt, balance);
-            tableRows.push([rok, wiek, f2(rataDisplay), fi(yCap), fi(yInt), fi(balance)]);
+            const rok      = 'Rok ' + Math.ceil(month / 12);
+            const wiek     = (data.currentAge + month / 12).toFixed(0);
+            const rRoczna  = balance > 0.01 ? standardRata : 0;
+            htmlRows += rowHtml(rok, wiek, f2(rRoczna), yCap, yInt, balance);
+            tableRows.push([rok, wiek, f2(rRoczna), fi(yCap), fi(yInt), fi(balance)]);
             yCap = 0; yInt = 0;
         }
         month++;
@@ -551,10 +561,10 @@ function setView(view) {
         : monthlyRowsHtml;
 }
 
-function rowHtml(rok, wiek, rata, cap, odsetki, saldo, months) {
+function rowHtml(rok, wiek, rata, cap, odsetki, saldo) {
     return `<tr>
         <td>${rok}</td><td>${wiek}</td>
-        <td>${f2(rata)}</td>
+        <td>${rata}</td>
         <td>${fi(cap)}</td>
         <td>${fi(odsetki)}</td>
         <td>${fi(saldo)}</td>
@@ -564,7 +574,7 @@ function rowHtml(rok, wiek, rata, cap, odsetki, saldo, months) {
 function monthlyRowHtml(miesiac, wiek, rata, cap, odsetki, saldo) {
     return `<tr>
         <td>${miesiac}</td><td>${wiek}</td>
-        <td>${f2(rata)}</td>
+        <td style="white-space:nowrap;">${rata}</td>
         <td>${fi(cap)}</td>
         <td>${fi(odsetki)}</td>
         <td>${fi(saldo)}</td>
@@ -664,7 +674,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v4.6  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v4.9  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -743,7 +753,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v4.6 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v4.9 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
