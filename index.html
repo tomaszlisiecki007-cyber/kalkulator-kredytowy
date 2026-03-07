@@ -774,6 +774,14 @@ function sectionTitle(doc, text, y, W, color) {
     doc.setFont('helvetica', 'normal');
     doc.setTextColor(60, 64, 67);
 }
+
+// Enter → przelicz
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter') {
+        const tag = document.activeElement.tagName;
+        if (tag === 'INPUT' || tag === 'SELECT') calculate();
+    }
+});
 </script>
 </body>
 </html>
