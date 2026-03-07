@@ -129,6 +129,24 @@
             box-shadow: 0 8px 28px rgba(13,44,110,0.45) !important;
             transform: translateY(-2px) !important;
         }
+        /* Przyklejony przycisk Przelicz na mobile */
+        @media (max-width: 700px) {
+            .sticky-bar {
+                position: fixed;
+                bottom: 0; left: 0; right: 0;
+                background: rgba(13,44,110,0.97);
+                padding: 10px 16px;
+                z-index: 999;
+                box-shadow: 0 -3px 16px rgba(0,0,0,0.25);
+                display: none;
+            }
+            .sticky-bar .btn-calculate {
+                width: 100%; margin: 0; padding: 13px;
+                font-size: 1rem; animation: none;
+            }
+            body { padding-bottom: 70px; }
+        }
+
         /* ===== MOBILE ===== */
         @media (max-width: 700px) {
             body { padding: 10px; }
@@ -181,6 +199,54 @@
         .mission-signature { font-style: italic; color: var(--primary); border-top: 1px solid var(--border); padding-top: 14px; margin-top: 18px; }
         .mission-author { font-size: 0.88rem; color: var(--text-muted); margin-top: 6px; margin-bottom: 0; }
     </style>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Czy nadpłata kredytu hipotecznego się opłaca?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tak — każda nadpłata kredytu hipotecznego zmniejsza saldo zadłużenia, od którego naliczane są odsetki. Nawet niewielka nadpłata co miesiąc może skrócić kredyt o kilka lat i zaoszczędzić dziesiątki tysięcy złotych."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Co jest lepsze — skrócenie okresu kredytowania czy zmniejszenie raty?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Skrócenie okresu kredytowania oznacza większe oszczędności na odsetkach — rata pozostaje taka sama, ale kredyt spłacasz szybciej. Zmniejszenie raty daje większą elastyczność budżetu domowego. Najlepszy wybór zależy od Twojej sytuacji finansowej — nasz kalkulator pokaże Ci dokładne wyliczenia dla obu strategii."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Jak obliczyć ile zaoszczędzę na nadpłacie kredytu?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Wpisz w kalkulator kapitał pozostały do spłaty, oprocentowanie i liczbę pozostałych rat — znajdziesz je w harmonogramie kredytu w bankowości mobilnej. Następnie podaj kwotę nadpłaty (jednorazową, miesięczną lub roczną) i kliknij Przelicz. Kalkulator pokaże oszczędność, nowy harmonogram i wykres spadku salda."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Czy mogę bezpłatnie sprawdzić czy istnieje dla mnie tańszy kredyt?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tak. Po przeliczeniu nadpłat możesz wysłać swoje dane do certyfikowanego doradcy kredytowego — bezpłatnie. Jeśli znajdziemy tańszy kredyt, wynagrodzenie doradcy pokrywa nowy bank. Zgodnie z polskim prawem koszty kredytu przy refinansowaniu przez doradcę są takie same jak przy zawarciu umowy bezpośrednio w banku."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Czy kalkulator nadpłaty kredytu jest darmowy?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Tak, kalkulator nadplacam.com.pl jest w 100% darmowy, bez rejestracji i bez ukrytych opłat. Możesz też pobrać bezpłatny raport PDF z pełnym harmonogramem spłat."
+      }
+    }
+  ]
+}
+</script>
 </head>
 <!-- GoatCounter – statystyki odwiedzin -->
 <script data-goatcounter="https://nadplacam.goatcounter.com/count"
@@ -194,7 +260,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.1</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.2</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -348,9 +414,29 @@
                 <div></div>
             </div>
         </div>
-    </div>
+    <!-- Sticky przycisk Przelicz (mobile) -->
+<div class="sticky-bar" id="stickyBar">
+    <button class="btn btn-calculate" onclick="calculate()">▶ Przelicz i generuj harmonogram</button>
+</div>
 
-    <!-- Nasza Misja -->
+<!-- Pop-up dziękujący po wysłaniu -->
+<div id="thankYouModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:9999; align-items:center; justify-content:center;">
+    <div style="background:#fff; border-radius:16px; padding:36px 32px; max-width:380px; width:90%; text-align:center; box-shadow:0 8px 40px rgba(0,0,0,0.25); position:relative;">
+        <div style="font-size:3rem; margin-bottom:12px;">🎉</div>
+        <h2 style="font-family:'Montserrat',sans-serif; color:var(--primary); margin:0 0 10px; font-size:1.3rem;">Dziękuję za zaufanie!</h2>
+        <p style="font-family:'Open Sans',sans-serif; color:var(--text-main); font-size:0.93rem; line-height:1.7; margin:0 0 22px;">
+            Twoje dane zostały przesłane.<br>
+            Skontaktuję się z Tobą <strong>najszybciej jak to możliwe</strong> — sprawdzimy razem czy istnieje dla Ciebie tańszy kredyt. 💰
+        </p>
+        <button onclick="document.getElementById('thankYouModal').style.display='none';"
+            style="background:linear-gradient(135deg,var(--primary),#1a4fa0); color:#fff; border:none; border-radius:8px; padding:11px 32px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.95rem; cursor:pointer;">
+            Zamknij
+        </button>
+        <p style="font-size:0.78rem; color:var(--text-muted); margin:14px 0 0;">— Tomasz Lisiecki, nadplacam.com.pl</p>
+    </div>
+</div>
+
+</div>
     <div class="mission-section">
         <h3 class="mission-title">Nasza Misja</h3>
         <div class="mission-body">
@@ -714,8 +800,12 @@ async function sendToTomasz() {
         });
 
         if (response.status === 200) {
-            alert("Dziękuję! Twoje dane zostały przesłane. Skontaktuję się z Tobą wkrótce.");
-            btn.innerText = "Wysłano pomyślnie!";
+            const modal = document.getElementById('thankYouModal');
+            modal.style.display = 'flex';
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) modal.style.display = 'none';
+            }, { once: true });
+            btn.innerText = "✅ Wysłano!";
             btn.style.background = "#27ae60";
         } else {
             throw new Error();
@@ -755,7 +845,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v5.1  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v5.2  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -834,7 +924,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.1 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.2 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -985,6 +1075,18 @@ function drawChart(baseBalances, nadpBalances, labels) {
         }
     });
 }
+/* ===== STICKY BAR — pokaż po przewinięciu poza przycisk Przelicz ===== */
+(function() {
+    const stickyBar = document.getElementById('stickyBar');
+    const calcBtn   = document.querySelector('.btn-calculate:not(.sticky-bar .btn-calculate)');
+    if (!stickyBar || !calcBtn) return;
+
+    const observer = new IntersectionObserver(function(entries) {
+        // Gdy oryginalny przycisk wychodzi poza ekran → pokaż sticky
+        stickyBar.style.display = entries[0].isIntersecting ? 'none' : 'block';
+    }, { threshold: 0 });
+
+    observer.observe(calcBtn);
+})();
 </script>
-</body>
 </html>
