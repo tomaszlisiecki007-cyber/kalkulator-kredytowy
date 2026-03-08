@@ -104,6 +104,12 @@
         table { width: 100%; border-collapse: collapse; font-size: 0.8rem; background: white; }
         th, td { border: 1px solid #dde3f0; padding: 8px; text-align: center; white-space: nowrap; }
         th { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: white; position: sticky; top: 0; z-index: 1; font-family: 'Montserrat', sans-serif; font-size: 0.75rem; font-weight: 600; }
+        @media (max-width: 700px) {
+            table { font-size: 0.62rem; }
+            th, td { padding: 5px 4px; }
+            th { font-size: 0.60rem; }
+            .table-wrapper { max-height: 450px; }
+        }
         tr:nth-child(even) { background: #f4f7ff; }
         tr:hover { background: #eaeffa; }
         .view-toggle { display: flex; align-items: center; gap: 0; background: var(--author-bg); border-radius: 9px; padding: 4px; width: fit-content; border: 1.5px solid var(--border); }
@@ -158,39 +164,6 @@
             animation: glow-btn 1s ease-in-out infinite;
             transform: translateY(-2px) !important;
         }
-        /* Swipe hint — tylko mobile */
-        .swipe-hint {
-            display: none;
-        }
-        @media (max-width: 700px) {
-            .swipe-hint {
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 6px;
-                background: linear-gradient(135deg, rgba(13,44,110,0.07), rgba(200,168,75,0.10));
-                border: 1px solid rgba(200,168,75,0.35);
-                border-radius: 8px;
-                padding: 8px 12px;
-                margin-bottom: 8px;
-                font-size: 0.78rem;
-                font-family: 'Open Sans', sans-serif;
-                color: var(--primary);
-                font-weight: 600;
-                transition: opacity 0.4s ease, max-height 0.4s ease;
-                overflow: hidden;
-                max-height: 60px;
-            }
-            .swipe-hint.hidden {
-                opacity: 0;
-                max-height: 0;
-                padding: 0;
-                margin: 0;
-                border: none;
-                pointer-events: none;
-            }
-        }
-
         /* Przyklejony przycisk Przelicz na mobile */
         @media (max-width: 700px) {
             .sticky-bar {
@@ -318,7 +291,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.9</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v6.0</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -432,9 +405,6 @@
         <div class="view-toggle-mobile-anchor"></div>
         </div>
         <div class="table-container">
-            <div class="swipe-hint" id="swipeHint">
-                <span>👆 Przesuń tabelę w bok aby zobaczyć wszystkie kolumny</span>
-            </div>
             <div class="table-wrapper" id="tableWrapper">
                 <table>
                     <thead>
@@ -792,9 +762,6 @@ function calculate() {
 
     // Mobile — przesuń toggle pod wykres
     reorderToggleForMobile();
-
-    // Mobile — hint przewijania tabeli
-    initSwipeHint();
 }
 
 let currentView = 'roczny';
@@ -927,7 +894,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v5.9  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v6.0  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1010,7 +977,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.9 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v6.0 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1181,78 +1148,6 @@ function reorderToggleForMobile() {
 
 </script>
 <script>
-/* ===== SWIPE HINT + PARALLAX ===== */
-window.initSwipeHint = function() {
-    if (window.innerWidth > 700) return;
-
-    const wrapper = document.getElementById('tableWrapper');
-    const hint    = document.getElementById('swipeHint');
-    if (!wrapper || !hint) return;
-
-    // Reset przy każdym przeliczeniu
-    let userSwiped = !!sessionStorage.getItem('tableSwipeSeen');
-    hint.classList.toggle('hidden', userSwiped);
-
-    // --- HINT-SCROLL gdy tabela wejdzie w widok ---
-    let hintScrollFired = false;
-
-    function doHintScroll() {
-        if (hintScrollFired || userSwiped) return;
-        hintScrollFired = true;
-        wrapper.scrollLeft = 0;
-        setTimeout(() => {
-            wrapper.scrollTo({ left: 90, behavior: 'smooth' });
-            setTimeout(() => wrapper.scrollTo({ left: 0, behavior: 'smooth' }), 700);
-        }, 300);
-    }
-
-    const hintObserver = new IntersectionObserver(entries => {
-        if (entries[0].isIntersecting) {
-            setTimeout(doHintScroll, 400);
-        }
-    }, { threshold: 0.25 });
-    hintObserver.observe(wrapper);
-
-    // Ukryj hint tylko przy poziomym swipe
-    let tx = 0, ty = 0;
-    wrapper.addEventListener('touchstart', e => {
-        tx = e.touches[0].clientX;
-        ty = e.touches[0].clientY;
-    }, { passive: true });
-
-    wrapper.addEventListener('touchmove', e => {
-        const dx = Math.abs(e.touches[0].clientX - tx);
-        const dy = Math.abs(e.touches[0].clientY - ty);
-        if (dx > dy && dx > 8) {
-            userSwiped = true;
-            sessionStorage.setItem('tableSwipeSeen', '1');
-            hint.classList.add('hidden');
-            stopParallax();
-        }
-    }, { passive: true });
-
-    // --- PARALLAX ---
-    let parallaxOn = true;
-
-    function stopParallax() {
-        parallaxOn = false;
-        window.removeEventListener('scroll', onScroll);
-    }
-
-    function onScroll() {
-        if (!parallaxOn || userSwiped) return;
-        const rect     = wrapper.getBoundingClientRect();
-        const winH     = window.innerHeight;
-        // progress 0 = tabela wchodzi od dołu, 1 = wychodzi górą
-        const progress = 1 - (rect.bottom / (winH + rect.height));
-        const clamped  = Math.max(0, Math.min(1, progress));
-        const maxScroll = wrapper.scrollWidth - wrapper.clientWidth;
-        wrapper.scrollLeft = clamped * maxScroll * 0.85;
-    }
-
-    window.addEventListener('scroll', onScroll, { passive: true });
-};
-
 /* ===== EFEKT 1 — animowany licznik ===== */
 function animateCounter(elId, targetValue, formatter, duration) {
     const el = document.getElementById(elId);
