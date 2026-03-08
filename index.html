@@ -291,7 +291,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v6.0</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v6.1</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -775,6 +775,17 @@ function setView(view) {
     document.getElementById('scheduleBody').innerHTML = view === 'roczny'
         ? document.getElementById('scheduleBody').dataset.roczny
         : monthlyRowsHtml;
+
+    // Hint-scroll tylko przy widoku miesięcznym na mobile
+    if (view === 'miesieczny' && window.innerWidth <= 700) {
+        const w = document.getElementById('tableWrapper');
+        if (!w) return;
+        w.scrollLeft = 0;
+        setTimeout(() => {
+            w.scrollTo({ left: 70, behavior: 'smooth' });
+            setTimeout(() => w.scrollTo({ left: 0, behavior: 'smooth' }), 650);
+        }, 200);
+    }
 }
 
 function rowHtml(rok, wiek, rata, cap, odsetki, saldo) {
@@ -894,7 +905,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v6.0  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v6.1  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -977,7 +988,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v6.0 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v6.1 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
