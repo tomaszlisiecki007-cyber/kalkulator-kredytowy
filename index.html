@@ -318,7 +318,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.7</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.8</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -927,7 +927,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v5.7  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v5.8  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1010,7 +1010,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.7 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.8 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1181,50 +1181,113 @@ function reorderToggleForMobile() {
 
 </script>
 <script>
-/* ===== SWIPE HINT — podpowiedź przewijania tabeli ===== */
+/* ===== SWIPE HINT + PARALLAX SCROLL TABELI ===== */
 (function() {
-    function initSwipeHint() {
-        if (window.innerWidth > 700) return;
+    if (window.innerWidth > 700) return;
 
-        const wrapper = document.getElementById('tableWrapper');
-        const hint    = document.getElementById('swipeHint');
-        if (!wrapper || !hint) return;
+    const wrapper = document.getElementById('tableWrapper');
+    const hint    = document.getElementById('swipeHint');
+    if (!wrapper || !hint) return;
 
-        // Nie pokazuj jeśli użytkownik już przewijał w tej sesji
-        if (sessionStorage.getItem('tableSwipeSeen')) {
-            hint.classList.add('hidden');
-            return;
-        }
+    let hintDone      = !!sessionStorage.getItem('tableSwipeSeen');
+    let parallaxActive = false;
+    let hintScrollDone = false;
 
-        // Hint-scroll: przesuń o 80px w prawo i wróć
-        function doHintScroll() {
-            if (sessionStorage.getItem('tableSwipeSeen')) return;
-            wrapper.scrollTo({ left: 0, behavior: 'instant' });
-
-            setTimeout(() => {
-                wrapper.scrollTo({ left: 80, behavior: 'smooth' });
-                setTimeout(() => {
-                    wrapper.scrollTo({ left: 0, behavior: 'smooth' });
-                }, 600);
-            }, 400);
-        }
-
-        // Odpal hint-scroll 1.2s po pojawieniu się tabeli
-        setTimeout(doHintScroll, 1200);
-
-        // Znikanie po dotknięciu tabeli
-        function onTouch() {
-            sessionStorage.setItem('tableSwipeSeen', '1');
-            hint.classList.add('hidden');
-            wrapper.removeEventListener('touchstart', onTouch);
-            wrapper.removeEventListener('scroll', onTouch);
-        }
-        wrapper.addEventListener('touchstart', onTouch, { passive: true });
-        wrapper.addEventListener('scroll', onTouch, { passive: true });
+    // --- HINT ---
+    function hideHint() {
+        if (hint.classList.contains('hidden')) return;
+        sessionStorage.setItem('tableSwipeSeen', '1');
+        hintDone = true;
+        hint.classList.add('hidden');
     }
 
-    // Wywołaj po przeliczeniu (eksportujemy do window)
-    window.initSwipeHint = initSwipeHint;
+    if (hintDone) {
+        hint.classList.add('hidden');
+    }
+
+    // Hint-scroll: odpala się gdy tabela wchodzi w pole widzenia
+    function doHintScroll() {
+        if (hintScrollDone || hintDone) return;
+        hintScrollDone = true;
+        wrapper.scrollTo({ left: 0, behavior: 'instant' });
+        setTimeout(() => {
+            wrapper.scrollTo({ left: 90, behavior: 'smooth' });
+            setTimeout(() => {
+                wrapper.scrollTo({ left: 0, behavior: 'smooth' });
+            }, 700);
+        }, 300);
+    }
+
+    // IntersectionObserver — odpala hint gdy tabela wchodzi w widok
+    const observer = new IntersectionObserver(function(entries) {
+        if (entries[0].isIntersecting) {
+            setTimeout(doHintScroll, 500);
+        }
+    }, { threshold: 0.3 });
+    observer.observe(wrapper);
+
+    // Znikanie hintu tylko przy poziomym swipe (nie pionowym scrollu)
+    let touchStartX = 0, touchStartY = 0;
+    wrapper.addEventListener('touchstart', function(e) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+    }, { passive: true });
+    wrapper.addEventListener('touchmove', function(e) {
+        const dx = Math.abs(e.touches[0].clientX - touchStartX);
+        const dy = Math.abs(e.touches[0].clientY - touchStartY);
+        if (dx > dy && dx > 10) hideHint(); // poziomy swipe
+    }, { passive: true });
+
+    // --- PARALLAX SCROLL ---
+    // Tabela przesuwa się w poziomie w miarę scrollowania strony,
+    // proporcjonalnie do pozycji tabeli w oknie
+    function updateParallax() {
+        if (!parallaxActive) return;
+        const rect      = wrapper.getBoundingClientRect();
+        const winH      = window.innerHeight;
+        const tableH    = rect.height;
+
+        // progress: 0 gdy tabela dopiero wchodzi od dołu, 1 gdy wychodzi górą
+        const progress  = 1 - (rect.bottom / (winH + tableH));
+        const clamped   = Math.max(0, Math.min(1, progress));
+
+        // max przesunięcie = szerokość ukrytej części tabeli (max 60%)
+        const maxScroll = wrapper.scrollWidth - wrapper.clientWidth;
+        const target    = clamped * maxScroll * 0.85;
+
+        // Tylko jeśli użytkownik nie scrolluje tabeli ręcznie
+        if (!hintDone) {
+            wrapper.scrollLeft = target;
+        }
+    }
+
+    // Aktywuj parallax gdy tabela jest widoczna
+    const parallaxObserver = new IntersectionObserver(function(entries) {
+        parallaxActive = entries[0].isIntersecting;
+    }, { threshold: 0 });
+    parallaxObserver.observe(wrapper);
+
+    window.addEventListener('scroll', updateParallax, { passive: true });
+
+    // Po ręcznym swipe — wyłącz parallax żeby nie "walczył" z użytkownikiem
+    wrapper.addEventListener('touchstart', function() {
+        parallaxActive = false;
+        parallaxObserver.disconnect();
+    }, { passive: true, once: true });
+
+    // Eksportuj do window żeby calculate() mógł wywołać reset
+    window.initSwipeHint = function() {
+        if (window.innerWidth > 700) return;
+        hintScrollDone = false;
+        parallaxActive = true;
+        if (!sessionStorage.getItem('tableSwipeSeen')) {
+            hint.classList.remove('hidden');
+            hintDone = false;
+        }
+        // Podłącz parallax observer ponownie
+        parallaxObserver.observe(wrapper);
+        window.addEventListener('scroll', updateParallax, { passive: true });
+    };
 })();
 
 /* ===== EFEKT 1 — animowany licznik ===== */
