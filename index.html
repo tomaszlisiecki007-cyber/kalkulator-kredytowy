@@ -264,7 +264,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.3</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.4</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -462,6 +462,7 @@
 let globalResults = {};
 let globalInputs  = {};
 let tableRows     = [];
+let monthlyTableRows = [];
 
 /* ===================== OBLICZENIA ===================== */
 function annuity(balance, r, n) {
@@ -513,6 +514,7 @@ function calculate() {
     let htmlRows      = '';
     monthlyRowsHtml   = '';
     tableRows         = [];
+    monthlyTableRows  = [];
 
     let totalPaid = 0;
     let month     = 1;
@@ -602,6 +604,7 @@ function calculate() {
             ? String(data.currentAge)
             : (data.currentAge + month / 12).toFixed(1);
         monthlyRowsHtml += monthlyRowHtml(miesLabel, wiekMies, rataLabel, capThisMonth, interest, balance);
+        monthlyTableRows.push([miesLabel, wiekMies, rataLabel, fi(capThisMonth), fi(interest), fi(balance)]);
 
         // Wiersz roczny
         if (month % 12 === 0 || balance <= 0.01) {
@@ -855,7 +858,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v5.3  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v5.4  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -914,7 +917,11 @@ function generatePDF() {
     y = doc.lastAutoTable.finalY + 8;
 
     // ---- Harmonogram ----
-    sectionTitle(doc, 'Harmonogram splat (roczny)', y, W, C_BLUE);
+    const isMiesieczny = currentView === 'miesieczny';
+    const pdfRows      = isMiesieczny ? monthlyTableRows : tableRows;
+    const pdfLabel     = isMiesieczny ? 'Harmonogram splat (miesieczny)' : 'Harmonogram splat (roczny)';
+    const pdfOkres     = isMiesieczny ? 'Miesiac' : 'Rok';
+    sectionTitle(doc, pdfLabel, y, W, C_BLUE);
     y += 8;
 
     doc.autoTable({
@@ -924,8 +931,8 @@ function generatePDF() {
         styles: { fontSize: 7.5, cellPadding: 2, textColor: C_DARK, halign: 'center' },
         headStyles: { fillColor: C_DARK, textColor: 255, fontStyle: 'bold', fontSize: 8 },
         alternateRowStyles: { fillColor: [240, 244, 255] },
-        head: [['Rok', 'Wiek', 'Rata (zl)', 'Kapital (zl)', 'Odsetki (zl)', 'Saldo (zl)']],
-        body: tableRows,
+        head: [[pdfOkres, 'Wiek', 'Rata (zl)', 'Kapital (zl)', 'Odsetki (zl)', 'Saldo (zl)']],
+        body: pdfRows,
         showHead: 'everyPage',
         rowPageBreak: 'avoid',
         didDrawPage: () => {
@@ -934,7 +941,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.3 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.4 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
