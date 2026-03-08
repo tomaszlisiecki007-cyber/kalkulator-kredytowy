@@ -158,6 +158,39 @@
             animation: glow-btn 1s ease-in-out infinite;
             transform: translateY(-2px) !important;
         }
+        /* Swipe hint — tylko mobile */
+        .swipe-hint {
+            display: none;
+        }
+        @media (max-width: 700px) {
+            .swipe-hint {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+                background: linear-gradient(135deg, rgba(13,44,110,0.07), rgba(200,168,75,0.10));
+                border: 1px solid rgba(200,168,75,0.35);
+                border-radius: 8px;
+                padding: 8px 12px;
+                margin-bottom: 8px;
+                font-size: 0.78rem;
+                font-family: 'Open Sans', sans-serif;
+                color: var(--primary);
+                font-weight: 600;
+                transition: opacity 0.4s ease, max-height 0.4s ease;
+                overflow: hidden;
+                max-height: 60px;
+            }
+            .swipe-hint.hidden {
+                opacity: 0;
+                max-height: 0;
+                padding: 0;
+                margin: 0;
+                border: none;
+                pointer-events: none;
+            }
+        }
+
         /* Przyklejony przycisk Przelicz na mobile */
         @media (max-width: 700px) {
             .sticky-bar {
@@ -285,7 +318,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.6</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.7</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -398,16 +431,21 @@
         </div>
         <div class="view-toggle-mobile-anchor"></div>
         </div>
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th id="thOkres">Rok</th><th>Wiek</th><th>Rata (zł)</th>
-                        <th>Kapitał (zł)</th><th>Odsetki (zł)</th><th>Saldo (zł)</th>
-                    </tr>
-                </thead>
-                <tbody id="scheduleBody"></tbody>
-            </table>
+        <div class="table-container">
+            <div class="swipe-hint" id="swipeHint">
+                <span>👆 Przesuń tabelę w bok aby zobaczyć wszystkie kolumny</span>
+            </div>
+            <div class="table-wrapper" id="tableWrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th id="thOkres">Rok</th><th>Wiek</th><th>Rata (zł)</th>
+                            <th>Kapitał (zł)</th><th>Odsetki (zł)</th><th>Saldo (zł)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleBody"></tbody>
+                </table>
+            </div>
         </div>
 
         <div class="export-section">
@@ -754,6 +792,9 @@ function calculate() {
 
     // Mobile — przesuń toggle pod wykres
     reorderToggleForMobile();
+
+    // Mobile — hint przewijania tabeli
+    initSwipeHint();
 }
 
 let currentView = 'roczny';
@@ -886,7 +927,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v5.6  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v5.7  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -969,7 +1010,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.6 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.7 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1140,6 +1181,52 @@ function reorderToggleForMobile() {
 
 </script>
 <script>
+/* ===== SWIPE HINT — podpowiedź przewijania tabeli ===== */
+(function() {
+    function initSwipeHint() {
+        if (window.innerWidth > 700) return;
+
+        const wrapper = document.getElementById('tableWrapper');
+        const hint    = document.getElementById('swipeHint');
+        if (!wrapper || !hint) return;
+
+        // Nie pokazuj jeśli użytkownik już przewijał w tej sesji
+        if (sessionStorage.getItem('tableSwipeSeen')) {
+            hint.classList.add('hidden');
+            return;
+        }
+
+        // Hint-scroll: przesuń o 80px w prawo i wróć
+        function doHintScroll() {
+            if (sessionStorage.getItem('tableSwipeSeen')) return;
+            wrapper.scrollTo({ left: 0, behavior: 'instant' });
+
+            setTimeout(() => {
+                wrapper.scrollTo({ left: 80, behavior: 'smooth' });
+                setTimeout(() => {
+                    wrapper.scrollTo({ left: 0, behavior: 'smooth' });
+                }, 600);
+            }, 400);
+        }
+
+        // Odpal hint-scroll 1.2s po pojawieniu się tabeli
+        setTimeout(doHintScroll, 1200);
+
+        // Znikanie po dotknięciu tabeli
+        function onTouch() {
+            sessionStorage.setItem('tableSwipeSeen', '1');
+            hint.classList.add('hidden');
+            wrapper.removeEventListener('touchstart', onTouch);
+            wrapper.removeEventListener('scroll', onTouch);
+        }
+        wrapper.addEventListener('touchstart', onTouch, { passive: true });
+        wrapper.addEventListener('scroll', onTouch, { passive: true });
+    }
+
+    // Wywołaj po przeliczeniu (eksportujemy do window)
+    window.initSwipeHint = initSwipeHint;
+})();
+
 /* ===== EFEKT 1 — animowany licznik ===== */
 function animateCounter(elId, targetValue, formatter, duration) {
     const el = document.getElementById(elId);
