@@ -264,7 +264,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.2</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.3</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -351,8 +351,9 @@
             </div>
         </div>
 
+        <div class="results-flow">
         <div class="results-bar">
-            <div class="view-toggle">
+            <div class="view-toggle" id="viewToggle">
                 <button id="btnRoczny" class="active" onclick="setView('roczny')">📅 Widok roczny</button>
                 <button id="btnMiesieczny" onclick="setView('miesieczny')">📆 Widok miesięczny</button>
             </div>
@@ -373,6 +374,8 @@
                 <h3 style="margin:0; font-size:0.95rem; color:var(--primary); font-family:'Montserrat',sans-serif; font-weight:700;">📈 Wykres spadku salda kredytu</h3>
             </div>
             <canvas id="balanceChart" style="width:100%; max-height:260px;"></canvas>
+        </div>
+        <div class="view-toggle-mobile-anchor"></div>
         </div>
         <div class="table-wrapper">
             <table>
@@ -717,6 +720,9 @@ function calculate() {
 
     // Scroll do wyników
     document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    // Mobile — przesuń toggle pod wykres
+    reorderToggleForMobile();
 }
 
 let currentView = 'roczny';
@@ -849,7 +855,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v5.2  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v5.3  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -928,7 +934,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.2 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.3 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1079,7 +1085,21 @@ function drawChart(baseBalances, nadpBalances, labels) {
         }
     });
 }
-/* ===== STICKY BAR — pokaż po przewinięciu poza przycisk Przelicz ===== */
+/* ===== MOBILE — przesuń toggle widoku pod wykres, nad tabelę ===== */
+function reorderToggleForMobile() {
+    if (window.innerWidth > 700) return;
+    const toggle  = document.getElementById('viewToggle');
+    const anchor  = document.querySelector('.view-toggle-mobile-anchor');
+    if (toggle && anchor && anchor.children.length === 0) {
+        anchor.appendChild(toggle);
+        // styl jak oryginał
+        toggle.style.width = '100%';
+        toggle.style.justifyContent = 'center';
+        toggle.querySelectorAll('button').forEach(b => b.style.flex = '1');
+    }
+}
+
+</script>
 (function() {
     const stickyBar = document.getElementById('stickyBar');
     const calcBtn   = document.querySelector('.btn-calculate:not(.sticky-bar .btn-calculate)');
