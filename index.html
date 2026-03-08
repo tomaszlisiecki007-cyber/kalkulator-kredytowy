@@ -157,6 +157,14 @@
             0%, 100% { box-shadow: 0 8px 28px rgba(13,44,110,0.45), 0 0 0 0px rgba(200,168,75,0); }
             50%       { box-shadow: 0 8px 36px rgba(13,44,110,0.60), 0 0 20px 4px rgba(200,168,75,0.35); }
         }
+        @keyframes flash-btn {
+            0%   { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); transform: scale(1); }
+            25%  { background: linear-gradient(135deg, #b8922e 0%, var(--gold) 100%); transform: scale(1.03); box-shadow: 0 0 0 6px rgba(200,168,75,0.30); }
+            50%  { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); transform: scale(1); }
+            75%  { background: linear-gradient(135deg, #b8922e 0%, var(--gold) 100%); transform: scale(1.03); box-shadow: 0 0 0 6px rgba(200,168,75,0.30); }
+            100% { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); transform: scale(1); }
+        }
+        .btn-flash { animation: flash-btn 0.7s ease forwards !important; }
         .btn-calculate {
             animation: pulse-btn 2.4s ease-in-out infinite;
         }
@@ -291,7 +299,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v6.2</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v6.3</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -909,7 +917,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v6.2  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v6.3  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -992,7 +1000,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v6.2 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v6.3 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1051,7 +1059,17 @@ lsFields.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', saveInputs);
 });
-document.getElementById('strategy').addEventListener('change', saveInputs);
+document.getElementById('strategy').addEventListener('change', function() {
+    saveInputs();
+    // Mrugnięcie przycisku Przelicz
+    const btns = document.querySelectorAll('.btn-calculate');
+    btns.forEach(btn => {
+        btn.classList.remove('btn-flash');
+        void btn.offsetWidth; // reflow
+        btn.classList.add('btn-flash');
+        btn.addEventListener('animationend', () => btn.classList.remove('btn-flash'), { once: true });
+    });
+});
 
 // Odczyt przy załadowaniu strony
 document.addEventListener('DOMContentLoaded', loadInputs);
