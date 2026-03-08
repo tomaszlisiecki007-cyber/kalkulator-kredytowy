@@ -80,7 +80,23 @@
 
         .results { margin-top: 20px; display: none; }
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 30px; }
-        .card { padding: 15px; background: linear-gradient(135deg, #f4f7ff 0%, #eef2fc 100%); border-radius: 10px; text-align: center; border: 1.5px solid var(--border); border-top: 3px solid var(--primary); }
+        .card { padding: 15px; background: linear-gradient(135deg, #f4f7ff 0%, #eef2fc 100%); border-radius: 10px; text-align: center; border: 1.5px solid var(--border); border-top: 3px solid var(--primary); transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        .card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(13,44,110,0.13); }
+
+        /* Efekt 2 — fade-in kart wyników */
+        @keyframes card-fade-in {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .card.animate-in { animation: card-fade-in 0.4s ease both; }
+        .card.animate-in:nth-child(1) { animation-delay: 0.05s; }
+        .card.animate-in:nth-child(2) { animation-delay: 0.15s; }
+        .card.animate-in:nth-child(3) { animation-delay: 0.25s; }
+        .card.animate-in:nth-child(4) { animation-delay: 0.35s; }
+
+        /* Efekt 4 — highlight wiersza tabeli */
+        #scheduleBody tr { transition: background 0.15s ease; cursor: default; }
+        #scheduleBody tr:hover { background: rgba(200, 168, 75, 0.15) !important; }
         .card h4 { margin: 0 0 5px 0; font-size: 0.63rem; text-transform: uppercase; color: var(--text-muted); font-family: 'Montserrat', sans-serif; font-weight: 600; letter-spacing: 0.5px; }
         .card .value { font-size: 1.1rem; font-weight: 700; color: var(--primary); font-family: 'Montserrat', sans-serif; }
 
@@ -129,14 +145,17 @@
 
         @keyframes pulse-btn {
             0%, 100% { box-shadow: 0 4px 14px rgba(13,44,110,0.25); }
-            50%       { box-shadow: 0 4px 28px rgba(13,44,110,0.50), 0 0 0 6px rgba(26,74,173,0.12); }
+            50%       { box-shadow: 0 4px 28px rgba(13,44,110,0.55), 0 0 0 8px rgba(26,74,173,0.10); }
+        }
+        @keyframes glow-btn {
+            0%, 100% { box-shadow: 0 8px 28px rgba(13,44,110,0.45), 0 0 0 0px rgba(200,168,75,0); }
+            50%       { box-shadow: 0 8px 36px rgba(13,44,110,0.60), 0 0 20px 4px rgba(200,168,75,0.35); }
         }
         .btn-calculate {
             animation: pulse-btn 2.4s ease-in-out infinite;
         }
         .btn-calculate:hover {
-            animation: none;
-            box-shadow: 0 8px 28px rgba(13,44,110,0.45) !important;
+            animation: glow-btn 1s ease-in-out infinite;
             transform: translateY(-2px) !important;
         }
         /* Przyklejony przycisk Przelicz na mobile */
@@ -266,7 +285,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.5</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.6</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -657,24 +676,31 @@ function calculate() {
     }
 
     document.getElementById('results').style.display = 'block';
-    document.getElementById('resNextRata').innerText = f2(firstRata) + ' zł';
+
+    // Efekt 2 — fade-in kart
+    document.querySelectorAll('.stats .card').forEach(c => {
+        c.classList.remove('animate-in');
+        void c.offsetWidth; // reflow
+        c.classList.add('animate-in');
+    });
+
+    // Efekt 1 — animowane liczniki
+    animateCounter('resNextRata',  firstRata,    v => f2(v) + ' zł',        800);
+    animateCounter('resYearsLeft', monthsUsed/12, v => v.toFixed(1) + ' lat', 900);
+    animateCounter('resAge',       data.currentAge + monthsUsed/12, v => v.toFixed(1) + ' lat', 900);
+    animateCounter('resTotalPaid', totalPaid,    v => f2(v) + ' zł',        1000);
 
     // Oszczędność lub strata
     const savingsEl   = document.getElementById('resSavings');
     const savingsCard = savingsEl.closest('.savings-card');
     if (isLoss || isLowRata) {
-        savingsEl.innerText = finalOszcz + ' zł';
         savingsCard.style.background = 'linear-gradient(135deg, #c0392b 0%, #e05252 100%)';
         savingsCard.querySelector('.s-label').textContent = '📉 Strata';
     } else {
-        savingsEl.innerText = finalOszcz + ' zł';
         savingsCard.style.background = 'linear-gradient(135deg, var(--secondary) 0%, #1e9e55 100%)';
         savingsCard.querySelector('.s-label').textContent = '💰 Oszczędność';
     }
-
-    document.getElementById('resYearsLeft').innerText = globalResults.lat + ' lat';
-    document.getElementById('resAge').innerText       = globalResults.age + ' lat';
-    document.getElementById('resTotalPaid').innerText = totalPaid.toFixed(2) + ' zł';
+    animateCounter('resSavings', parseFloat(finalOszcz), v => f2(v) + ' zł', 1100);
 
     // Skrócenie lub wydłużenie czasu spłaty
     const elYearsSaved = document.getElementById('resYearsSaved');
@@ -860,7 +886,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v5.5  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v5.6  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -943,7 +969,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.5 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.6 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1073,6 +1099,10 @@ function drawChart(baseBalances, nadpBalances, labels) {
         },
         options: {
             responsive: true,
+            animation: {
+                duration: 900,
+                easing: 'easeInOutQuart'
+            },
             interaction: { mode: 'index', intersect: false },
             plugins: {
                 legend: { position: 'top', labels: { font: { family: 'Montserrat', size: 11 }, boxWidth: 14 } },
@@ -1110,6 +1140,23 @@ function reorderToggleForMobile() {
 
 </script>
 <script>
+/* ===== EFEKT 1 — animowany licznik ===== */
+function animateCounter(elId, targetValue, formatter, duration) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    const start     = performance.now();
+    const startVal  = 0;
+    function step(now) {
+        const progress = Math.min((now - start) / duration, 1);
+        // easeOutQuart
+        const ease = 1 - Math.pow(1 - progress, 4);
+        el.innerText = formatter(startVal + (targetValue - startVal) * ease);
+        if (progress < 1) requestAnimationFrame(step);
+        else el.innerText = formatter(targetValue);
+    }
+    requestAnimationFrame(step);
+}
+
 /* ===== TOOLTIP — automatyczne pozycjonowanie na mobile ===== */
 (function() {
     const TOOLTIP_WIDTH = 260;
