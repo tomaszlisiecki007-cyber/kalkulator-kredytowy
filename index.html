@@ -98,8 +98,14 @@
         .tip { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: var(--primary-light); color: white; border-radius: 50%; font-size: 10px; font-weight: 700; cursor: pointer; margin-left: 5px; vertical-align: middle; flex-shrink: 0; font-family: 'Montserrat', sans-serif; user-select: none; }
         .tip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #1a2540; color: #fff; font-size: 11px; font-weight: 400; font-family: 'Open Sans', sans-serif; line-height: 1.5; padding: 9px 13px; border-radius: 8px; width: 240px; white-space: normal; text-align: left; box-shadow: 0 4px 16px rgba(0,0,0,0.22); opacity: 0; pointer-events: none; transition: opacity 0.18s; z-index: 100; }
         .tip::before { content: ''; position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #1a2540; opacity: 0; pointer-events: none; transition: opacity 0.18s; z-index: 100; }
-        .tip:hover::after, .tip:hover::before { opacity: 1; }
+        .tip:hover::after, .tip:hover::before, .tip.tip-open::after, .tip.tip-open::before { opacity: 1; }
         .tip.tip-wide::after { width: 320px; }
+        /* Tooltip w lewo — gdy ? jest blisko prawej krawędzi ekranu */
+        .tip.tip-right::after { left: auto; right: 0; transform: none; }
+        .tip.tip-right::before { left: auto; right: 6px; transform: none; }
+        /* Tooltip od lewej — gdy ? jest blisko lewej krawędzi */
+        .tip.tip-left-edge::after { left: 0; transform: none; }
+        .tip.tip-left-edge::before { left: 6px; transform: none; }
 
         /* Savings bar below toggle */
         .results-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; flex-wrap: wrap; }
@@ -185,10 +191,6 @@
 
             /* Misja */
             .mission-section { padding: 20px 16px; }
-
-            /* Tooltip — nie ucieka poza ekran */
-            .tip::after { left: 0; transform: none; width: 220px; }
-            .tip.tip-wide::after { width: 260px; }
         }
 
         @media (max-width: 400px) {
@@ -264,7 +266,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.4</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v5.5</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -858,7 +860,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v5.4  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v5.5  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -941,7 +943,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.4 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v5.5 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1107,16 +1109,57 @@ function reorderToggleForMobile() {
 }
 
 </script>
+<script>
+/* ===== TOOLTIP — automatyczne pozycjonowanie na mobile ===== */
+(function() {
+    const TOOLTIP_WIDTH = 260;
+    const MARGIN = 10;
+
+    function positionTip(el) {
+        const rect    = el.getBoundingClientRect();
+        const screenW = window.innerWidth;
+        el.classList.remove('tip-right', 'tip-left-edge');
+        if (screenW - rect.right < TOOLTIP_WIDTH / 2 + MARGIN) {
+            el.classList.add('tip-right');
+        } else if (rect.left < TOOLTIP_WIDTH / 2 + MARGIN) {
+            el.classList.add('tip-left-edge');
+        }
+    }
+
+    function initTips() {
+        document.querySelectorAll('.tip').forEach(el => {
+            el.addEventListener('mouseenter', () => positionTip(el));
+            el.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.tip').forEach(t => {
+                    if (t !== el) t.classList.remove('tip-open');
+                });
+                positionTip(el);
+                el.classList.toggle('tip-open');
+            }, { passive: false });
+        });
+        document.addEventListener('touchstart', function(e) {
+            if (!e.target.closest('.tip')) {
+                document.querySelectorAll('.tip').forEach(t => t.classList.remove('tip-open'));
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initTips);
+    } else {
+        initTips();
+    }
+})();
+
+/* ===== STICKY BAR ===== */
 (function() {
     const stickyBar = document.getElementById('stickyBar');
     const calcBtn   = document.querySelector('.btn-calculate:not(.sticky-bar .btn-calculate)');
     if (!stickyBar || !calcBtn) return;
-
     const observer = new IntersectionObserver(function(entries) {
-        // Gdy oryginalny przycisk wychodzi poza ekran → pokaż sticky
         stickyBar.style.display = entries[0].isIntersecting ? 'none' : 'block';
     }, { threshold: 0 });
-
     observer.observe(calcBtn);
 })();
 </script>
