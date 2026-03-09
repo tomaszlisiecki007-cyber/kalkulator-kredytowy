@@ -120,6 +120,9 @@
         .tip { position: relative; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; background: var(--primary-light); color: white; border-radius: 50%; font-size: 10px; font-weight: 700; cursor: pointer; margin-left: 5px; vertical-align: middle; flex-shrink: 0; font-family: 'Montserrat', sans-serif; user-select: none; }
         .tip::after { content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 50%; transform: translateX(-50%); background: #1a2540; color: #fff; font-size: 11px; font-weight: 400; font-family: 'Open Sans', sans-serif; line-height: 1.5; padding: 9px 13px; border-radius: 8px; width: 240px; white-space: normal; text-align: left; box-shadow: 0 4px 16px rgba(0,0,0,0.22); opacity: 0; pointer-events: none; transition: opacity 0.18s; z-index: 100; }
         #tipFloating { display:none; position:fixed; z-index:9999; background:#1a2540; color:#fff; font-size:11px; font-family:'Open Sans',sans-serif; line-height:1.5; padding:9px 13px; border-radius:8px; white-space:normal; text-align:left; box-shadow:0 4px 16px rgba(0,0,0,0.28); max-width:calc(100vw - 24px); pointer-events:none; }
+        @media (max-width: 700px) {
+            .tip::after, .tip::before { display: none !important; }
+        }
         .tip::before { content: ''; position: absolute; bottom: calc(100% + 2px); left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #1a2540; opacity: 0; pointer-events: none; transition: opacity 0.18s; z-index: 100; }
         .tip:hover::after, .tip:hover::before, .tip.tip-open::after, .tip.tip-open::before { opacity: 1; }
         .tip.tip-wide::after { width: 320px; }
@@ -301,7 +304,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v6.7</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v6.8</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -939,7 +942,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v6.7  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v6.8  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1022,7 +1025,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v6.7 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v6.8 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
