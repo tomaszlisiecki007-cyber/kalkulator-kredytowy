@@ -218,11 +218,8 @@
             .view-toggle button { flex: 1; height: auto; }
 
             /* Sekcja 3 — pola w kolumnie, przyciski obok siebie */
-            .export-grid { grid-template-columns: 1fr 1fr !important; }
-            .export-grid .input-group { grid-column: span 1; }
-            .export-grid .input-group:first-child { grid-column: span 2; }
-            .export-msg-desktop { display: none !important; }
-            .export-msg-mobile { display: block !important; }
+            .export-grid { grid-template-columns: 1fr !important; }
+            .export-btns { grid-template-columns: 1fr 1fr !important; }
             .export-btn-wrap { grid-column: span 1; }
 
             /* RODO — pełna szerokość */
@@ -353,7 +350,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v7.3</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v7.5</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -494,7 +491,8 @@
             <h3>3. Eksport i Bezpłatna Analiza <span class="tip tip-wide" data-tip="Masz możliwość wysłania danych o Twoim kredycie do certyfikowanego doradcy kredytowego. Nie płacisz mu żadnego wynagrodzenia. Jeśli znajdziemy dla Ciebie tańszy kredyt, to wynagrodzenie doradcy zapłaci nowy bank, a koszty kredytu będą takie same jak przy kredycie zaciągniętym bezpośrednio w tym banku – tak stanowi polskie prawo. Możesz tylko zyskać i nie musisz podejmować żadnych decyzji" style="width:18px;height:18px;font-size:11px;">?</span></h3>
             <p style="color:var(--gold); font-weight:700; font-family:'Montserrat',sans-serif; margin-bottom:18px;">Sprawdzimy czy istnieje dla Ciebie tańszy kredyt i za darmo Cię o tym poinformujemy.</p>
 
-            <div class="export-grid" style="display:grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; gap:15px; align-items:start;">
+            <!-- 3 pola: Bank, Email, Telefon -->
+            <div class="export-grid" style="display:grid; grid-template-columns: 1fr 1fr 1fr; gap:15px; align-items:start; margin-bottom:12px;">
                 <div class="input-group">
                     <label>Nazwa Banku</label>
                     <input type="text" id="bankName" placeholder="np. PKO BP">
@@ -507,31 +505,23 @@
                     <label>Telefon</label>
                     <input type="tel" id="userPhone" placeholder="123-456-789">
                 </div>
-                <div class="export-btn-wrap">
-                    <button class="btn btn-mail" style="margin:0;" onclick="sendToTomasz()">📧 Wyślij do analizy</button>
-                </div>
-                <div class="export-btn-wrap">
-                    <button class="btn btn-pdf" style="margin:0;" onclick="generatePDF()">📄 Pobierz Raport PDF</button>
-                </div>
-                <!-- Wiadomość: desktop = pod 3 polami, pełna szerokość 3 kolumn -->
-                <div class="input-group export-msg-desktop" style="grid-column: span 3;">
-                    <label>Wiadomość <span style="font-weight:400; color:var(--text-muted);">(opcjonalnie)</span></label>
-                    <textarea id="userMessage" placeholder="Napisz coś do doradcy — np. kiedy najlepiej zadzwonić, czego szukasz, co Cię niepokoi w Twoim kredycie..." style="width:100%; box-sizing:border-box; height:72px; resize:vertical; font-family:'Open Sans',sans-serif; font-size:0.88rem; color:var(--text-main); background:#fff; border:1.5px solid var(--border); border-radius:8px; padding:10px 12px; line-height:1.55; outline:none; transition:border-color 0.2s;"></textarea>
-                </div>
             </div>
 
-            <!-- Wiadomość: mobile = między polami a RODO -->
-            <div class="input-group export-msg-mobile" style="display:none; margin-top:12px;">
+            <!-- Wiadomość: zawsze między polami a przyciskami -->
+            <div class="input-group" style="margin-bottom:12px;">
                 <label>Wiadomość <span style="font-weight:400; color:var(--text-muted);">(opcjonalnie)</span></label>
-                <textarea id="userMessageMobile" placeholder="Napisz coś do doradcy — np. kiedy najlepiej zadzwonić, czego szukasz, co Cię niepokoi w Twoim kredycie..." style="width:100%; box-sizing:border-box; height:72px; resize:vertical; font-family:'Open Sans',sans-serif; font-size:0.88rem; color:var(--text-main); background:#fff; border:1.5px solid var(--border); border-radius:8px; padding:10px 12px; line-height:1.55; outline:none; transition:border-color 0.2s;"></textarea>
+                <textarea id="userMessage" placeholder="Napisz coś do doradcy — np. kiedy najlepiej zadzwonić, czego szukasz, co Cię niepokoi w Twoim kredycie..." style="width:100%; box-sizing:border-box; height:72px; resize:vertical; font-family:'Open Sans',sans-serif; font-size:0.88rem; color:var(--text-main); background:#fff; border:1.5px solid var(--border); border-radius:8px; padding:10px 12px; line-height:1.55; outline:none; transition:border-color 0.2s;"></textarea>
             </div>
 
-            <div class="rodo-row" style="display:grid; grid-template-columns: 3fr 2fr; gap:15px; margin-top:10px;">
-                <p style="font-size:11px; color:var(--text-muted); margin:0; text-align:justify; line-height:1.5;">
-                    * Klikając przycisk "Wyślij do analizy", wyrażasz zgodę na przetwarzanie Twoich danych osobowych (e-mail, telefon) przez Lisieccy Sp. z o.o. wyłącznie w celu przygotowania i przedstawienia bezpłatnej analizy nadpłat kredytu oraz kontaktu w celach doradztwa kredytowego. Dane mogą być udostępnione certyfikowanemu doradcy kredytowemu.
-                </p>
-                <div></div>
+            <!-- Przyciski -->
+            <div class="export-btns" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:10px;">
+                <button class="btn btn-mail" style="margin:0;" onclick="sendToTomasz()">📧 Wyślij do analizy</button>
+                <button class="btn btn-pdf" style="margin:0;" onclick="generatePDF()">📄 Pobierz Raport PDF</button>
             </div>
+
+            <p style="font-size:11px; color:var(--text-muted); margin:10px 0 0; text-align:justify; line-height:1.5;">
+                * Klikając przycisk "Wyślij do analizy", wyrażasz zgodę na przetwarzanie Twoich danych osobowych (e-mail, telefon) przez Lisieccy Sp. z o.o. wyłącznie w celu przygotowania i przedstawienia bezpłatnej analizy nadpłat kredytu oraz kontaktu w celach doradztwa kredytowego. Dane mogą być udostępnione certyfikowanemu doradcy kredytowemu.
+            </p>
         </div>
     <!-- Sticky przycisk Przelicz (mobile) -->
 <div class="sticky-bar" id="stickyBar">
@@ -962,10 +952,8 @@ async function sendToTomasz() {
     const bank      = document.getElementById('bankName').value.trim()  || 'Nie podano';
     const userEmail = document.getElementById('userEmail').value.trim();
     const userPhone = document.getElementById('userPhone').value.trim() || 'Nie podano';
-    // Pobierz wiadomość z aktywnego pola (desktop lub mobile)
     const msgDesktop = document.getElementById('userMessage');
-    const msgMobile  = document.getElementById('userMessageMobile');
-    const userMsg = (msgDesktop && msgDesktop.offsetParent !== null ? msgDesktop : msgMobile)?.value.trim() || '';
+    const userMsg = msgDesktop?.value.trim() || '';
     
     if (!userEmail) { 
         alert('Podaj swój e-mail, abyśmy mogli przesłać analizę!'); 
@@ -1054,7 +1042,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v7.3  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v7.5  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1137,7 +1125,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v7.3 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v7.5 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
