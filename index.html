@@ -299,7 +299,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v6.4</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v6.5</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -334,7 +334,7 @@
         <div class="input-group">
             <label style="display:flex;align-items:flex-start;flex-direction:column;">
                 <span style="display:flex;align-items:center;">Nowa rata (zł)
-                    <span class="tip" data-tip="W banku możesz mieć możliwość skrócenia okresu kredytowania poprzez zwiększenie swojej raty – nadpłacasz wtedy więcej kapitału">?</span>
+                    <span class="tip tip-wide" data-tip="Wpisz kwotę którą chcesz co miesiąc wpłacać do banku. Przy strategii Skrócenie okresu — płacisz tę kwotę jako stałą ratę, kredyt kończy się wcześniej. Przy strategii Zmniejszenie raty — rata bankowa maleje co miesiąc, a Twoja nadpłata automatycznie rośnie. W trudniejszym miesiącu możesz zapłacić tylko aktualną (niższą) ratę bankową.">?</span>
                 </span>
                 <span class="hint">0 = bez zmian</span>
             </label>
@@ -937,7 +937,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v6.4  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v6.5  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1020,7 +1020,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v6.4 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v6.5 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
