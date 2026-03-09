@@ -227,7 +227,7 @@
             .rodo-row > div:last-child { display: none; }
 
             /* Misja */
-            .mission-section { padding: 20px 16px; }
+            
         }
 
         @media (max-width: 400px) {
@@ -235,24 +235,26 @@
             .stats { grid-template-columns: 1fr; }
         }
 
-        /* FAQ Akordeon */
-        .faq-section { margin: 32px 0; }
-        .faq-title { font-family: 'Montserrat', sans-serif; font-size: 1.15rem; font-weight: 800; color: var(--primary); border-bottom: 2px solid var(--gold); padding-bottom: 8px; margin-bottom: 20px; }
-        .faq-group-label { font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gold); margin: 20px 0 6px; }
+        /* Zakładki Misja / FAQ */
+        .tabs-section { margin-top: 40px; background: linear-gradient(135deg, #f4f7ff 0%, #eef2fc 100%); border-radius: 14px; border: 1.5px solid var(--border); border-left: 4px solid var(--gold); overflow: hidden; }
+        .tabs-nav { display: flex; border-bottom: 2px solid var(--border); }
+        .tab-btn { flex: 1; background: none; border: none; padding: 14px 20px; font-family: 'Montserrat', sans-serif; font-size: 0.88rem; font-weight: 700; cursor: pointer; color: var(--text-muted); transition: all 0.2s; border-bottom: 3px solid transparent; margin-bottom: -2px; }
+        .tab-btn.active { color: var(--primary); border-bottom-color: var(--gold); background: rgba(200,168,75,0.06); }
+        .tab-btn:hover:not(.active) { color: var(--primary); background: rgba(13,44,110,0.04); }
+        .tab-panel { padding: 24px 28px; }
+        .faq-title { font-family: 'Montserrat', sans-serif; font-size: 1.0rem; font-weight: 800; color: var(--primary); margin: 0 0 14px; }
+        .faq-group-label { font-family: 'Montserrat', sans-serif; font-size: 0.70rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--gold); margin: 18px 0 4px; }
         .faq-item { border-bottom: 1px solid var(--border); }
-        .faq-q { width: 100%; background: none; border: none; text-align: left; padding: 13px 36px 13px 4px; font-family: 'Open Sans', sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--primary); cursor: pointer; position: relative; transition: color 0.18s; line-height: 1.4; }
-        .faq-q::after { content: '+'; position: absolute; right: 6px; top: 50%; transform: translateY(-50%); font-size: 1.3rem; font-weight: 400; color: var(--gold); transition: transform 0.25s; }
-        .faq-q[aria-expanded="true"] { color: var(--gold); }
-        .faq-q[aria-expanded="true"]::after { transform: translateY(-50%) rotate(45deg); }
-        .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.25s ease; padding: 0 4px; font-family: 'Open Sans', sans-serif; font-size: 0.85rem; color: var(--text-main); line-height: 1.75; }
-        .faq-a.open { max-height: 400px; padding: 2px 4px 14px; }
-
-        /* Nasza Misja */
-        .mission-section { margin-top: 40px; padding: 30px 35px; background: linear-gradient(135deg, #f4f7ff 0%, #eef2fc 100%); border-radius: 14px; border: 1.5px solid var(--border); border-left: 4px solid var(--gold); }
-        .mission-title { font-family: 'Montserrat', sans-serif; font-size: 1.15rem; font-weight: 800; color: var(--primary); border-bottom: 2px solid var(--gold); padding-bottom: 8px; margin-top: 0; margin-bottom: 20px; }
+        .faq-q { font-family: 'Open Sans', sans-serif; font-size: 0.87rem; font-weight: 700; color: var(--primary); padding: 11px 36px 11px 0; margin: 0; cursor: pointer; position: relative; line-height: 1.4; display: block; }
+        .faq-q::after { content: '+'; position: absolute; right: 4px; top: 50%; transform: translateY(-50%); font-size: 1.3rem; font-weight: 400; color: var(--gold); transition: transform 0.25s; font-family: sans-serif; }
+        .faq-q.open { color: var(--gold); }
+        .faq-q.open::after { transform: translateY(-50%) rotate(45deg); }
+        .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s ease, padding 0.25s ease; padding: 0; font-family: 'Open Sans', sans-serif; font-size: 0.84rem; color: var(--text-main); line-height: 1.75; }
+        .faq-a.open { max-height: 500px; padding: 2px 0 14px; }
         .mission-body p { font-family: 'Open Sans', sans-serif; font-size: 0.92rem; color: var(--text-main); line-height: 1.8; margin-bottom: 12px; }
         .mission-signature { font-style: italic; color: var(--primary); border-top: 1px solid var(--border); padding-top: 14px; margin-top: 18px; }
         .mission-author { font-size: 0.88rem; color: var(--text-muted); margin-top: 6px; margin-bottom: 0; }
+        @media (max-width: 700px) { .tab-panel { padding: 18px 16px; } .tab-btn { font-size: 0.80rem; padding: 12px 10px; } }
     </style>
 <script type="application/ld+json">
 {
@@ -348,7 +350,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v7.0</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v7.2</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -540,46 +542,61 @@
 </div>
 
 </div>
-        <div class="faq-section">
-            <h3 class="faq-title">❓ Najczęstsze pytania o nadpłatę kredytu</h3>
-
-            <div class="faq-group-label">Rata czy okres kredytowania?</div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Co się bardziej opłaca: skrócenie okresu kredytowania czy zmniejszenie raty?</button><div class="faq-a">Obie strategie dają realne oszczędności na odsetkach, ale skrócenie okresu kredytowania jest zazwyczaj korzystniejsze finansowo — kapitał spada szybciej, więc bank nalicza mniej odsetek. Zmniejszenie raty daje za to większą elastyczność budżetu — w trudnym miesiącu możesz zapłacić tylko niższą ratę bankową. Sprawdź obie opcje w kalkulatorze i porównaj wyniki.</div></div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Czy po nadpłacie bank automatycznie skraca okres kredytowania?</button><div class="faq-a">To zależy od banku i od tego co wybierzesz w umowie lub w aplikacji. Większość banków pyta przy każdej nadpłacie czy chcesz skrócić okres czy obniżyć ratę — jeśli nie wybierzesz, zazwyczaj domyślnie obniżają ratę. Zawsze warto sprawdzić regulamin lub zadzwonić na infolinię.</div></div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Ile zaoszczędzę na odsetkach, jeśli skrócę kredyt o 5 lat?</button><div class="faq-a">Przy kredycie 400 000 zł na 25 lat z oprocentowaniem 7% skrócenie okresu o 5 lat może oznaczać oszczędność nawet 80 000–100 000 zł na odsetkach. Dokładna kwota zależy od salda i oprocentowania — wpisz swoje dane w kalkulator powyżej i sprawdź w kilka sekund.</div></div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Czy zmniejszenie raty daje realne oszczędności?</button><div class="faq-a">Zmniejszenie raty samo w sobie oszczędza mniej niż skrócenie okresu, ale zastosowane jako strategia progresywna — gdzie co miesiąc dopłacasz różnicę do stałej kwoty — daje identyczne oszczędności co skrócenie, zachowując przy tym elastyczność. To jeden z bardziej niedocenianych sposobów na nadpłacanie kredytu hipotecznego.</div></div>
-
-            <div class="faq-group-label">Opłacalność i moment nadpłaty</div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Kiedy najlepiej nadpłacić kredyt hipoteczny?</button><div class="faq-a">Większość banków kieruje nadpłatę bezpośrednio na kapitał, ale część banków najpierw rozlicza z nadpłaty narosłe odsetki — dopiero reszta trafia na kapitał. Żeby uniknąć niepotrzebnych kosztów, przyjmij bezpieczną zasadę: nadpłacaj dzień po zaksięgowaniu raty. W tym momencie odsetki za miniony miesiąc są już rozliczone i cała nadpłata trafia na kapitał. Im szybciej po racie — tym lepiej.</div></div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Czy warto nadpłacać kredyt przy wysokiej inflacji?</button><div class="faq-a">Przy oprocentowaniu kredytu hipotecznego na poziomie 6–8% każda nadpłata daje gwarantowany "zwrot" równy temu oprocentowaniu — bez ryzyka i podatku Belki. W większości przypadków jest to lepsze niż przeciętna lokata. Jeśli masz wolne środki i nie masz długów o wyższym oprocentowaniu — nadpłata kredytu to jedna z bezpieczniejszych decyzji finansowych.</div></div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Czy nadpłacać małymi kwotami co miesiąc, czy zbierać większą sumę?</button><div class="faq-a">Matematycznie lepiej nadpłacać jak najwcześniej i jak najczęściej — każdy dzień z niższym saldem to mniej naliczonych odsetek. Zbieranie większej sumy ma sens tylko jeśli bank pobiera prowizję od każdej nadpłaty w ciągu pierwszych 3 lat umowy.</div></div>
-
-            <div class="faq-group-label">Koszty i formalności</div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Prowizja za wcześniejszą spłatę kredytu hipotecznego — ile wynosi i kiedy znika?</button><div class="faq-a">Ustawa o kredycie hipotecznym z 2017 roku ogranicza prowizję do maksymalnie 3% nadpłacanej kwoty i tylko przez pierwsze 36 miesięcy — przy kredytach ze zmiennym oprocentowaniem. Po tym czasie nadpłata jest bezpłatna z mocy prawa. Wiele banków (ING, PKO BP, Millennium, mBank) nie pobiera tej opłaty w ogóle. Banki takie jak Pekao S.A. czy Alior mogą naliczać prowizję w ciągu pierwszych 3 lat — sprawdź swoją umowę.</div></div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Czy aneks do umowy po nadpłacie jest płatny?</button><div class="faq-a">Przy nadpłacie częściowej zazwyczaj nie jest wymagany aneks — bank sam aktualizuje harmonogram. Aneks może być potrzebny przy zmianie okresu kredytowania na wniosek klienta — w takim przypadku banki pobierają od 0 do kilkuset złotych. Warto zapytać swój bank przed złożeniem wniosku.</div></div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Czy przy nadpłacie kredytu gotówkowego bank musi zwrócić prowizję?</button><div class="faq-a">Tak — przy przedterminowej spłacie kredytu konsumenckiego bank jest zobowiązany zwrócić proporcjonalną część prowizji i innych kosztów. Wynika to z ustawy o kredycie konsumenckim. Jeśli bank odmawia zwrotu — masz prawo złożyć reklamację.</div></div>
-
-            <div class="faq-group-label">Sposoby na zmniejszenie obciążeń</div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Jak negocjować z bankiem obniżenie marży?</button><div class="faq-a">Banki rzadko obniżają marżę z własnej inicjatywy, ale negocjacje mają sens — szczególnie jeśli Twoje LTV znacznie się poprawiło, masz dobrą historię kredytową i jesteś lojalnym klientem. Warto też zapytać o przeniesienie kredytu do innego banku — sama groźba refinansowania bywa skuteczna.</div></div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Refinansowanie kredytu — czy przeniesienie do innego banku się opłaca?</button><div class="faq-a">W większości przypadków tak, i to bardziej niż wiele osób myśli. Na rynku wciąż funkcjonuje ogromna liczba kredytów zaciągniętych w czasie pandemii i na początku wojny w Ukrainie, często z marżami znacznie powyżej obecnego standardu. Część kredytobiorców utknęła na stałym oprocentowaniu powyżej 7%. Wiele banków oferuje dziś zdecydowanie lepsze warunki — ale tylko nowym klientom. Refinansowanie pozwala "zostać nowym klientem" gdzie indziej i przejąć te warunki dla siebie. Koszty zazwyczaj zwracają się w ciągu kilkunastu miesięcy. <a href="#eksport" style="color:var(--gold);font-weight:700;">Nasz ekspert bezpłatnie sprawdzi czy refinansowanie jest opłacalne w Twoim przypadku →</a></div></div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Co to jest Sankcja Kredytu Darmowego (SKD)?</button><div class="faq-a">SKD to uprawnienie konsumenta wynikające z ustawy o kredycie konsumenckim — jeśli bank popełnił błędy formalne w umowie, możesz spłacić kredyt bez odsetek. To jednak skomplikowana procedura prawna wymagająca indywidualnej analizy umowy przez prawnika. Jeśli interesuje Cię ten temat, skonsultuj się ze specjalistą ds. prawa bankowego.</div></div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Jak zawiesić spłatę kredytu hipotecznego?</button><div class="faq-a">Rządowy program wakacji kredytowych zakończył się. Dziś dostępne są wyłącznie wakacje umowne oferowane przez banki na własnych warunkach — są mniej korzystne: zawieszasz tylko spłatę kapitału, odsetki musisz płacić nadal, a okres kredytowania wydłuża się o liczbę zawieszonych miesięcy. Bank zazwyczaj wymaga też nienagannej historii spłat. To rozwiązanie awaryjne — jeśli problem jest głębszy, warto porozmawiać z doradcą o refinansowaniu lub negocjacji warunków.</div></div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Czym jest Fundusz Wsparcia Kredytobiorców?</button><div class="faq-a">FWK oferuje nieoprocentowane pożyczki na spłatę rat osobom w trudnej sytuacji finansowej. Wniosek składa się w swoim banku. Szczegółowe kryteria i aktualne warunki znajdziesz na stronie Banku Gospodarstwa Krajowego (bgk.pl).</div></div>
-
-            <div class="faq-group-label">Sytuacje specjalne</div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Nadpłata kredytu 2% (Bezpieczny Kredyt) — czy można nadpłacać bez utraty dopłat?</button><div class="faq-a">Co do zasady nadpłaty przy Bezpiecznym Kredycie 2% są możliwe, ale mogą wpłynąć na wysokość dopłat rządowych w zależności od wybranej strategii i zapisów umowy. To temat wymagający indywidualnej weryfikacji — <a href="#eksport" style="color:var(--gold);font-weight:700;">nasz ekspert bezpłatnie przeanalizuje Twoją sytuację →</a></div></div>
-            <div class="faq-item"><button class="faq-q" aria-expanded="false">Nadpłata kredytu ze stałym oprocentowaniem — czy to ma sens?</button><div class="faq-a">Tak — oszczędności na odsetkach są identyczne jak przy zmiennym oprocentowaniu. Różnica polega na kosztach: przy stałej stopie bank może pobierać prowizję za nadpłatę przez cały okres obowiązywania stałej stopy (zazwyczaj 5–7 lat), choć w 2026 roku większość banków komercyjnych zrezygnowała z tej opłaty. Sprawdź zapisy swojej umowy przed pierwszą nadpłatą.</div></div>
+    <!-- ===== ZAKŁADKI: NASZA MISJA / FAQ ===== -->
+    <div class="tabs-section">
+        <div class="tabs-nav">
+            <button class="tab-btn active" onclick="switchTab('misja', this)">📖 Nasza Misja</button>
+            <button class="tab-btn" onclick="switchTab('faq', this)">❓ FAQ</button>
         </div>
 
-    <div class="mission-section">
-        <h3 class="mission-title">Nasza Misja</h3>
-        <div class="mission-body">
-            <p>Budowa domu lub zakup mieszkania to jedna z największych inwestycji w życiu. Wiemy, jak wiele wyrzeczeń, planowania i ciężkiej pracy kosztuje każdy metr kwadratowy — i dokładnie dlatego boli nas myśl, że tak wiele z tych pieniędzy oddajemy bankowi w formie odsetek.</p>
-            <p>W <strong>nadplacam.com.pl</strong> mamy jeden cel: uświadamiać Polaków ile naprawdę kosztuje <strong>kredyt hipoteczny</strong> i pokazywać, że <strong>nadpłata kredytu hipotecznego</strong> — nawet niewielka — może zmienić bardzo wiele. Wystarczy <strong>symulacja kredytu</strong> oparta na Twoich realnych danych, żeby zobaczyć czarno na białym: <strong>jak nadpłacić kredyt</strong>, ile <strong>zaoszczędzić na kredycie</strong> i o ile lat możesz skrócić swoje zobowiązanie wobec banku.</p>
-            <p>Nasz darmowy <strong>kalkulator kredytowy</strong> powstał z przekonania, że każdy zasługuje na dostęp do rzetelnej wiedzy finansowej — bez skomplikowanego języka, bez ukrytych opłat, bez rejestracji. Wpisz swoje dane, uruchom symulację i pobierz <strong>raport kredytowy PDF</strong> — wszystko w dwie minuty.</p>
-            <p>Jeśli chcesz wiedzieć czy istnieje dla Ciebie <strong>tańszy kredyt</strong>, nasi certyfikowani doradcy przeanalizują Twoją sytuację bezpłatnie. Wynagrodzenie doradcy pokrywa nowy bank — Ty możesz tylko zyskać.</p>
-            <p class="mission-signature">Chcemy, żeby jak najwięcej pieniędzy zostało tam, gdzie jest ich miejsce — <strong>w kieszeniach Polaków</strong>, a nie w bankowych bilansach.</p>
-            <p class="mission-author">— <strong>Tomasz Lisiecki</strong>, nadplacam.com.pl</p>
+        <!-- MISJA -->
+        <div id="tab-misja" class="tab-panel">
+            <div class="mission-body">
+                <p>Budowa domu lub zakup mieszkania to jedna z największych inwestycji w życiu. Wiemy, jak wiele wyrzeczeń, planowania i ciężkiej pracy kosztuje każdy metr kwadratowy — i dokładnie dlatego boli nas myśl, że tak wiele z tych pieniędzy oddajemy bankowi w formie odsetek.</p>
+                <p>W <strong>nadplacam.com.pl</strong> mamy jeden cel: uświadamiać Polaków ile naprawdę kosztuje <strong>kredyt hipoteczny</strong> i pokazywać, że <strong>nadpłata kredytu hipotecznego</strong> — nawet niewielka — może zmienić bardzo wiele. Wystarczy <strong>symulacja kredytu</strong> oparta na Twoich realnych danych, żeby zobaczyć czarno na białym: <strong>jak nadpłacić kredyt</strong>, ile <strong>zaoszczędzić na kredycie</strong> i o ile lat możesz skrócić swoje zobowiązanie wobec banku.</p>
+                <p>Nasz darmowy <strong>kalkulator kredytowy</strong> powstał z przekonania, że każdy zasługuje na dostęp do rzetelnej wiedzy finansowej — bez skomplikowanego języka, bez ukrytych opłat, bez rejestracji. Wpisz swoje dane, uruchom symulację i pobierz <strong>raport kredytowy PDF</strong> — wszystko w dwie minuty.</p>
+                <p>Jeśli chcesz wiedzieć czy istnieje dla Ciebie <strong>tańszy kredyt</strong>, nasi certyfikowani doradcy przeanalizują Twoją sytuację bezpłatnie. Wynagrodzenie doradcy pokrywa nowy bank — Ty możesz tylko zyskać.</p>
+                <p class="mission-signature">Chcemy, żeby jak najwięcej pieniędzy zostało tam, gdzie jest ich miejsce — <strong>w kieszeniach Polaków</strong>, a nie w bankowych bilansach.</p>
+                <p class="mission-author">— <strong>Tomasz Lisiecki</strong>, nadplacam.com.pl</p>
+            </div>
+        </div>
+
+        <!-- FAQ -->
+        <div id="tab-faq" class="tab-panel" style="display:none;">
+            <h2 class="faq-title">Najczęściej zadawane pytania o nadpłatę kredytu hipotecznego</h2>
+
+            <div class="faq-group-label">Podstawy nadpłaty</div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy nadpłata kredytu hipotecznego się opłaca?</h3><div class="faq-a">W większości przypadków tak. Każda nadpłata zmniejsza saldo zadłużenia, od którego bank nalicza odsetki. Dzięki temu kolejne raty zawierają mniej odsetek, a więcej kapitału. Nawet niewielka nadpłata co miesiąc może skrócić kredyt o kilka lat i pozwolić zaoszczędzić dziesiątki tysięcy złotych.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy nadpłata kredytu zmniejsza odsetki od razu?</h3><div class="faq-a">Tak. Odsetki w kredycie hipotecznym są naliczane od aktualnego salda zadłużenia. Jeśli dokonasz nadpłaty, saldo spada natychmiast — więc od kolejnego dnia bank nalicza odsetki od niższej kwoty.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy można nadpłacać kredyt hipoteczny w dowolnym momencie?</h3><div class="faq-a">Tak. Zgodnie z polskim prawem kredytobiorca ma prawo do wcześniejszej spłaty całości lub części kredytu hipotecznego w dowolnym momencie. W niektórych bankach przez pierwsze 3 lata może obowiązywać prowizja za nadpłatę — maksymalnie do 3% nadpłacanej kwoty.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy bank może odmówić nadpłaty kredytu?</h3><div class="faq-a">Nie. Bank nie może odmówić przyjęcia nadpłaty kredytu. Może jedynie pobrać prowizję za wcześniejszą spłatę, jeśli przewiduje to umowa i mieści się w limitach określonych przez ustawę.</div></div>
+
+            <div class="faq-group-label">Rata czy okres kredytowania?</div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Co bardziej się opłaca: skrócenie okresu kredytu czy zmniejszenie raty?</h3><div class="faq-a">Z punktu widzenia matematyki finansowej skrócenie okresu kredytowania daje większe oszczędności na odsetkach — kapitał spłacany jest szybciej. Zmniejszenie raty daje jednak większą elastyczność budżetu domowego. Sprawdź obie opcje w kalkulatorze i porównaj wyniki dla swojego kredytu.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy nadpłata kredytu skraca okres spłaty automatycznie?</h3><div class="faq-a">To zależy od banku i wybranej opcji. W większości banków przy nadpłacie możesz wybrać skrócenie okresu kredytowania lub obniżenie raty. Jeśli nie wybierzesz opcji, bank często domyślnie obniża ratę. Zawsze warto sprawdzić regulamin lub zadzwonić na infolinię.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Ile można zaoszczędzić nadpłacając kredyt hipoteczny?</h3><div class="faq-a">To zależy od kwoty kredytu, oprocentowania i momentu nadpłaty. Przykładowo przy kredycie 400 000 zł na 25 lat z oprocentowaniem 7% skrócenie okresu spłaty o 5 lat może oznaczać oszczędność nawet 80 000–100 000 zł na odsetkach. Wpisz swoje dane w kalkulator powyżej i sprawdź dokładną kwotę.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy zmniejszenie raty daje realne oszczędności?</h3><div class="faq-a">Zmniejszenie raty samo w sobie oszczędza mniej niż skrócenie okresu, ale zastosowane jako strategia progresywna — gdzie co miesiąc dopłacasz różnicę do stałej kwoty — daje identyczne oszczędności co skrócenie, zachowując przy tym elastyczność. To jeden z bardziej niedocenianych sposobów na nadpłacanie kredytu hipotecznego.</div></div>
+
+            <div class="faq-group-label">Opłacalność i moment nadpłaty</div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Kiedy najlepiej nadpłacić kredyt hipoteczny?</h3><div class="faq-a">Większość banków kieruje nadpłatę bezpośrednio na kapitał, ale część banków najpierw rozlicza z nadpłaty narosłe odsetki — dopiero reszta trafia na kapitał. Żeby uniknąć niepotrzebnych kosztów, przyjmij bezpieczną zasadę: nadpłacaj dzień po zaksięgowaniu raty. W tym momencie odsetki za miniony miesiąc są już rozliczone i cała nadpłata trafia na kapitał.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy warto nadpłacać kredyt przy wysokiej inflacji?</h3><div class="faq-a">Przy oprocentowaniu kredytu hipotecznego na poziomie 6–8% każda nadpłata daje gwarantowany zwrot równy temu oprocentowaniu — bez ryzyka i podatku Belki. W większości przypadków jest to korzystniejsze niż przeciętna lokata. Jeśli masz wolne środki i nie masz długów o wyższym oprocentowaniu — nadpłata kredytu to jedna z bezpieczniejszych decyzji finansowych.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy nadpłacać kredyt małymi kwotami co miesiąc czy jednorazowo?</h3><div class="faq-a">Z punktu widzenia matematyki najlepiej nadpłacać jak najwcześniej. Każdy dzień z niższym saldem kredytu oznacza mniej naliczonych odsetek. Zbieranie większej kwoty ma sens tylko wtedy, gdy bank pobiera prowizję za każdą nadpłatę w ciągu pierwszych 3 lat umowy.</div></div>
+
+            <div class="faq-group-label">Koszty i formalności</div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Ile wynosi prowizja za wcześniejszą spłatę kredytu hipotecznego?</h3><div class="faq-a">Ustawa o kredycie hipotecznym z 2017 roku ogranicza prowizję do maksymalnie 3% nadpłacanej kwoty i tylko przez pierwsze 36 miesięcy — przy kredytach ze zmiennym oprocentowaniem. Po tym czasie nadpłata jest bezpłatna z mocy prawa. Wiele banków (ING, PKO BP, Millennium, mBank) nie pobiera tej opłaty w ogóle. Banki takie jak Pekao S.A. czy Alior mogą naliczać prowizję w ciągu pierwszych 3 lat — sprawdź swoją umowę.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy przy wcześniejszej spłacie kredytu bank musi zwrócić prowizję?</h3><div class="faq-a">W przypadku kredytów konsumenckich tak. Bank ma obowiązek zwrócić proporcjonalną część prowizji oraz innych kosztów kredytu za okres, o który skrócono umowę. Wynika to z ustawy o kredycie konsumenckim. Jeśli bank odmawia — masz prawo złożyć reklamację.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy aneks do umowy po nadpłacie jest płatny?</h3><div class="faq-a">Przy nadpłacie częściowej zazwyczaj nie jest wymagany aneks — bank sam aktualizuje harmonogram. Aneks może być potrzebny przy zmianie okresu kredytowania na wniosek klienta — banki pobierają wtedy od 0 do kilkuset złotych. Warto zapytać swój bank przed złożeniem wniosku.</div></div>
+
+            <div class="faq-group-label">Sposoby na zmniejszenie obciążeń</div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Jak negocjować z bankiem obniżenie marży?</h3><div class="faq-a">Banki rzadko obniżają marżę z własnej inicjatywy, ale negocjacje mają sens — szczególnie jeśli Twoje LTV znacznie się poprawiło, masz dobrą historię kredytową i jesteś lojalnym klientem. Warto też zapytać o przeniesienie kredytu do innego banku — sama groźba refinansowania bywa skuteczna.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Refinansowanie kredytu — czy przeniesienie do innego banku się opłaca?</h3><div class="faq-a">W większości przypadków tak, i to bardziej niż wiele osób myśli. Na rynku wciąż funkcjonuje ogromna liczba kredytów z marżami znacznie powyżej obecnego standardu z okresu pandemii i początku wojny w Ukrainie. Część kredytobiorców utknęła na stałym oprocentowaniu powyżej 7%. Wiele banków oferuje dziś zdecydowanie lepsze warunki — ale tylko nowym klientom. Koszty refinansowania zazwyczaj zwracają się w ciągu kilkunastu miesięcy. <a href="#eksport" style="color:var(--gold);font-weight:700;">Nasz ekspert bezpłatnie sprawdzi czy refinansowanie jest opłacalne →</a></div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Co to jest Sankcja Kredytu Darmowego (SKD)?</h3><div class="faq-a">SKD to uprawnienie konsumenta wynikające z ustawy o kredycie konsumenckim — jeśli bank popełnił błędy formalne w umowie, możesz spłacić kredyt bez odsetek. To skomplikowana procedura prawna wymagająca indywidualnej analizy umowy przez prawnika. Jeśli interesuje Cię ten temat, skonsultuj się ze specjalistą ds. prawa bankowego.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Jak zawiesić spłatę kredytu hipotecznego?</h3><div class="faq-a">Rządowy program wakacji kredytowych zakończył się. Dziś dostępne są wyłącznie wakacje umowne oferowane przez banki — zawieszasz tylko spłatę kapitału, odsetki musisz płacić nadal, a okres kredytowania wydłuża się o liczbę zawieszonych miesięcy. Bank zazwyczaj wymaga nienagannej historii spłat. To rozwiązanie awaryjne — jeśli problem jest głębszy, warto porozmawiać z doradcą.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czym jest Fundusz Wsparcia Kredytobiorców?</h3><div class="faq-a">FWK oferuje nieoprocentowane pożyczki na spłatę rat osobom w trudnej sytuacji finansowej. Wniosek składa się w swoim banku. Szczegółowe kryteria i aktualne warunki znajdziesz na stronie Banku Gospodarstwa Krajowego (bgk.pl).</div></div>
+
+            <div class="faq-group-label">Sytuacje specjalne</div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Nadpłata kredytu 2% (Bezpieczny Kredyt) — czy można nadpłacać bez utraty dopłat?</h3><div class="faq-a">Co do zasady nadpłaty przy Bezpiecznym Kredycie 2% są możliwe, ale mogą wpłynąć na wysokość dopłat rządowych w zależności od wybranej strategii i zapisów umowy. To temat wymagający indywidualnej weryfikacji — <a href="#eksport" style="color:var(--gold);font-weight:700;">nasz ekspert bezpłatnie przeanalizuje Twoją sytuację →</a></div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy nadpłata kredytu ze stałym oprocentowaniem ma sens?</h3><div class="faq-a">Tak. Nadpłata zmniejsza saldo zadłużenia tak samo jak przy zmiennym oprocentowaniu, więc oszczędności na odsetkach są podobne. Różnica polega na tym, że przy kredytach ze stałą stopą bank może pobierać prowizję za nadpłatę przez okres obowiązywania stałej stopy — sprawdź zapisy swojej umowy przed pierwszą nadpłatą.</div></div>
         </div>
     </div>
 
@@ -1018,7 +1035,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v7.0  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v7.2  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1101,7 +1118,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v7.0 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v7.2 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1412,21 +1429,31 @@ function animateCounter(elId, targetValue, formatter, duration) {
     }
 })();
 
-/* ===== FAQ AKORDEON ===== */
-document.querySelectorAll('.faq-q').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const answer  = btn.nextElementSibling;
-        const isOpen  = btn.getAttribute('aria-expanded') === 'true';
-        // Zamknij wszystkie
-        document.querySelectorAll('.faq-q').forEach(b => {
-            b.setAttribute('aria-expanded', 'false');
-            b.nextElementSibling.classList.remove('open');
+/* ===== ZAKŁADKI MISJA / FAQ ===== */
+function switchTab(id, btn) {
+    document.querySelectorAll('.tab-panel').forEach(p => p.style.display = 'none');
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('tab-' + id).style.display = 'block';
+    btn.classList.add('active');
+}
+
+/* ===== FAQ AKORDEON (h3) ===== */
+document.querySelectorAll('.faq-q').forEach(h3 => {
+    h3.addEventListener('click', () => {
+        const answer = h3.nextElementSibling;
+        const isOpen = h3.classList.contains('open');
+        document.querySelectorAll('.faq-q').forEach(q => {
+            q.classList.remove('open');
+            q.nextElementSibling.classList.remove('open');
         });
-        // Otwórz kliknięty (jeśli był zamknięty)
         if (!isOpen) {
-            btn.setAttribute('aria-expanded', 'true');
+            h3.classList.add('open');
             answer.classList.add('open');
         }
+    });
+    // Dostępność klawiatury
+    h3.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); h3.click(); }
     });
 });
 
