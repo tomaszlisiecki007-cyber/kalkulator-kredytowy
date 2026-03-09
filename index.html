@@ -299,7 +299,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v6.3</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v6.4</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -338,7 +338,7 @@
                 </span>
                 <span class="hint">0 = bez zmian</span>
             </label>
-            <input type="number" id="newInstalment" value="0" min="0" class="highlight" oninput="if(parseFloat(this.value)>0) document.getElementById('strategy').value='shorten';">
+            <input type="number" id="newInstalment" value="0" min="0" class="highlight">
         </div>
         <div class="input-group">
             <label style="display:flex;align-items:flex-start;flex-direction:column;">
@@ -354,12 +354,17 @@
     <!-- Wiersz 2: strategia -->
     <div class="section-grid-1">
         <div class="input-group">
-            <label>Strategia nadpłat (wybierz z listy)</label>
+            <label>Strategia nadpłat
+                <span class="tip tip-wide" data-tip="Skrócenie okresu: płacisz stałą kwotę co miesiąc, kredyt kończy się wcześniej. Zmniejszenie raty: płacisz stałą kwotę którą sam ustalasz — rata bankowa maleje co miesiąc, a Twoja nadpłata rośnie. W trudnym miesiącu możesz zapłacić tylko aktualną (niższą) ratę bankową.">?</span>
+            </label>
             <select id="strategy">
                 <option value="shorten" selected>Skrócenie okresu kredytowania</option>
                 <option value="lower">Zmniejszenie wysokości raty</option>
             </select>
         </div>
+    </div>
+    <div id="progressiveInfo" style="display:none; background:linear-gradient(135deg,#e8f4fd,#d6eaf8); border:1.5px solid #5dade2; border-radius:10px; padding:12px 16px; margin-bottom:12px; font-size:0.82rem; color:#1a5276; font-family:'Open Sans',sans-serif; line-height:1.55;">
+        💡 <strong>Strategia progresywna:</strong> Co miesiąc wpłacasz stałe <span id="infoNowaRata">—</span> zł do banku. Rata bankowa maleje, więc Twoja nadpłata automatycznie rośnie. W trudniejszym miesiącu możesz zapłacić tylko aktualną ratę bankową — harmonogram pokazuje jej bieżącą wysokość.
     </div>
 
     <button class="btn btn-calculate" onclick="calculate()">▶ Przelicz i generuj harmonogram</button>
@@ -562,9 +567,14 @@ function calculate() {
     let yCap = 0, yInt = 0;
 
     // Rata standardowa w miesiącu 1 liczona od pełnego salda
-    // (przy strategii "lower" będzie przeliczana co miesiąc od nowego salda)
-    let standardRata;
-    if (data.newInstalment > 0) {
+    let standardRata; // = rata bankowa (malejąca przy 'lower', stała przy 'shorten')
+    let nowaRataStala = data.newInstalment; // stała kwota wpłacana przy strategii 'lower'
+
+    if (data.newInstalment > 0 && data.strategy === 'lower') {
+        // Strategia progresywna: rata bankowa liczona normalnie, nadpłata = nowaRata - rataBankowa
+        standardRata = annuity(balance, r, N);
+    } else if (data.newInstalment > 0 && data.strategy === 'shorten') {
+        // Skrócenie: stała rata = nowaRata
         standardRata = data.newInstalment;
     } else if (data.strategy === 'lower') {
         standardRata = annuity(balance, r, N);
@@ -600,16 +610,22 @@ function calculate() {
         const bonusOneTime = (month === 1) ? data.oneTimeExtra : 0;
         const bonusMonthly = data.monthlyExtra;
         const bonusYearly  = (month === 1 || month % 12 === 1) ? data.yearlyExtra : 0;
-        const totalBonus   = bonusOneTime + bonusMonthly + bonusYearly;
 
-        const totalCap = capFromRata + totalBonus;
+        // Przy strategii progresywnej (lower + nowaRata) nadpłata = nowaRata - rataBankowa
+        const bonusProgresywny = (data.newInstalment > 0 && data.strategy === 'lower')
+            ? Math.max(0, nowaRataStala - standardRata)
+            : 0;
 
-        // Kwota wyświetlana w kolumnie Rata = standardowa + nadpłata
-        const rataDisplay  = standardRata + totalBonus;
-        // Etykieta raty z rozbiciem jeśli jest nadpłata
+        const totalBonus = bonusOneTime + bonusMonthly + bonusYearly + bonusProgresywny;
+        const totalCap   = capFromRata + totalBonus;
+
+        // Etykieta raty w harmonogramie
+        // Przy progresywnej: pokazuj ratę bankową + całą nadpłatę
+        const rataWyswietlana = standardRata;
         const rataLabel = totalBonus > 0
-            ? `${f2(standardRata)} + ${f2(totalBonus)}`
-            : f2(standardRata);
+            ? `${f2(rataWyswietlana)} + ${f2(totalBonus)}`
+            : f2(rataWyswietlana);
+        const rataDisplay = rataWyswietlana + totalBonus;
 
         let capThisMonth;
         if (totalCap >= balance) {
@@ -627,13 +643,17 @@ function calculate() {
         // Przelicz standardRata na kolejny miesiąc
         if (balance > 0.01) {
             const rem = N - month > 0 ? N - month : 1;
-            if (data.newInstalment > 0) {
+            if (data.newInstalment > 0 && data.strategy === 'lower') {
+                // Progresywna: rata bankowa maleje co miesiąc od nowego salda
+                standardRata = annuity(balance, r, rem);
+            } else if (data.newInstalment > 0 && data.strategy === 'shorten') {
+                // Skrócenie: rata stała = nowaRata, chyba że saldo prawie spłacone
                 const minR = balance * r * 1.01;
                 if (standardRata < minR) standardRata = annuity(balance, r, rem);
             } else if (data.strategy === 'lower') {
                 standardRata = annuity(balance, r, rem);
             }
-            // strategia 'shorten' — rata stała
+            // strategia 'shorten' bez nowaRata — rata stała
         }
 
         // Po Mies.1 zapisujemy "następną ratę" = rata obowiązująca od Mies.2
@@ -917,7 +937,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v6.3  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v6.4  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1000,7 +1020,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v6.3 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v6.4 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1059,20 +1079,44 @@ lsFields.forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('input', saveInputs);
 });
+function updateStrategyUI() {
+    const nowaRata  = parseFloat(document.getElementById('newInstalment').value) || 0;
+    const strategy  = document.getElementById('strategy').value;
+    const optShorten = document.querySelector('#strategy option[value="shorten"]');
+    const optLower   = document.querySelector('#strategy option[value="lower"]');
+    const infoDiv    = document.getElementById('progressiveInfo');
+    const infoSpan   = document.getElementById('infoNowaRata');
+
+    if (nowaRata > 0) {
+        optShorten.text = '📅 Skrócenie okresu — stała rata ' + nowaRata.toLocaleString('pl-PL') + ' zł, kredyt kończy się wcześniej';
+        optLower.text   = '📉 Malejąca rata — płacisz zawsze ' + nowaRata.toLocaleString('pl-PL') + ' zł, rata bankowa maleje co miesiąc';
+    } else {
+        optShorten.text = 'Skrócenie okresu kredytowania';
+        optLower.text   = 'Zmniejszenie wysokości raty';
+    }
+
+    // Komunikat progresywny
+    const showInfo = nowaRata > 0 && strategy === 'lower';
+    infoDiv.style.display = showInfo ? 'block' : 'none';
+    if (showInfo) infoSpan.textContent = nowaRata.toLocaleString('pl-PL');
+}
+
+document.getElementById('newInstalment').addEventListener('input', updateStrategyUI);
 document.getElementById('strategy').addEventListener('change', function() {
     saveInputs();
+    updateStrategyUI();
     // Mrugnięcie przycisku Przelicz
     const btns = document.querySelectorAll('.btn-calculate');
     btns.forEach(btn => {
         btn.classList.remove('btn-flash');
-        void btn.offsetWidth; // reflow
+        void btn.offsetWidth;
         btn.classList.add('btn-flash');
         btn.addEventListener('animationend', () => btn.classList.remove('btn-flash'), { once: true });
     });
 });
 
 // Odczyt przy załadowaniu strony
-document.addEventListener('DOMContentLoaded', loadInputs);
+document.addEventListener('DOMContentLoaded', () => { loadInputs(); updateStrategyUI(); });
 
 /* ===== WALIDACJA ===== */
 function validateInputs(data) {
