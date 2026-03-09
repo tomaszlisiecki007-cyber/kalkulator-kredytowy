@@ -152,6 +152,7 @@
 
         .export-section { background: linear-gradient(135deg, #f4f7ff 0%, #eef2fc 100%); padding: 25px; border-radius: 12px; border: 1.5px solid var(--border); border-left: 4px solid var(--gold); margin-top: 30px; }
         .export-section h3 { color: var(--primary); border-bottom-color: var(--gold); }
+        textarea:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(13,44,110,0.10); }
 
         @keyframes pulse-btn {
             0%, 100% { box-shadow: 0 4px 14px rgba(13,44,110,0.25); }
@@ -220,6 +221,8 @@
             .export-grid { grid-template-columns: 1fr 1fr !important; }
             .export-grid .input-group { grid-column: span 1; }
             .export-grid .input-group:first-child { grid-column: span 2; }
+            .export-msg-desktop { display: none !important; }
+            .export-msg-mobile { display: block !important; }
             .export-btn-wrap { grid-column: span 1; }
 
             /* RODO — pełna szerokość */
@@ -350,7 +353,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v7.2</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v7.3</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -458,10 +461,6 @@
 
         <!-- Toggle + Kawa pod wykresem -->
         <div class="results-bar" id="viewToggle">
-            <div class="view-toggle">
-                <button id="btnRoczny" class="active" onclick="setView('roczny')">📅 Widok roczny</button>
-                <button id="btnMiesieczny" onclick="setView('miesieczny')">📆 Widok miesięczny</button>
-            </div>
             <a href="https://buymeacoffee.com/nadplacam" target="_blank" class="bmc-btn">
                 <span class="bmc-icon">☕</span>
                 <span class="bmc-text">
@@ -469,6 +468,10 @@
                     <span class="bmc-bottom">Postawisz mi kawę? 😊</span>
                 </span>
             </a>
+            <div class="view-toggle">
+                <button id="btnRoczny" class="active" onclick="setView('roczny')">📅 Widok roczny</button>
+                <button id="btnMiesieczny" onclick="setView('miesieczny')">📆 Widok miesięczny</button>
+            </div>
         </div>
         <div class="view-toggle-mobile-anchor"></div>
         </div>
@@ -510,6 +513,17 @@
                 <div class="export-btn-wrap">
                     <button class="btn btn-pdf" style="margin:0;" onclick="generatePDF()">📄 Pobierz Raport PDF</button>
                 </div>
+                <!-- Wiadomość: desktop = pod 3 polami, pełna szerokość 3 kolumn -->
+                <div class="input-group export-msg-desktop" style="grid-column: span 3;">
+                    <label>Wiadomość <span style="font-weight:400; color:var(--text-muted);">(opcjonalnie)</span></label>
+                    <textarea id="userMessage" placeholder="Napisz coś do doradcy — np. kiedy najlepiej zadzwonić, czego szukasz, co Cię niepokoi w Twoim kredycie..." style="width:100%; box-sizing:border-box; height:72px; resize:vertical; font-family:'Open Sans',sans-serif; font-size:0.88rem; color:var(--text-main); background:#fff; border:1.5px solid var(--border); border-radius:8px; padding:10px 12px; line-height:1.55; outline:none; transition:border-color 0.2s;"></textarea>
+                </div>
+            </div>
+
+            <!-- Wiadomość: mobile = między polami a RODO -->
+            <div class="input-group export-msg-mobile" style="display:none; margin-top:12px;">
+                <label>Wiadomość <span style="font-weight:400; color:var(--text-muted);">(opcjonalnie)</span></label>
+                <textarea id="userMessageMobile" placeholder="Napisz coś do doradcy — np. kiedy najlepiej zadzwonić, czego szukasz, co Cię niepokoi w Twoim kredycie..." style="width:100%; box-sizing:border-box; height:72px; resize:vertical; font-family:'Open Sans',sans-serif; font-size:0.88rem; color:var(--text-main); background:#fff; border:1.5px solid var(--border); border-radius:8px; padding:10px 12px; line-height:1.55; outline:none; transition:border-color 0.2s;"></textarea>
             </div>
 
             <div class="rodo-row" style="display:grid; grid-template-columns: 3fr 2fr; gap:15px; margin-top:10px;">
@@ -948,6 +962,10 @@ async function sendToTomasz() {
     const bank      = document.getElementById('bankName').value.trim()  || 'Nie podano';
     const userEmail = document.getElementById('userEmail').value.trim();
     const userPhone = document.getElementById('userPhone').value.trim() || 'Nie podano';
+    // Pobierz wiadomość z aktywnego pola (desktop lub mobile)
+    const msgDesktop = document.getElementById('userMessage');
+    const msgMobile  = document.getElementById('userMessageMobile');
+    const userMsg = (msgDesktop && msgDesktop.offsetParent !== null ? msgDesktop : msgMobile)?.value.trim() || '';
     
     if (!userEmail) { 
         alert('Podaj swój e-mail, abyśmy mogli przesłać analizę!'); 
@@ -976,6 +994,7 @@ async function sendToTomasz() {
         oprocentowanie: oprocentowanie + " %",
         pozostalo_rat_msc: pozostaloRat,
         wiek_klienta: wiek,
+        wiadomosc: userMsg || '(brak wiadomości)',
         RODO: "Zaakceptowano zgodę na przetwarzanie danych do celów analizy kredytowej"
     };
 
@@ -1035,7 +1054,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v7.2  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v7.3  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1118,7 +1137,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v7.2 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v7.3 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1310,11 +1329,10 @@ function drawChart(baseBalances, nadpBalances, labels) {
 /* ===== MOBILE — przesuń toggle widoku pod wykres, nad tabelę ===== */
 function reorderToggleForMobile() {
     if (window.innerWidth > 700) return;
-    const toggle  = document.getElementById('viewToggle');
+    const toggle  = document.querySelector('#viewToggle .view-toggle');
     const anchor  = document.querySelector('.view-toggle-mobile-anchor');
     if (toggle && anchor && anchor.children.length === 0) {
         anchor.appendChild(toggle);
-        // styl jak oryginał
         toggle.style.width = '100%';
         toggle.style.justifyContent = 'center';
         toggle.querySelectorAll('button').forEach(b => b.style.flex = '1');
