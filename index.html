@@ -152,6 +152,19 @@
 
         .export-section { background: linear-gradient(135deg, #f4f7ff 0%, #eef2fc 100%); padding: 25px; border-radius: 12px; border: 1.5px solid var(--border); border-left: 4px solid var(--gold); margin-top: 30px; }
         .export-section h3 { color: var(--primary); border-bottom-color: var(--gold); }
+        /* SEO Article Accordion */
+        .seo-section { margin-top: 36px; background: #fff; border-radius: 12px; border: 1.5px solid var(--border); overflow: hidden; }
+        .seo-item { border-bottom: 1px solid var(--border); }
+        .seo-item:last-child { border-bottom: none; }
+        .seo-q { font-family: 'Montserrat', sans-serif; font-size: 0.97rem; font-weight: 800; color: var(--primary); padding: 14px 44px 14px 20px; margin: 0; cursor: pointer; position: relative; line-height: 1.4; display: block; transition: color 0.18s; }
+        .seo-q::after { content: '+'; position: absolute; right: 16px; top: 50%; transform: translateY(-50%); font-size: 1.4rem; font-weight: 400; color: var(--gold); transition: transform 0.25s; font-family: sans-serif; }
+        .seo-q.open { color: var(--gold); background: rgba(200,168,75,0.04); }
+        .seo-q.open::after { transform: translateY(-50%) rotate(45deg); }
+        .seo-a { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.25s ease; padding: 0 20px; }
+        .seo-a.open { max-height: 600px; padding: 4px 20px 18px; }
+        .seo-a p { font-family: 'Open Sans', sans-serif; font-size: 0.90rem; color: var(--text-main); line-height: 1.8; margin: 0 0 10px; }
+        .seo-a p:last-child { margin-bottom: 0; }
+        @media (max-width: 700px) { .seo-q { font-size: 0.88rem; padding: 13px 40px 13px 14px; } .seo-a { padding: 0 14px; } .seo-a.open { padding: 4px 14px 16px; } }
         textarea:focus { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(13,44,110,0.10); }
 
         @keyframes pulse-btn {
@@ -349,8 +362,11 @@
 </div>
 <div class="container">
 
-    <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v7.7</span></div>
+    <h1 style="font-family:'Montserrat',sans-serif; font-size:1.55rem; font-weight:800; color:var(--primary); margin:0 0 6px;">Kalkulator nadpłaty kredytu hipotecznego</h1>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v8.0</span></div>
+    <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
+        Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
+    </p>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -486,7 +502,56 @@
             </div>
         </div>
 
-        <!-- ===== FAQ ===== -->
+        <!-- ===== SEKCJA SEO ===== -->
+        <div class="seo-section">
+
+            <div class="seo-item">
+                <h2 class="seo-q" tabindex="0">Jak działa nadpłata kredytu hipotecznego</h2>
+                <div class="seo-a">
+                    <p>Nadpłata kredytu hipotecznego polega na wpłaceniu do banku dodatkowej kwoty poza standardową ratą kredytu. Dzięki temu zmniejsza się saldo zadłużenia, od którego bank nalicza odsetki. Im niższy kapitał pozostaje do spłaty, tym mniej odsetek zapłacisz w kolejnych miesiącach.</p>
+                    <p>W praktyce oznacza to, że każda nadpłata kredytu może zmniejszyć całkowity koszt kredytu hipotecznego oraz skrócić czas jego spłaty. Nawet stosunkowo niewielkie nadpłaty wykonywane regularnie mogą przynieść znaczące oszczędności w długim okresie.</p>
+                    <p>Właśnie dlatego wielu kredytobiorców decyduje się nadpłacać kredyt wtedy, gdy mają wolne środki — na przykład z premii, podwyżki wynagrodzenia lub oszczędności.</p>
+                </div>
+            </div>
+
+            <div class="seo-item">
+                <h2 class="seo-q" tabindex="0">Czy nadpłata kredytu hipotecznego się opłaca</h2>
+                <div class="seo-a">
+                    <p>W większości przypadków nadpłata kredytu hipotecznego jest opłacalna. Każda dodatkowa wpłata zmniejsza saldo kredytu, od którego bank nalicza odsetki. Dzięki temu kolejne raty zawierają mniej odsetek, a większą część stanowi kapitał.</p>
+                    <p>Największe korzyści z nadpłaty pojawiają się w pierwszych latach spłaty kredytu. W tym okresie większość raty stanowią odsetki, dlatego obniżenie salda kredytu ma największy wpływ na całkowity koszt kredytu.</p>
+                    <p>Warto jednak sprawdzić w umowie kredytowej, czy bank nie pobiera prowizji za wcześniejszą spłatę. W Polsce taka prowizja przy kredytach hipotecznych ze zmiennym oprocentowaniem może obowiązywać maksymalnie przez pierwsze 36 miesięcy od podpisania umowy.</p>
+                </div>
+            </div>
+
+            <div class="seo-item">
+                <h2 class="seo-q" tabindex="0">Skrócenie okresu czy zmniejszenie raty — co wybrać</h2>
+                <div class="seo-a">
+                    <p>Po dokonaniu nadpłaty bank zwykle pozwala wybrać jedną z dwóch opcji:</p>
+                    <p><strong>Skrócenie okresu kredytowania</strong> — wysokość raty pozostaje podobna, ale kredyt zostaje spłacony szybciej. To rozwiązanie daje największe oszczędności na odsetkach.</p>
+                    <p><strong>Zmniejszenie wysokości raty</strong> — saldo kredytu spada, więc bank przelicza harmonogram i obniża miesięczną ratę. Dzięki temu budżet domowy jest mniej obciążony.</p>
+                    <p>Z punktu widzenia matematyki finansowej większe oszczędności przynosi skrócenie okresu spłaty. Obniżenie raty może być jednak wygodniejsze dla osób, które chcą zwiększyć swoją miesięczną płynność finansową.</p>
+                </div>
+            </div>
+
+            <div class="seo-item">
+                <h2 class="seo-q" tabindex="0">Ile można zaoszczędzić nadpłacając kredyt</h2>
+                <div class="seo-a">
+                    <p>Oszczędności z nadpłaty kredytu zależą od kilku czynników: wysokości kredytu, oprocentowania, czasu pozostałego do spłaty oraz wielkości i częstotliwości nadpłat.</p>
+                    <p>Przykładowo przy kredycie hipotecznym w wysokości 400 000 zł na 25 lat nawet nadpłata 500 zł miesięcznie może skrócić okres spłaty o kilka lat i zmniejszyć całkowity koszt kredytu o kilkadziesiąt tysięcy złotych.</p>
+                    <p>Najprostszym sposobem sprawdzenia realnych oszczędności jest użycie kalkulatora nadpłaty kredytu. Dzięki niemu można szybko zobaczyć, jak dodatkowe wpłaty wpływają na harmonogram spłaty oraz całkowity koszt kredytu.</p>
+                </div>
+            </div>
+
+            <div class="seo-item">
+                <h2 class="seo-q" tabindex="0">Kalkulator nadpłaty kredytu hipotecznego — jak z niego korzystać</h2>
+                <div class="seo-a">
+                    <p>Korzystanie z kalkulatora jest proste i zajmuje około dwóch minut. W sekcji <em>Dane Kredytu</em> wpisz kapitał pozostały do spłaty, oprocentowanie oraz liczbę pozostałych rat — znajdziesz je w harmonogramie od banku lub w aplikacji mobilnej. Następnie w sekcji <em>Plan Nadpłat</em> podaj kwotę jednorazowej lub miesięcznej nadpłaty i wybierz strategię: skrócenie okresu albo zmniejszenie raty. Po kliknięciu <em>Przelicz</em> zobaczysz dokładne oszczędności, nowy harmonogram spłaty oraz wykres porównujący oba scenariusze.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ===== EKSPORT ===== -->
         <div class="export-section" id="eksport">
             <h3>3. Eksport i Bezpłatna Analiza <span class="tip tip-wide" data-tip="Masz możliwość wysłania danych o Twoim kredycie do certyfikowanego doradcy kredytowego. Nie płacisz mu żadnego wynagrodzenia. Jeśli znajdziemy dla Ciebie tańszy kredyt, to wynagrodzenie doradcy zapłaci nowy bank, a koszty kredytu będą takie same jak przy kredycie zaciągniętym bezpośrednio w tym banku – tak stanowi polskie prawo. Możesz tylko zyskać i nie musisz podejmować żadnych decyzji" style="width:18px;height:18px;font-size:11px;">?</span></h3>
             <p style="color:var(--gold); font-weight:700; font-family:'Montserrat',sans-serif; margin-bottom:18px;">Sprawdzimy czy istnieje dla Ciebie tańszy kredyt i za darmo Cię o tym poinformujemy.</p>
@@ -1160,7 +1225,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v7.7  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v8.0  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1243,7 +1308,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v7.7 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v8.0 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1560,6 +1625,25 @@ function switchTab(id, btn) {
     document.getElementById('tab-' + id).style.display = 'block';
     btn.classList.add('active');
 }
+
+/* ===== SEO AKORDEON (h2) ===== */
+document.querySelectorAll('.seo-q').forEach(h2 => {
+    h2.addEventListener('click', () => {
+        const answer = h2.nextElementSibling;
+        const isOpen = h2.classList.contains('open');
+        document.querySelectorAll('.seo-q').forEach(q => {
+            q.classList.remove('open');
+            q.nextElementSibling.classList.remove('open');
+        });
+        if (!isOpen) {
+            h2.classList.add('open');
+            answer.classList.add('open');
+        }
+    });
+    h2.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); h2.click(); }
+    });
+});
 
 /* ===== FAQ AKORDEON (h3) ===== */
 document.querySelectorAll('.faq-q').forEach(h3 => {
