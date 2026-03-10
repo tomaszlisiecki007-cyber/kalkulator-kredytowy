@@ -350,7 +350,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v7.5</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v7.6</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -519,9 +519,13 @@
                 <button class="btn btn-pdf" style="margin:0;" onclick="generatePDF()">📄 Pobierz Raport PDF</button>
             </div>
 
-            <p style="font-size:11px; color:var(--text-muted); margin:10px 0 0; text-align:justify; line-height:1.5;">
-                * Klikając przycisk "Wyślij do analizy", wyrażasz zgodę na przetwarzanie Twoich danych osobowych (e-mail, telefon) przez Lisieccy Sp. z o.o. wyłącznie w celu przygotowania i przedstawienia bezpłatnej analizy nadpłat kredytu oraz kontaktu w celach doradztwa kredytowego. Dane mogą być udostępnione certyfikowanemu doradcy kredytowemu.
-            </p>
+            <!-- Zgoda RODO z checkboxem -->
+            <div style="margin-top:12px; display:flex; align-items:flex-start; gap:10px;">
+                <input type="checkbox" id="rodoCheck" style="margin-top:3px; width:16px; height:16px; flex-shrink:0; accent-color:var(--primary); cursor:pointer;">
+                <label for="rodoCheck" style="font-size:11px; color:var(--text-muted); line-height:1.6; cursor:pointer;">
+                    Wyrażam zgodę na przetwarzanie moich danych osobowych (w tym informacji o moim kredycie) przez Lisieccy Sp. z o.o. oraz na ich przekazanie do Phinance S.A. w celu przygotowania i przedstawienia analizy oraz oferty kredytowej. Potwierdzam zapoznanie się z <a href="#" onclick="event.preventDefault(); document.getElementById('rodoModal').style.display='flex';" style="color:var(--primary); font-weight:700; text-decoration:underline;">informacją o RODO</a>.
+                </label>
+            </div>
         </div>
     <!-- Sticky przycisk Przelicz (mobile) -->
 <div class="sticky-bar" id="stickyBar">
@@ -542,6 +546,48 @@
             Zamknij
         </button>
         <p style="font-size:0.78rem; color:var(--text-muted); margin:14px 0 0;">— Tomasz Lisiecki, nadplacam.com.pl</p>
+    </div>
+</div>
+
+<!-- Modal: Pełna Klauzula RODO -->
+<div id="rodoModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.60); z-index:9999; align-items:center; justify-content:center; padding:16px;" onclick="if(event.target===this) this.style.display='none';">
+    <div style="background:#fff; border-radius:16px; max-width:640px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,0.30); position:relative;">
+        <!-- Nagłówek sticky -->
+        <div style="position:sticky; top:0; background:#fff; border-bottom:2px solid var(--border); padding:18px 24px 14px; border-radius:16px 16px 0 0; display:flex; align-items:center; justify-content:space-between; z-index:1;">
+            <h2 style="font-family:'Montserrat',sans-serif; color:var(--primary); font-size:1.05rem; margin:0;">🔒 Klauzula Informacyjna RODO</h2>
+            <button onclick="document.getElementById('rodoModal').style.display='none';" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-muted); line-height:1; padding:0 4px;">&times;</button>
+        </div>
+        <!-- Treść -->
+        <div style="padding:20px 24px 28px; font-family:'Open Sans',sans-serif; font-size:0.83rem; color:var(--text-main); line-height:1.75;">
+            <p><strong>1. Administrator Danych Osobowych</strong><br>
+            Administratorem Twoich danych osobowych jest Lisieccy Sp. z o.o. z siedzibą w Warszawie (00-020), ul. Chmielna 2/31, NIP: 5252817890, REGON: 385745010.</p>
+
+            <p><strong>2. Cele i Podstawa Przetwarzania</strong><br>
+            Twoje dane są przetwarzane w celu:<br>
+            • Podjęcia działań na Twoje żądanie przed zawarciem umowy, tj. dokonania wstępnej analizy parametrów Twojego kredytu (art. 6 ust. 1 lit. b RODO).<br>
+            • Przekazania zapytania do wyspecjalizowanego doradcy finansowego na podstawie Twojej dobrowolnej zgody (art. 6 ust. 1 lit. a RODO).</p>
+
+            <p><strong>3. Odbiorcy Danych i Powierzenie Przetwarzania</strong><br>
+            Twoje dane osobowe będą udostępniane następującym podmiotom:<br>
+            • Phinance S.A. (ul. Ratajczaka 19, 61-814 Poznań, KRS: 0000312494) – jako partnerowi merytorycznemu, w celu przygotowania oferty i kontaktu doradcy.<br>
+            • Web3Forms (techniczny dostawca formularza) – na zasadzie powierzenia przetwarzania danych. Web3Forms służy wyłącznie jako kanał transmisyjny i deklaruje, że nie przechowuje Twoich danych po ich skutecznym dostarczeniu do Administratora.</p>
+
+            <p><strong>4. Przekazywanie danych poza EOG</strong><br>
+            W związku z korzystaniem z narzędzia Web3Forms, Twoje dane mogą być przesyłane do dostawców usług chmurowych (np. AWS) posiadających infrastrukturę poza Europejskim Obszarem Gospodarczym. Administrator zapewnia, że stosowane są odpowiednie zabezpieczenia, w tym Standardowe Klauzule Umowne zatwierdzone przez Komisję Europejską, gwarantujące stopień ochrony danych równoważny z przepisami UE.</p>
+
+            <p><strong>5. Okres Przechowywania Danych</strong><br>
+            Dane będą przetwarzane do czasu zakończenia obsługi Twojego zapytania, nie dłużej jednak niż do momentu wycofania przez Ciebie zgody.</p>
+
+            <p><strong>6. Twoje Prawa</strong><br>
+            Masz prawo do: dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, przenoszenia danych oraz prawo do cofnięcia zgody w dowolnym momencie bez wpływu na zgodność z prawem przetwarzania, którego dokonano przed jej cofnięciem.</p>
+
+            <p style="margin-bottom:0;"><strong>7. Skarga do Organu Nadzorczego</strong><br>
+            Masz prawo wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych (PUODO), jeśli uznasz, że przetwarzanie Twoich danych narusza przepisy RODO.</p>
+        </div>
+        <!-- Stopka sticky -->
+        <div style="position:sticky; bottom:0; background:#fff; border-top:1px solid var(--border); padding:14px 24px; border-radius:0 0 16px 16px; text-align:center;">
+            <button onclick="document.getElementById('rodoModal').style.display='none';" style="background:linear-gradient(135deg,var(--primary),#1a4fa0); color:#fff; border:none; border-radius:8px; padding:10px 36px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.92rem; cursor:pointer;">Zamknij</button>
+        </div>
     </div>
 </div>
 
@@ -959,6 +1005,10 @@ async function sendToTomasz() {
         alert('Podaj swój e-mail, abyśmy mogli przesłać analizę!'); 
         return; 
     }
+    if (!document.getElementById('rodoCheck').checked) {
+        alert('Prosimy o zaznaczenie zgody na przetwarzanie danych osobowych przed wysłaniem formularza.');
+        return;
+    }
 
     const btn = document.querySelector('.btn-mail');
     const originalText = btn.innerText;
@@ -1042,7 +1092,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v7.5  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v7.6  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1125,7 +1175,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v7.5 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v7.6 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
