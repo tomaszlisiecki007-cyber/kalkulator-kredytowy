@@ -350,7 +350,7 @@
 <div class="container">
 
     <h2>Kalkulator Nadpłaty Kredytu</h2>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v7.6</span></div>
+    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v7.7</span></div>
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
@@ -650,6 +650,74 @@
         </div>
     </div>
 
+</div>
+
+<!-- STOPKA -->
+<footer style="margin-top:32px; padding:16px 24px; background:var(--primary); text-align:center;">
+    <p style="font-family:'Open Sans',sans-serif; font-size:0.78rem; color:rgba(255,255,255,0.75); margin:0; line-height:1.7;">
+        Administratorem Twoich danych jest Lisieccy Sp. z o.o. Dane przesyłane są do Phinance S.A.
+        Szczegóły znajdziesz w naszej
+        <a href="#" onclick="event.preventDefault(); document.getElementById('privacyModal').style.display='flex';"
+           style="color:var(--gold); font-weight:700; text-decoration:underline;">Polityce Prywatności</a>.
+    </p>
+</footer>
+
+<!-- Modal: Polityka Prywatności -->
+<div id="privacyModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.60); z-index:9999; align-items:center; justify-content:center; padding:16px;" onclick="if(event.target===this) this.style.display='none';">
+    <div style="background:#fff; border-radius:16px; max-width:680px; width:100%; max-height:90vh; overflow-y:auto; box-shadow:0 8px 40px rgba(0,0,0,0.30); position:relative;">
+        <div style="position:sticky; top:0; background:#fff; border-bottom:2px solid var(--border); padding:18px 24px 14px; border-radius:16px 16px 0 0; display:flex; align-items:center; justify-content:space-between; z-index:1;">
+            <h2 style="font-family:'Montserrat',sans-serif; color:var(--primary); font-size:1.05rem; margin:0;">🔒 Polityka Prywatności</h2>
+            <button onclick="document.getElementById('privacyModal').style.display='none';" style="background:none; border:none; font-size:1.5rem; cursor:pointer; color:var(--text-muted); line-height:1; padding:0 4px;">&times;</button>
+        </div>
+        <div style="padding:20px 24px 28px; font-family:'Open Sans',sans-serif; font-size:0.83rem; color:var(--text-main); line-height:1.75;">
+            <p style="font-family:'Montserrat',sans-serif; font-weight:800; color:var(--primary); font-size:0.95rem; margin-bottom:4px;">Polityka Prywatności Serwisu</p>
+            <p style="color:var(--text-muted); margin-top:0;">Administrator Danych Osobowych: Lisieccy Sp. z o.o.</p>
+
+            <p><strong>1. Informacje ogólne</strong><br>
+            Niniejsza Polityka Prywatności określa zasady przetwarzania i ochrony danych osobowych przekazywanych przez Użytkowników w związku z korzystaniem z formularza kontaktowego na stronie internetowej Administratora. Dbałość o bezpieczeństwo Twoich danych, zwłaszcza tych dotyczących zobowiązań finansowych, jest dla nas priorytetem.</p>
+
+            <p><strong>2. Administrator Danych</strong><br>
+            Administratorem Twoich danych osobowych jest: Lisieccy Sp. z o.o. z siedzibą w Warszawie (00-020), ul. Chmielna 2/31, NIP: 5252817890, REGON: 385745010.</p>
+
+            <p><strong>3. Zakres zbieranych danych</strong><br>
+            W celu przygotowania wstępnej analizy kredytowej i kontaktu z doradcą, zbieramy za pośrednictwem formularza następujące dane:<br>
+            • Imię i nazwisko / Nazwa banku,<br>
+            • Dane kontaktowe: adres e-mail, numer telefonu,<br>
+            • Informacje o kredycie: Kapitał do spłaty, oprocentowanie, liczba rat,<br>
+            • Dane demograficzne: Wiek,<br>
+            • Treść wiadomości.</p>
+
+            <p><strong>4. Cel i Podstawa Prawna Przetwarzania</strong><br>
+            Twoje dane są przetwarzane w celu:<br>
+            1. Podjęcia działań na żądanie osoby, której dane dotyczą, przed zawarciem umowy (art. 6 ust. 1 lit. b RODO) – m.in. wstępna analiza możliwości restrukturyzacji lub nadpłaty kredytu.<br>
+            2. Realizacji zgody na przekazanie danych do partnera merytorycznego (art. 6 ust. 1 lit. a RODO) – w celu umożliwienia doradcy z firmy Phinance S.A. przygotowania dedykowanej oferty.</p>
+
+            <p><strong>5. Odbiorcy Danych i Przekazywanie do Państw Trzecich</strong><br>
+            W celu rzetelnej obsługi Twojego zapytania, dane są przekazywane:<br>
+            1. Phinance S.A. (ul. Ratajczaka 19, 61-814 Poznań, KRS: 0000312494) – podmiotowi świadczącemu usługi doradztwa finansowego.<br>
+            2. Web3Forms – podmiotowi przetwarzającemu, który zapewnia infrastrukturę techniczną do wysyłki formularza e-mail. Dane za pośrednictwem Web3Forms są przesyłane w sposób bezpieczny i szyfrowany. Z uwagi na korzystanie przez ten podmiot z infrastruktury chmurowej (np. AWS), dane mogą być procesowane poza EOG, co odbywa się w oparciu o Standardowe Klauzule Umowne zapewniające wysoki stopień ochrony.</p>
+
+            <p><strong>6. Brak Plików Cookies</strong><br>
+            Informujemy, że nasza strona internetowa została zaprojektowana w sposób maksymalnie chroniący prywatność i nie korzysta z plików cookies (tzw. ciasteczek) do śledzenia, profilowania czy analizy zachowań użytkowników.</p>
+
+            <p><strong>7. Prawa Użytkownika</strong><br>
+            W każdej chwili masz prawo do:<br>
+            • Dostępu do swoich danych oraz otrzymania ich kopii,<br>
+            • Sprostowania (poprawiania) swoich danych,<br>
+            • Usunięcia danych (prawo do bycia zapomnianym),<br>
+            • Wycofania zgody na przetwarzanie (co nie wpływa na zgodność z prawem przetwarzania przed jej wycofaniem),<br>
+            • Wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych (ul. Stawki 2, 00-193 Warszawa).</p>
+
+            <p><strong>8. Okres przechowywania danych</strong><br>
+            Dane będą przechowywane przez okres niezbędny do udzielenia odpowiedzi na zapytanie i przeprowadzenia analizy, a po tym czasie mogą być przetwarzane przez okres przedawnienia ewentualnych roszczeń.</p>
+
+            <p style="margin-bottom:0;"><strong>9. Kontakt</strong><br>
+            W sprawach związanych z ochroną danych osobowych możesz skontaktować się z Administratorem pod adresem: <a href="/cdn-cgi/l/email-protection#31455e5c50424b1f5d58425854525a581f01010671565c50585d1f525e5c" style="color:var(--primary);"><span class="__cf_email__" data-cfemail="01756e6c60727b2f6d68726864626a682f31313641666c60686d2f626e6c">[email&#160;protected]</span></a>.</p>
+        </div>
+        <div style="position:sticky; bottom:0; background:#fff; border-top:1px solid var(--border); padding:14px 24px; border-radius:0 0 16px 16px; text-align:center;">
+            <button onclick="document.getElementById('privacyModal').style.display='none';" style="background:linear-gradient(135deg,var(--primary),#1a4fa0); color:#fff; border:none; border-radius:8px; padding:10px 36px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.92rem; cursor:pointer;">Zamknij</button>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -1092,7 +1160,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v7.6  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v7.7  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1104,7 +1172,7 @@ function generatePDF() {
     doc.setTextColor(...C_ORANGE);
     doc.setFontSize(8);
     doc.setFont('helvetica', 'bold');
-    doc.text('Wyslij ten plik na: tomasz.lisiecki.007@gmail.com', W / 2, y + 5.5, { align: 'center' });
+    doc.text('Wyslij ten plik na: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f88c9795998b82d694918b919d9b9391d6c8c8cfb89f95999194d69b9795">[email&#160;protected]</a>', W / 2, y + 5.5, { align: 'center' });
     doc.setFont('helvetica', 'normal');
     doc.text('aby otrzymac bezplatne porownanie ofert innych bankow i sprawdzic czy masz najlepsza rate!', W / 2, y + 10.5, { align: 'center' });
     y += 20;
@@ -1175,7 +1243,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v7.6 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v7.7 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1378,7 +1446,7 @@ function reorderToggleForMobile() {
 }
 
 </script>
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 /* ===== EFEKT 1 — animowany licznik ===== */
 function animateCounter(elId, targetValue, formatter, duration) {
     const el = document.getElementById(elId);
@@ -1512,16 +1580,6 @@ document.querySelectorAll('.faq-q').forEach(h3 => {
         if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); h3.click(); }
     });
 });
-
-/* ===== STICKY BAR ===== */
-(function() {
-    const stickyBar = document.getElementById('stickyBar');
-    const calcBtn   = document.querySelector('.btn-calculate:not(.sticky-bar .btn-calculate)');
-    if (!stickyBar || !calcBtn) return;
-    const observer = new IntersectionObserver(function(entries) {
-        stickyBar.style.display = entries[0].isIntersecting ? 'none' : 'block';
-    }, { threshold: 0 });
-    observer.observe(calcBtn);
-})();
 </script>
+</body>
 </html>
