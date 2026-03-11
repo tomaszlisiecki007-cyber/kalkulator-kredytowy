@@ -76,7 +76,7 @@
         .btn-pdf { background: linear-gradient(135deg, #0d2c6e 0%, #1a4aad 100%); margin-top: 0; box-shadow: 0 4px 14px rgba(13,44,110,0.25); }
         .btn-pdf:hover { background: linear-gradient(135deg, #0a2256 0%, #1340a0 100%); box-shadow: 0 6px 20px rgba(13,44,110,0.35); transform: translateY(-1px); }
 
-        .info-bar { display: flex; justify-content: flex-end; align-items: center; background: var(--author-bg); color: var(--author-text); padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; font-weight: 600; font-family: 'Montserrat', sans-serif; border-left: 3px solid var(--gold); }
+        .info-bar { display: flex; justify-content: space-between; align-items: center; background: var(--author-bg); color: var(--author-text); padding: 10px 20px; border-radius: 8px; margin-bottom: 20px; font-size: 0.85rem; font-weight: 600; font-family: 'Montserrat', sans-serif; border-left: 3px solid var(--gold); }
 
         .results { margin-top: 20px; display: none; }
         .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; margin-bottom: 30px; }
@@ -363,7 +363,13 @@
 <div class="container">
 
     <h1 style="font-family:'Montserrat',sans-serif; font-size:1.55rem; font-weight:800; color:var(--primary); margin:0 0 6px;">Kalkulator nadpłaty kredytu hipotecznego</h1>
-    <div class="info-bar"><span>Autor: Tomasz Lisiecki (2026) v8.0</span></div>
+    <div class="info-bar">
+        <a href="https://www.facebook.com/Nadplacam" target="_blank" rel="noopener" title="Obserwuj nas na Facebooku" style="display:flex; align-items:center; gap:7px; text-decoration:none; color:var(--primary); font-weight:700; font-size:0.82rem; transition:opacity 0.2s;" onmouseover="this.style.opacity='0.7'" onmouseout="this.style.opacity='1'">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
+            <span>Obserwuj na Facebooku</span>
+        </a>
+        <span>Autor: Tomasz Lisiecki (2026) v8.0</span>
+    </div>
     <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
         Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
     </p>
