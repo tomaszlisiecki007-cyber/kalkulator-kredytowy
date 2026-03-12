@@ -349,6 +349,14 @@
   ]
 }
 </script>
+<!-- Google Analytics 4 -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3B2FZS1PJ2"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-3B2FZS1PJ2');
+</script>
 </head>
 <!-- GoatCounter – statystyki odwiedzin -->
 <script data-goatcounter="https://nadplacam.goatcounter.com/count"
@@ -844,6 +852,19 @@ function calculate() {
     };
 
     if (!validateInputs(data)) return;
+
+    // GA4 — event przy każdym przeliczeniu
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'kalkulator_przelicz', {
+            kwota_kredytu:     data.loanAmount,
+            oprocentowanie:    data.interestRate,
+            pozostalo_rat:     data.monthsLeft,
+            nadplata_jednoraz: data.oneTimeExtra  || 0,
+            nadplata_miesieczna: data.monthlyExtra || 0,
+            nadplata_roczna:   data.yearlyExtra    || 0,
+            strategia:         data.strategy
+        });
+    }
 
     globalInputs = data;
     tableRows = [];
