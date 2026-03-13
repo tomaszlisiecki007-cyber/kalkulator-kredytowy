@@ -376,7 +376,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             <span>Obserwuj na Facebooku</span>
         </a>
-        <span>Autor: Tomasz Lisiecki (2026) v8.3</span>
+        <span>Autor: Tomasz Lisiecki (2026) v8.4</span>
     </div>
     <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
         Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
@@ -881,13 +881,13 @@ function calculate() {
     const baseMonths    = N;
     const MAX_MONTHS    = 360;
 
-    // totalCostBase — liczymy pętlą (tak samo jak totalPaid) żeby uniknąć
-    // fałszywych oszczędności gdy N > MAX_MONTHS
+    // totalCostBase — liczymy pełną symulację bez limitu MAX_MONTHS
+    // żeby objąć kredyty z N > 360
     let totalCostBase = 0;
     {
         let b = data.loanAmount;
         let m = 1;
-        while (b > 0.01 && m <= MAX_MONTHS) {
+        while (b > 0.01 && m <= N + 12) {
             const i = b * rOrig;
             const cap = baseRata - i;
             if (cap >= b) {
@@ -899,8 +899,6 @@ function calculate() {
             }
             m++;
         }
-        // Jeśli kredyt nie spłacony w MAX_MONTHS — dolicz pozostałe saldo
-        if (b > 0.01) totalCostBase += b;
     }
 
     // Saldo startowe (przed jakąkolwiek spłatą)
@@ -1034,9 +1032,58 @@ function calculate() {
         month++;
     }
 
-    // Jeśli kredyt nie spłacony w MAX_MONTHS — dolicz pozostałe saldo
-    // (identycznie jak w totalCostBase, żeby diff = 0 bez nadpłat)
-    if (balance > 0.01) totalPaid += balance;
+    // Gdy N > MAX_MONTHS i kredyt nie został spłacony w pętli —
+    // doklejamy brakujące raty do harmonogramu, sumy kosztów i czasu spłaty
+    if (balance > 0.01) {
+        // Kontynuuj symulację od miesiąca MAX_MONTHS+1 do faktycznej spłaty
+        // (bez limitu — ale N jest rozsądną granicą)
+        while (balance > 0.01 && month <= N + 12) {
+            const interest  = balance * r;
+            let capFromRata = standardRata - interest;
+            if (capFromRata < 0) capFromRata = 0;
+
+            const rataDisplay = standardRata;
+            const rataLabel   = f2(standardRata);
+
+            let capThisMonth;
+            if (capFromRata >= balance) {
+                capThisMonth = balance;
+                totalPaid   += balance + interest;
+                balance      = 0;
+            } else {
+                capThisMonth = capFromRata;
+                balance     -= capFromRata;
+                totalPaid   += rataDisplay;
+            }
+            yCap += capThisMonth;
+            yInt += interest;
+
+            // Przelicz ratę na kolejny miesiąc
+            if (balance > 0.01) {
+                const rem = N - month > 0 ? N - month : 1;
+                if (data.strategy === 'lower') {
+                    standardRata = annuity(balance, r, rem);
+                }
+            }
+
+            const miesLabel = 'Mies. ' + month;
+            const wiekMies  = (data.currentAge + month / 12).toFixed(1);
+            monthlyRowsHtml += monthlyRowHtml(miesLabel, wiekMies, rataLabel, capThisMonth, interest, balance);
+            monthlyTableRows.push([miesLabel, wiekMies, rataLabel, fi(capThisMonth), fi(interest), fi(balance)]);
+
+            if (month % 12 === 0 || balance <= 0.01) {
+                const rok     = 'Rok ' + Math.ceil(month / 12);
+                const wiek    = (data.currentAge + month / 12).toFixed(0);
+                const rRoczna = balance > 0.01 ? standardRata : 0;
+                htmlRows += rowHtml(rok, wiek, f2(rRoczna), yCap, yInt, balance);
+                tableRows.push([rok, wiek, f2(rRoczna), fi(yCap), fi(yInt), fi(balance)]);
+                yCap = 0; yInt = 0;
+                chartNadp.push(Math.round(balance));
+                chartLabels.push('Rok ' + Math.ceil(month / 12));
+            }
+            month++;
+        }
+    }
 
     const diff       = totalCostBase - totalPaid;
     const isLoss     = diff < 0;
@@ -1302,7 +1349,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v8.3  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v8.4  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1385,7 +1432,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v8.3 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v8.4 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
