@@ -376,7 +376,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             <span>Obserwuj na Facebooku</span>
         </a>
-        <span>Autor: Tomasz Lisiecki (2026) v8.7</span>
+        <span>Autor: Tomasz Lisiecki (2026) v8.8</span>
     </div>
     <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
         Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
@@ -384,7 +384,7 @@
 
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
-        <div class="input-group"><label>Kapitał do spłaty (zł)</label><input type="number" id="loanAmount" value="300000"></div>
+        <div class="input-group"><label>Kapitał do spłaty (zł)</label><input type="text" id="loanAmount" value="300 000" inputmode="numeric" autocomplete="off"></div>
         <div class="input-group"><label>Oprocentowanie (%)</label><input type="number" id="interestRate" step="0.01" value="7.5"></div>
         <div class="input-group"><label>Pozostało rat (msc)</label><input type="number" id="monthsLeft" value="240"></div>
         <div class="input-group"><label style="display:flex;align-items:center;">Twój wiek <span class="tip" data-tip="Podawanie wieku nie jest obowiązkowe, ale pomoże Ci zobrazować sobie ile będziesz mieć lat jak spłacisz kredyt">?</span></label><input type="number" id="currentAge" value="30"></div>
@@ -839,7 +839,7 @@ function annuity(balance, r, n) {
 
 function calculate() {
     const data = {
-        loanAmount:    parseFloat(document.getElementById('loanAmount').value)    || 0,
+        loanAmount:    parseFloat(document.getElementById('loanAmount').value.replace(/\s/g,'').replace(',','.')) || 0,
         interestRate:  parseFloat(document.getElementById('interestRate').value)  || 0,
         monthsLeft:    parseInt(document.getElementById('monthsLeft').value)      || 0,
         currentAge:    parseInt(document.getElementById('currentAge').value)      || 0,
@@ -1349,7 +1349,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v8.7  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v8.8  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1432,7 +1432,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v8.7 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v8.8 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1463,13 +1463,63 @@ document.addEventListener('keydown', function(e) {
 });
 
 /* ===== LOCALSTORAGE — zapis/odczyt danych ===== */
+// ===== FORMATOWANIE KAPITAŁU NA ŻYWO =====
+(function() {
+    const el = document.getElementById('loanAmount');
+    if (!el) return;
+
+    function parseRaw(val) {
+        // usuń spacje i zamień przecinek na kropkę
+        return parseFloat(val.replace(/\s/g, '').replace(',', '.')) || 0;
+    }
+
+    function formatVal(num) {
+        if (!num) return '';
+        // spacja jako separator tysięcy, przecinek jako dziesiętny
+        return num.toLocaleString('pl-PL', { maximumFractionDigits: 2 });
+    }
+
+    el.addEventListener('input', function() {
+        const raw = this.value.replace(/\s/g, '').replace(',', '.');
+        // pozwól wpisywać tylko cyfry, kropkę i przecinek
+        const cleaned = raw.replace(/[^0-9.]/g, '');
+        const num = parseFloat(cleaned);
+        if (!cleaned || isNaN(num)) { this.value = cleaned; return; }
+
+        // zachowaj pozycję kursora
+        const cursorFromEnd = this.value.length - (this.selectionEnd || 0);
+        this.value = formatVal(num);
+        const newPos = Math.max(0, this.value.length - cursorFromEnd);
+        this.setSelectionRange(newPos, newPos);
+    });
+
+    el.addEventListener('focus', function() {
+        // przy focus pokaż czystą liczbę bez spacji (łatwiej edytować)
+        const num = parseRaw(this.value);
+        this.value = num ? String(num) : '';
+    });
+
+    el.addEventListener('blur', function() {
+        // przy blur sformatuj z powrotem
+        const num = parseRaw(this.value);
+        this.value = num ? formatVal(num) : '';
+    });
+})();
+
 const LS_KEY = 'nadplacam_inputs';
 const lsFields = ['loanAmount','interestRate','monthsLeft','currentAge',
                   'oneTimeExtra','monthlyExtra','yearlyExtra','newInstalment','newRate'];
 
 function saveInputs() {
     const obj = {};
-    lsFields.forEach(id => { obj[id] = document.getElementById(id).value; });
+    lsFields.forEach(id => {
+        if (id === 'loanAmount') {
+            const el = document.getElementById(id);
+            obj[id] = parseFloat(el.value.replace(/\s/g,'').replace(',','.')) || 0;
+        } else {
+            obj[id] = document.getElementById(id).value;
+        }
+    });
     obj.strategy = document.getElementById('strategy').value;
     try { localStorage.setItem(LS_KEY, JSON.stringify(obj)); } catch(e) {}
 }
@@ -1480,7 +1530,13 @@ function loadInputs() {
         if (!saved) return;
         lsFields.forEach(id => {
             const el = document.getElementById(id);
-            if (el && saved[id] !== undefined) el.value = saved[id];
+            if (!el || saved[id] === undefined) return;
+            if (id === 'loanAmount') {
+                const num = parseFloat(String(saved[id]).replace(/\s/g,'').replace(',','.')) || 0;
+                el.value = num ? num.toLocaleString('pl-PL', { maximumFractionDigits: 2 }) : '';
+            } else {
+                el.value = saved[id];
+            }
         });
         if (saved.strategy) document.getElementById('strategy').value = saved.strategy;
     } catch(e) {}
