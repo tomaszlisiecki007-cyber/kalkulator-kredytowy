@@ -376,7 +376,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             <span>Obserwuj na Facebooku</span>
         </a>
-        <span>Autor: Tomasz Lisiecki (2026) v8.5</span>
+        <span>Autor: Tomasz Lisiecki (2026) v8.7</span>
     </div>
     <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
         Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
@@ -1087,7 +1087,7 @@ function calculate() {
 
     const diff       = totalCostBase - totalPaid;
     const isLoss     = diff < 0;
-    const finalOszcz = Math.abs(diff).toFixed(2);
+    const finalOszcz = Math.abs(diff);
     const monthsUsed = month - 1;
 
     const monthsSaved = baseMonths - monthsUsed;
@@ -1096,9 +1096,9 @@ function calculate() {
 
     globalResults = {
         rata:  f2(firstRata),
-        oszcz: finalOszcz,
+        oszcz: f2(finalOszcz),
         lat:   (monthsUsed / 12).toFixed(1),
-        total: totalPaid.toFixed(2),
+        total: f2(totalPaid),
         age:   (data.currentAge + monthsUsed / 12).toFixed(1)
     };
 
@@ -1115,7 +1115,7 @@ function calculate() {
         warningEl.innerHTML = `⚠️ <strong>Rata zbyt niska!</strong> Kwota ${f2(firstRata)} zł nie pokrywa nawet miesięcznych odsetek (${f2(minViableRata)} zł). Przy takiej racie saldo kredytu będzie rosło – kredyt nigdy nie zostanie spłacony. Wprowadź wyższą wartość.`;
     } else if (isLowRata) {
         warningEl.style.display = 'block';
-        warningEl.innerHTML = `⚠️ <strong>Uwaga – rata niższa niż pierwotna!</strong> Obniżenie raty z <strong>${f2(baseRata)} zł</strong> do <strong>${f2(firstRata)} zł</strong> <u>wydłuży</u> Twój kredyt o <strong>${yearsSaved} lat</strong> i będzie Cię kosztować <strong>${finalOszcz} zł więcej</strong>. Rozważ czy to na pewno dobra decyzja.`;
+        warningEl.innerHTML = `⚠️ <strong>Uwaga – rata niższa niż pierwotna!</strong> Obniżenie raty z <strong>${f2(baseRata)} zł</strong> do <strong>${f2(firstRata)} zł</strong> <u>wydłuży</u> Twój kredyt o <strong>${yearsSaved} lat</strong> i będzie Cię kosztować <strong>${f2(finalOszcz)} zł więcej</strong>. Rozważ czy to na pewno dobra decyzja.`;
     } else {
         warningEl.style.display = 'none';
     }
@@ -1145,7 +1145,7 @@ function calculate() {
         savingsCard.style.background = 'linear-gradient(135deg, var(--secondary) 0%, #1e9e55 100%)';
         savingsCard.querySelector('.s-label').textContent = '💰 Oszczędność';
     }
-    animateCounter('resSavings', parseFloat(finalOszcz), v => f2(v) + ' zł', 1100);
+    animateCounter('resSavings', finalOszcz, v => f2(v) + ' zł', 1100);
 
     // Skrócenie lub wydłużenie czasu spłaty
     const elYearsSaved = document.getElementById('resYearsSaved');
@@ -1163,10 +1163,10 @@ function calculate() {
     const elRataDiff = document.getElementById('resRataDiff');
     if (Math.abs(rataDiff) > 0.5) {
         if (rataDiff < 0) {
-            elRataDiff.textContent = '↓ MNIEJ O ' + Math.abs(rataDiff).toFixed(2) + ' ZŁ';
+            elRataDiff.textContent = '↓ MNIEJ O ' + f2(Math.abs(rataDiff)) + ' ZŁ';
             elRataDiff.style.color = 'var(--secondary)';
         } else {
-            elRataDiff.textContent = '↑ WIĘCEJ O ' + rataDiff.toFixed(2) + ' ZŁ';
+            elRataDiff.textContent = '↑ WIĘCEJ O ' + f2(rataDiff) + ' ZŁ';
             elRataDiff.style.color = '#e05252';
         }
     } else {
@@ -1245,9 +1245,9 @@ function monthlyRowHtml(miesiac, wiek, rata, cap, odsetki, saldo) {
     </tr>`;
 }
 
-function f2(n)   { return parseFloat(n).toFixed(2); }
+function f2(n)   { return parseFloat(n).toLocaleString('pl-PL', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 function fi(n)   { return Math.round(n).toLocaleString('pl-PL'); }
-function fNum(n) { return Number(n).toLocaleString('pl-PL'); }
+function fNum(n) { return Number(n).toLocaleString('pl-PL', {minimumFractionDigits:2, maximumFractionDigits:2}); }
 
 /* ===================== EMAIL ===================== */
 
@@ -1349,7 +1349,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v8.5  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v8.7  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1432,7 +1432,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v8.5 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v8.7 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
