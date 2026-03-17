@@ -136,6 +136,14 @@
         /* Savings bar below toggle */
         .results-bar { display: flex; align-items: stretch; gap: 12px; margin-bottom: 12px; }
         .savings-card { background: linear-gradient(135deg, var(--secondary) 0%, #1e9e55 100%); color: white; border-radius: 10px; padding: 14px 28px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 3px 12px rgba(39,174,96,0.28); width: 100%; }
+        .refi-alert { border-radius: 10px; padding: 16px 20px; font-family: 'Open Sans', sans-serif; font-size: 0.9rem; line-height: 1.6; }
+        .refi-alert.refi-strong { background: linear-gradient(135deg, #fff3cd, #ffe8a0); border-left: 4px solid #e6a817; }
+        .refi-alert.refi-mild   { background: linear-gradient(135deg, #e8f4fd, #d0e8f8); border-left: 4px solid #2980b9; }
+        .refi-alert-title { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 0.95rem; color: var(--primary); margin-bottom: 6px; }
+        .refi-alert-body  { color: #333; margin-bottom: 12px; }
+        .refi-alert-body strong { color: var(--primary); }
+        .refi-btn { display: inline-block; background: var(--primary); color: #fff; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: 0.85rem; padding: 10px 20px; border-radius: 7px; text-decoration: none; transition: background 0.2s; cursor: pointer; border: none; }
+        .refi-btn:hover { background: #1a2e5a; }
         .savings-card .s-label { font-size: 0.62rem; text-transform: uppercase; font-family: 'Montserrat', sans-serif; font-weight: 600; letter-spacing: 0.5px; opacity: 0.85; }
         .savings-card .s-value { font-size: 1.35rem; font-weight: 800; font-family: 'Montserrat', sans-serif; }
 
@@ -376,7 +384,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             <span>Obserwuj na Facebooku</span>
         </a>
-        <span>Autor: Tomasz Lisiecki (2026) v8.8</span>
+        <span>Autor: Tomasz Lisiecki (2026) v9.4</span>
     </div>
     <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
         Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
@@ -477,6 +485,9 @@
             <div class="s-label">💰 Oszczędność</div>
             <div class="s-value" id="resSavings">-</div>
         </div>
+
+        <!-- Komunikat refinansowania -->
+        <div id="refinanceAlert" style="display:none; margin-bottom:14px;"></div>
 
         <div class="results-flow">
         <div class="chart-wrapper" id="chartWrapper" style="display:none; margin: 0 0 12px 0;">
@@ -837,6 +848,22 @@ function annuity(balance, r, n) {
     return balance * (r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
 }
 
+function smoothScrollTo(el, duration) {
+    duration = duration || 600;
+    const targetY = el.getBoundingClientRect().top + window.scrollY - 20;
+    const startY  = window.scrollY;
+    const dist    = targetY - startY;
+    let t0 = null;
+    function ease(t) { return t < 0.5 ? 2*t*t : -1+(4-2*t)*t; }
+    function step(ts) {
+        if (!t0) t0 = ts;
+        const p = Math.min((ts - t0) / duration, 1);
+        window.scrollTo(0, startY + dist * ease(p));
+        if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+}
+
 function calculate() {
     const data = {
         loanAmount:    parseFloat(document.getElementById('loanAmount').value.replace(/\s/g,'').replace(',','.')) || 0,
@@ -1129,11 +1156,13 @@ function calculate() {
         c.classList.add('animate-in');
     });
 
-    // Efekt 1 — animowane liczniki
-    animateCounter('resNextRata',  firstRata,    v => f2(v) + ' zł',        800);
-    animateCounter('resYearsLeft', monthsUsed/12, v => v.toFixed(1) + ' lat', 900);
-    animateCounter('resAge',       data.currentAge + monthsUsed/12, v => v.toFixed(1) + ' lat', 900);
-    animateCounter('resTotalPaid', totalPaid,    v => f2(v) + ' zł',        1000);
+    // Efekt 1 — animowane liczniki (opóźnienie = scroll 600ms + bufor 100ms)
+    setTimeout(() => {
+        animateCounter('resNextRata',  firstRata,    v => f2(v) + ' zł',        800);
+        animateCounter('resYearsLeft', monthsUsed/12, v => v.toFixed(1) + ' lat', 900);
+        animateCounter('resAge',       data.currentAge + monthsUsed/12, v => v.toFixed(1) + ' lat', 900);
+        animateCounter('resTotalPaid', totalPaid,    v => f2(v) + ' zł',        1000);
+    }, 700);
 
     // Oszczędność lub strata
     const savingsEl   = document.getElementById('resSavings');
@@ -1145,7 +1174,9 @@ function calculate() {
         savingsCard.style.background = 'linear-gradient(135deg, var(--secondary) 0%, #1e9e55 100%)';
         savingsCard.querySelector('.s-label').textContent = '💰 Oszczędność';
     }
-    animateCounter('resSavings', finalOszcz, v => f2(v) + ' zł', 1100);
+    setTimeout(() => {
+        animateCounter('resSavings', finalOszcz, v => f2(v) + ' zł', 1100);
+    }, 700);
 
     // Skrócenie lub wydłużenie czasu spłaty
     const elYearsSaved = document.getElementById('resYearsSaved');
@@ -1194,11 +1225,89 @@ function calculate() {
         if (balanceChartInstance) { balanceChartInstance.destroy(); balanceChartInstance = null; }
     }
 
-    // Scroll do wyników
-    document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    // Scroll do wyników — własna animacja
+    setTimeout(() => smoothScrollTo(document.getElementById('results')), 80);
 
     // Mobile — przesuń toggle pod wykres
     reorderToggleForMobile();
+
+    // Komunikat refinansowania
+    showRefinanceAlert(data.interestRate, data.loanAmount, data.monthsLeft);
+}
+
+// ===== KOMUNIKAT REFINANSOWANIA =====
+// Aktualizuj SREDNIA_RYNKOWA raz na kwartał na podstawie danych NBP
+const SREDNIA_RYNKOWA = 5.5; // % — średnia rynkowa (marzec 2026, źródło: NBP)
+const REFI_DATA_DATE  = 'marzec 2026';
+
+function showRefinanceAlert(userRate, loanAmount, monthsLeft) {
+    const el = document.getElementById('refinanceAlert');
+    if (!el) return;
+
+    const diff = userRate - SREDNIA_RYNKOWA; // pp powyżej średniej
+
+    // Próg minimalnej opłacalności refinansowania: 0.5 pp
+    if (diff < 0.5) { el.style.display = 'none'; return; }
+
+    // Oblicz ile użytkownik zapłaci przy obecnym oprocentowaniu vs średniej
+    function totalCost(rate) {
+        const r = rate / 100 / 12;
+        const rata = loanAmount * r * Math.pow(1+r, monthsLeft) / (Math.pow(1+r, monthsLeft) - 1);
+        let total = 0, bal = loanAmount;
+        for (let m = 0; m < monthsLeft && bal > 0.01; m++) {
+            const i = bal * r, cap = rata - i;
+            if (cap >= bal) { total += bal + i; bal = 0; }
+            else { total += rata; bal -= cap; }
+        }
+        return total;
+    }
+
+    const kosztObecny  = totalCost(userRate);
+    const kosztSrednia = totalCost(SREDNIA_RYNKOWA);
+    const potencjal    = kosztObecny - kosztSrednia;
+
+    // Strefa 1: zdecydowany (> 1 pp powyżej średniej)
+    // Strefa 2: zachęcający (0.5–1 pp powyżej średniej)
+    const isStrong = diff >= 1.0;
+
+    const icon    = isStrong ? '🔴' : '🟡';
+    const cssClass = isStrong ? 'refi-strong' : 'refi-mild';
+    const title   = isStrong
+        ? `${icon} Twoje oprocentowanie jest znacznie powyżej średniej rynkowej`
+        : `${icon} Rynek oferuje kredyty taniej — warto zapytać o refinansowanie`;
+
+    const body = isStrong
+        ? `Twoje oprocentowanie wynosi <strong>${userRate.toFixed(2).replace('.',',')} %</strong>, 
+           podczas gdy aktualna średnia rynkowa to około <strong>${SREDNIA_RYNKOWA.toFixed(1).replace('.',',')} %</strong> 
+           (dane NBP, ${REFI_DATA_DATE}). Różnica <strong>${diff.toFixed(2).replace('.',',')} pp</strong> 
+           przy Twoim kredycie przekłada się na potencjalną oszczędność nawet 
+           <strong>${f2(potencjal)} zł</strong>. Refinansowanie zdecydowanie warto sprawdzić.`
+        : `Twoje oprocentowanie (<strong>${userRate.toFixed(2).replace('.',',')} %</strong>) jest 
+           nieznacznie powyżej średniej rynkowej (<strong>${SREDNIA_RYNKOWA.toFixed(1).replace('.',',')} %</strong>, 
+           dane NBP, ${REFI_DATA_DATE}). Przy kwocie Twojego kredytu nawet 
+           <strong>${diff.toFixed(2).replace('.',',')} pp</strong> różnicy to potencjalnie 
+           <strong>${f2(potencjal)} zł</strong> — warto zapytać doradcę.`;
+
+    el.innerHTML = `
+        <div class="refi-alert ${cssClass}">
+            <div class="refi-alert-title">${title}</div>
+            <div class="refi-alert-body">${body}</div>
+            <a href="#eksport" class="refi-btn" onclick="event.preventDefault(); smoothScrollTo(document.getElementById('eksport'));">
+                Sprawdź czy możesz płacić mniej →
+            </a>
+        </div>`;
+    el.style.display = 'block';
+
+    // GA4
+    if (typeof gtag !== 'undefined') {
+        gtag('event', 'refinansowanie_alert', {
+            oprocentowanie_uzytkownika: userRate,
+            srednia_rynkowa: SREDNIA_RYNKOWA,
+            roznica_pp: parseFloat(diff.toFixed(2)),
+            potencjal_zlotych: Math.round(potencjal),
+            strefa: isStrong ? 'zdecydowany' : 'zachecajacy'
+        });
+    }
 }
 
 let currentView = 'roczny';
@@ -1349,7 +1458,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v8.8  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v9.4  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1432,7 +1541,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v8.8 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v9.4 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1480,11 +1589,19 @@ document.addEventListener('keydown', function(e) {
     }
 
     el.addEventListener('input', function() {
-        const raw = this.value.replace(/\s/g, '').replace(',', '.');
-        // pozwól wpisywać tylko cyfry, kropkę i przecinek
-        const cleaned = raw.replace(/[^0-9.]/g, '');
+        const raw = this.value;
+        // Jeśli użytkownik wpisuje przecinek lub kończy na przecinku/kropce — nie przerywaj
+        const endsWithSep = /[,.]$/.test(raw.replace(/\s/g, ''));
+        const normalized = raw.replace(/\s/g, '').replace(',', '.');
+        const cleaned = normalized.replace(/[^0-9.]/g, '');
         const num = parseFloat(cleaned);
-        if (!cleaned || isNaN(num)) { this.value = cleaned; return; }
+
+        // Pozwól na niedokończony ułamek (np. "500000," lub "500000,5")
+        if (endsWithSep || isNaN(num) || !cleaned) {
+            // tylko usuń spacje, nie formatuj jeszcze
+            this.value = raw.replace(/[^0-9.,]/g, '');
+            return;
+        }
 
         // zachowaj pozycję kursora
         const cursorFromEnd = this.value.length - (this.selectionEnd || 0);
