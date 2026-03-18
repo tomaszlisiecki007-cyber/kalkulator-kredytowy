@@ -385,7 +385,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             <span>Obserwuj na Facebooku</span>
         </a>
-        <span>Autor: Tomasz Lisiecki (2026) v9.5</span>
+        <span>Autor: Tomasz Lisiecki (2026) v9.6</span>
     </div>
     <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
         Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
@@ -394,9 +394,9 @@
     <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
     <div class="section-grid">
         <div class="input-group"><label>Kapitał do spłaty (zł)</label><input type="text" id="loanAmount" value="300 000" inputmode="decimal" autocomplete="off"></div>
-        <div class="input-group"><label>Oprocentowanie (%)</label><input type="number" id="interestRate" step="0.01" value="7.5"></div>
-        <div class="input-group"><label>Pozostało rat (msc)</label><input type="number" id="monthsLeft" value="240"></div>
-        <div class="input-group"><label style="display:flex;align-items:center;">Twój wiek <span class="tip" data-tip="Podawanie wieku nie jest obowiązkowe, ale pomoże Ci zobrazować sobie ile będziesz mieć lat jak spłacisz kredyt">?</span></label><input type="number" id="currentAge" value="30"></div>
+        <div class="input-group"><label>Oprocentowanie (%)</label><input type="text" inputmode="decimal" id="interestRate" value="7.5"></div>
+        <div class="input-group"><label>Pozostało rat (msc)</label><input type="text" inputmode="numeric" id="monthsLeft" value="240"></div>
+        <div class="input-group"><label style="display:flex;align-items:center;">Twój wiek <span class="tip" data-tip="Podawanie wieku nie jest obowiązkowe, ale pomoże Ci zobrazować sobie ile będziesz mieć lat jak spłacisz kredyt">?</span></label><input type="text" inputmode="numeric" id="currentAge" value="30"></div>
     </div>
 
     <h3>2. Plan Nadpłat i Scenariusze</h3>
@@ -407,19 +407,19 @@
             <label>Jednorazowo (teraz)
                 <span class="hint">nadpłata od razu</span>
             </label>
-            <input type="number" id="oneTimeExtra" value="0" min="0">
+            <input type="text" inputmode="numeric" id="oneTimeExtra" value="0" min="0">
         </div>
         <div class="input-group">
             <label>Co miesiąc (zł)
                 <span class="hint">stała nadpłata mies.</span>
             </label>
-            <input type="number" id="monthlyExtra" value="0" min="0">
+            <input type="text" inputmode="numeric" id="monthlyExtra" value="0" min="0">
         </div>
         <div class="input-group">
             <label>Raz w roku (zł)
                 <span class="hint">roczna nadpłata</span>
             </label>
-            <input type="number" id="yearlyExtra" value="0" min="0">
+            <input type="text" inputmode="numeric" id="yearlyExtra" value="0" min="0">
         </div>
         <div class="input-group">
             <label style="display:flex;align-items:flex-start;flex-direction:column;">
@@ -428,7 +428,7 @@
                 </span>
                 <span class="hint">0 = bez zmian</span>
             </label>
-            <input type="number" id="newInstalment" value="0" min="0" class="highlight">
+            <input type="text" inputmode="decimal" id="newInstalment" value="0" min="0" class="highlight">
         </div>
         <div class="input-group">
             <label style="display:flex;align-items:flex-start;flex-direction:column;">
@@ -437,7 +437,7 @@
                 </span>
                 <span class="hint">0 = bez zmian</span>
             </label>
-            <input type="number" id="newRate" step="0.01" value="0" min="0" class="highlight">
+            <input type="text" inputmode="decimal" id="newRate" step="0.01" value="0" min="0" class="highlight">
         </div>
     </div>
 
@@ -866,16 +866,19 @@ function smoothScrollTo(el, duration) {
 }
 
 function calculate() {
+    function pf(id) { return parseFloat(document.getElementById(id).value.replace(/\s/g,'').replace(',','.')) || 0; }
+    function pi(id) { return parseInt(document.getElementById(id).value.replace(/\s/g,'').replace(',','.'))   || 0; }
+
     const data = {
-        loanAmount:    parseFloat(document.getElementById('loanAmount').value.replace(/\s/g,'').replace(',','.')) || 0,
-        interestRate:  parseFloat(document.getElementById('interestRate').value)  || 0,
-        monthsLeft:    parseInt(document.getElementById('monthsLeft').value)      || 0,
-        currentAge:    parseInt(document.getElementById('currentAge').value)      || 0,
-        oneTimeExtra:  parseFloat(document.getElementById('oneTimeExtra').value)  || 0,
-        monthlyExtra:  parseFloat(document.getElementById('monthlyExtra').value)  || 0,
-        yearlyExtra:   parseFloat(document.getElementById('yearlyExtra').value)   || 0,
-        newInstalment: parseFloat(document.getElementById('newInstalment').value) || 0,
-        newRate:       parseFloat(document.getElementById('newRate').value)        || 0,
+        loanAmount:    pf('loanAmount'),
+        interestRate:  pf('interestRate'),
+        monthsLeft:    pi('monthsLeft'),
+        currentAge:    pi('currentAge'),
+        oneTimeExtra:  pf('oneTimeExtra'),
+        monthlyExtra:  pf('monthlyExtra'),
+        yearlyExtra:   pf('yearlyExtra'),
+        newInstalment: pf('newInstalment'),
+        newRate:       pf('newRate'),
         strategy:      document.getElementById('strategy').value
     };
 
@@ -1459,7 +1462,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v9.5  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v9.6  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1542,7 +1545,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v9.5 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v9.6 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
