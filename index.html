@@ -390,7 +390,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             <span>Obserwuj na Facebooku</span>
         </a>
-        <span>Autor: Tomasz Lisiecki (2026) v10.1</span>
+        <span>Autor: Tomasz Lisiecki (2026) v10.6</span>
     </div>
     <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
         Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
@@ -1489,7 +1489,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v10.1  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v10.6  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1572,7 +1572,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v10.1 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v10.6 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1814,7 +1814,8 @@ function drawInterestChart(d) {
                     backgroundColor: [COLORS.kapital, COLORS.odsetki],
                     borderWidth: 2,
                     borderColor: '#fff',
-                    hoverOffset: 8
+                    hoverOffset: 8,
+                    rotation: 180  // zaczyna od dołu (godzina 6)
                 }]
             },
             options: {
@@ -1840,12 +1841,14 @@ function drawInterestChart(d) {
     document.getElementById('donutBaseLabel').innerHTML =
         `Kapitał: <strong>${Math.round(capBase).toLocaleString('pl-PL')} zł</strong><br>
          Odsetki: <strong style="color:#e05252">${Math.round(intBase).toLocaleString('pl-PL')} zł</strong><br>
-         Odsetki stanowią <strong>${pctBase.toFixed(1)}%</strong> całości`;
+         Odsetki stanowią <strong>${pctBase.toFixed(1)}%</strong> całości<br>
+         <span style="border-top:1px solid #ddd;display:block;margin-top:5px;padding-top:5px;">Łącznie oddasz bankowi: <strong>${Math.round(capBase+intBase).toLocaleString('pl-PL')} zł</strong></span>`;
 
     document.getElementById('donutNadpLabel').innerHTML =
         `Kapitał: <strong>${Math.round(capNadp).toLocaleString('pl-PL')} zł</strong><br>
          Odsetki: <strong style="color:#e05252">${Math.round(intNadp).toLocaleString('pl-PL')} zł</strong><br>
-         Odsetki stanowią <strong style="color:#27ae60">${pctNadp.toFixed(1)}%</strong> całości`;
+         Odsetki stanowią <strong style="color:#27ae60">${pctNadp.toFixed(1)}%</strong> całości<br>
+         <span style="border-top:1px solid #ddd;display:block;margin-top:5px;padding-top:5px;">Łącznie oddasz bankowi: <strong style="color:#27ae60">${Math.round(capNadp+intNadp).toLocaleString('pl-PL')} zł</strong></span>`;
 }
 
 function drawChart(baseBalances, nadpBalances, labels) {
@@ -1855,48 +1858,62 @@ function drawChart(baseBalances, nadpBalances, labels) {
     const N = inp.monthsLeft;
     const baseRata = annuity(inp.loanAmount, rOrig, N);
 
-    // Bez nadpłat — narastający kapitał i odsetki rok po roku
+    // Bez nadpłat — narastający kapitał i odsetki do pełnej spłaty
     let capBase = [], intBase = [], cumCap = 0, cumInt = 0, bal = inp.loanAmount;
-    for (let y = 0; y < labels.length - 1; y++) {
-        let yc = 0, yi = 0;
-        for (let m = 0; m < 12 && bal > 0.01; m++) {
-            const i = bal * rOrig, cap = Math.min(baseRata - i, bal);
-            yi += i; yc += cap; bal -= cap;
+    let yCap = 0, yInt = 0, m = 1;
+    while (bal > 0.01 && m <= N + 12) {
+        const i = bal * rOrig, cap = Math.min(baseRata - i, bal);
+        yInt += i; yCap += cap; bal -= cap;
+        if (m % 12 === 0 || bal <= 0.01) {
+            cumCap += yCap; cumInt += yInt;
+            capBase.push(Math.round(cumCap));
+            intBase.push(Math.round(cumInt));
+            yCap = 0; yInt = 0;
         }
-        cumCap += yc; cumInt += yi;
-        capBase.push(Math.round(cumCap));
-        intBase.push(Math.round(cumInt));
+        m++;
     }
 
-    // Z nadpłatami — narastający kapitał i odsetki rok po roku
+    // Z nadpłatami — dokładnie ta sama logika co główna pętla calculate()
     const r = (inp.newRate > 0 ? inp.newRate : inp.interestRate) / 100 / 12;
-    let standardRata = annuity(inp.loanAmount, r, N);
+    let standardRata2 = (inp.newInstalment > 0 && inp.strategy === 'shorten')
+        ? inp.newInstalment
+        : annuity(inp.loanAmount, r, N);
     let capNadp = [], intNadp = [], cumCap2 = 0, cumInt2 = 0, bal2 = inp.loanAmount, month = 1;
-    for (let y = 0; y < labels.length - 1; y++) {
-        let yc = 0, yi = 0;
-        for (let m = 0; m < 12 && bal2 > 0.01; m++) {
-            const interest = bal2 * r;
-            const extra = (month===1?inp.oneTimeExtra:0) + inp.monthlyExtra + (month===1||month%12===1?inp.yearlyExtra:0);
-            const cap = Math.min(standardRata - interest + extra, bal2);
-            yi += interest; yc += cap; bal2 -= cap;
-            if (bal2 > 0.01) {
-                const rem = N - month > 0 ? N - month : 1;
-                if (inp.strategy === 'lower') standardRata = annuity(bal2, r, rem);
-            }
-            month++;
+    let yCap2 = 0, yInt2 = 0;
+    while (bal2 > 0.01 && month <= N + 12) {
+        const interest = bal2 * r;
+        let capFromRata = standardRata2 - interest;
+        if (capFromRata < 0) capFromRata = 0;
+        const extra = (month===1 ? inp.oneTimeExtra : 0) + inp.monthlyExtra +
+                      (month===1 || month%12===1 ? inp.yearlyExtra : 0) +
+                      (inp.newInstalment > 0 && inp.strategy === 'lower'
+                          ? Math.max(0, inp.newInstalment - standardRata2) : 0);
+        const totalCap = Math.min(capFromRata + extra, bal2);
+        yInt2 += interest;
+        yCap2 += totalCap;
+        bal2  -= totalCap;
+        if (bal2 > 0.01) {
+            const rem = N - month > 0 ? N - month : 1;
+            if (inp.strategy === 'lower') standardRata2 = annuity(bal2, r, rem);
         }
-        cumCap2 += yc; cumInt2 += yi;
-        capNadp.push(Math.round(cumCap2));
-        intNadp.push(Math.round(cumInt2));
+        if (month % 12 === 0 || bal2 <= 0.01) {
+            cumCap2 += yCap2; cumInt2 += yInt2;
+            capNadp.push(Math.round(cumCap2));
+            intNadp.push(Math.round(cumInt2));
+            yCap2 = 0; yInt2 = 0;
+        }
+        month++;
     }
 
     // Zapisz wszystkie dane globalnie
     chartDataGlobal = { baseBalances, nadpBalances, labels, capBase, intBase, capNadp, intNadp };
 
-    // Resetuj przełącznik na "Saldo"
+    // Resetuj przełącznik na "Saldo" i pokaż właściwy wykres
     document.getElementById('btnChartBalance').classList.add('active');
     document.getElementById('btnChartInterest').classList.remove('active');
     document.getElementById('chartTitle').textContent = '📈 Wykres spadku salda kredytu';
+    document.getElementById('balanceChartWrapper').style.display = 'block';
+    document.getElementById('donutWrapper').style.display = 'none';
 
     drawBalanceChart(baseBalances, nadpBalances, labels);
 }
