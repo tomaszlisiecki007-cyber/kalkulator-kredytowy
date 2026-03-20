@@ -390,7 +390,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             <span>Obserwuj na Facebooku</span>
         </a>
-        <span>Autor: Tomasz Lisiecki (2026) v10.8</span>
+        <span>Autor: Tomasz Lisiecki (2026) v11.3</span>
     </div>
     <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
         Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
@@ -526,12 +526,12 @@
             <!-- Wykres kołowy — dwa kółka obok siebie -->
             <div id="donutWrapper" style="display:none;">
                 <div style="display:flex; gap:16px; justify-content:center; flex-wrap:wrap; align-items:flex-start;">
-                    <div style="flex:1; min-width:200px; max-width:280px; text-align:center;">
-                        <div style="font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:700; color:var(--primary); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Bez nadpłat</div>
+                    <div id="donutBaseContainer" style="flex:1; min-width:200px; max-width:280px; text-align:center;">
+                        <div id="donutBaseTitle" style="font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:700; color:var(--primary); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Bez nadpłat</div>
                         <canvas id="donutBase"></canvas>
                         <div id="donutBaseLabel" style="margin-top:8px; font-size:0.78rem; color:var(--text-muted); font-family:'Open Sans',sans-serif; line-height:1.6;"></div>
                     </div>
-                    <div style="flex:1; min-width:200px; max-width:280px; text-align:center;">
+                    <div id="donutNadpContainer" style="flex:1; min-width:200px; max-width:280px; text-align:center;">
                         <div style="font-family:'Montserrat',sans-serif; font-size:0.8rem; font-weight:700; color:var(--secondary); margin-bottom:8px; text-transform:uppercase; letter-spacing:0.5px;">Z nadpłatami</div>
                         <canvas id="donutNadp"></canvas>
                         <div id="donutNadpLabel" style="margin-top:8px; font-size:0.78rem; color:var(--text-muted); font-family:'Open Sans',sans-serif; line-height:1.6;"></div>
@@ -1312,12 +1312,7 @@ function calculate() {
     while (chartBase.length < maxLen) chartBase.push(0);
     const hasNadplaty = data.oneTimeExtra > 0 || data.monthlyExtra > 0 ||
                         data.yearlyExtra > 0   || data.newInstalment > 0 || data.newRate > 0;
-    if (hasNadplaty) {
-        drawChart(chartBase, chartNadp, chartLabels);
-    } else {
-        document.getElementById('chartWrapper').style.display = 'none';
-        if (balanceChartInstance) { balanceChartInstance.destroy(); balanceChartInstance = null; }
-    }
+    drawChart(chartBase, hasNadplaty ? chartNadp : null, chartLabels, hasNadplaty);
 
     // Scroll do wyników — własna animacja
     setTimeout(() => smoothScrollTo(document.getElementById('results')), 80);
@@ -1552,7 +1547,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v10.8  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v11.3  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1635,7 +1630,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v10.8 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v11.3 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1839,7 +1834,7 @@ function switchChart(type) {
         document.getElementById('chartTitle').textContent = '📈 Wykres spadku salda kredytu';
         lineWrap.style.display  = 'block';
         donutWrap.style.display = 'none';
-        drawBalanceChart(chartDataGlobal.baseBalances, chartDataGlobal.nadpBalances, chartDataGlobal.labels);
+        drawBalanceChart(chartDataGlobal.baseBalances, chartDataGlobal.nadpBalances, chartDataGlobal.labels, chartDataGlobal.hasNadplaty);
     } else {
         document.getElementById('chartTitle').textContent = '🏦 Kapitał vs Odsetki — co trafia do Ciebie, co do banku';
         lineWrap.style.display  = 'none';
@@ -1853,16 +1848,17 @@ function drawInterestChart(d) {
     // Sumy końcowe
     const capBase  = d.capBase[d.capBase.length - 1]  || 0;
     const intBase  = d.intBase[d.intBase.length - 1]  || 0;
-    const capNadp  = d.capNadp[d.capNadp.length - 1]  || 0;
-    const intNadp  = d.intNadp[d.intNadp.length - 1]  || 0;
+    const hasNadplaty = d.hasNadplaty;
 
     const pctBase = intBase / (capBase + intBase) * 100;
-    const pctNadp = intNadp / (capNadp + intNadp) * 100;
 
-    const COLORS = {
-        kapital:  '#27ae60',
-        odsetki:  '#e05252'
-    };
+    const COLORS = { kapital: '#27ae60', odsetki: '#e05252' };
+
+    // Kontener drugiego kółka — pokaż tylko gdy są nadpłaty
+    document.getElementById('donutNadpContainer').style.display = hasNadplaty ? 'block' : 'none';
+
+    // Tytuł pierwszego kółka
+    document.getElementById('donutBaseTitle').textContent = hasNadplaty ? 'BEZ NADPŁAT' : 'STAN OBECNY';
 
     function makeDonut(canvasId, kapital, odsetki) {
         const existing = Chart.getChart(canvasId);
@@ -1898,24 +1894,27 @@ function drawInterestChart(d) {
     }
 
     makeDonut('donutBase', capBase, intBase);
-    makeDonut('donutNadp', capNadp, intNadp);
 
-    // Etykiety tekstowe pod kółkami
     document.getElementById('donutBaseLabel').innerHTML =
         `Kapitał: <strong>${Math.round(capBase).toLocaleString('pl-PL')} zł</strong><br>
          Odsetki: <strong style="color:#e05252">${Math.round(intBase).toLocaleString('pl-PL')} zł</strong><br>
          Odsetki stanowią <strong>${pctBase.toFixed(1)}%</strong> całości<br>
          <span style="border-top:1px solid #ddd;display:block;margin-top:5px;padding-top:5px;">Łącznie oddasz bankowi: <strong>${Math.round(capBase+intBase).toLocaleString('pl-PL')} zł</strong></span>`;
 
-    document.getElementById('donutNadpLabel').innerHTML =
-        `Kapitał: <strong>${Math.round(capNadp).toLocaleString('pl-PL')} zł</strong><br>
-         Odsetki: <strong style="color:#e05252">${Math.round(intNadp).toLocaleString('pl-PL')} zł</strong><br>
-         Odsetki stanowią <strong style="color:#27ae60">${pctNadp.toFixed(1)}%</strong> całości<br>
-         <span style="border-top:1px solid #ddd;display:block;margin-top:5px;padding-top:5px;">Łącznie oddasz bankowi: <strong style="color:#27ae60">${Math.round(capNadp+intNadp).toLocaleString('pl-PL')} zł</strong></span>`;
+    if (hasNadplaty) {
+        const capNadp = d.capNadp[d.capNadp.length - 1] || 0;
+        const intNadp = d.intNadp[d.intNadp.length - 1] || 0;
+        const pctNadp = intNadp / (capNadp + intNadp) * 100;
+        makeDonut('donutNadp', capNadp, intNadp);
+        document.getElementById('donutNadpLabel').innerHTML =
+            `Kapitał: <strong>${Math.round(capNadp).toLocaleString('pl-PL')} zł</strong><br>
+             Odsetki: <strong style="color:#e05252">${Math.round(intNadp).toLocaleString('pl-PL')} zł</strong><br>
+             Odsetki stanowią <strong style="color:#27ae60">${pctNadp.toFixed(1)}%</strong> całości<br>
+             <span style="border-top:1px solid #ddd;display:block;margin-top:5px;padding-top:5px;">Łącznie oddasz bankowi: <strong style="color:#27ae60">${Math.round(capNadp+intNadp).toLocaleString('pl-PL')} zł</strong></span>`;
+    }
 }
 
-function drawChart(baseBalances, nadpBalances, labels) {
-    // Oblicz dane kapitał/odsetki na podstawie globalInputs
+function drawChart(baseBalances, nadpBalances, labels, hasNadplaty) {
     const inp = globalInputs;
     const rOrig = inp.interestRate / 100 / 12;
     const N = inp.monthsLeft;
@@ -1936,83 +1935,87 @@ function drawChart(baseBalances, nadpBalances, labels) {
         m++;
     }
 
-    // Z nadpłatami — dokładnie ta sama logika co główna pętla calculate()
-    const r = (inp.newRate > 0 ? inp.newRate : inp.interestRate) / 100 / 12;
-    let standardRata2 = (inp.newInstalment > 0 && inp.strategy === 'shorten')
-        ? inp.newInstalment
-        : annuity(inp.loanAmount, r, N);
-    let capNadp = [], intNadp = [], cumCap2 = 0, cumInt2 = 0, bal2 = inp.loanAmount, month = 1;
-    let yCap2 = 0, yInt2 = 0;
-    while (bal2 > 0.01 && month <= N + 12) {
-        const interest = bal2 * r;
-        let capFromRata = standardRata2 - interest;
-        if (capFromRata < 0) capFromRata = 0;
-        const extra = (month===1 ? inp.oneTimeExtra : 0) + inp.monthlyExtra +
-                      (month===1 || month%12===1 ? inp.yearlyExtra : 0) +
-                      (inp.newInstalment > 0 && inp.strategy === 'lower'
-                          ? Math.max(0, inp.newInstalment - standardRata2) : 0);
-        const totalCap = Math.min(capFromRata + extra, bal2);
-        yInt2 += interest;
-        yCap2 += totalCap;
-        bal2  -= totalCap;
-        if (bal2 > 0.01) {
-            const rem = N - month > 0 ? N - month : 1;
-            if (inp.strategy === 'lower') standardRata2 = annuity(bal2, r, rem);
+    // Z nadpłatami — tylko jeśli są nadpłaty
+    let capNadp = [], intNadp = [];
+    if (hasNadplaty) {
+        const r = (inp.newRate > 0 ? inp.newRate : inp.interestRate) / 100 / 12;
+        let standardRata2 = (inp.newInstalment > 0 && inp.strategy === 'shorten')
+            ? inp.newInstalment : annuity(inp.loanAmount, r, N);
+        let cumCap2 = 0, cumInt2 = 0, bal2 = inp.loanAmount, month = 1;
+        let yCap2 = 0, yInt2 = 0;
+        while (bal2 > 0.01 && month <= N + 12) {
+            const interest = bal2 * r;
+            let capFromRata = standardRata2 - interest;
+            if (capFromRata < 0) capFromRata = 0;
+            const extra = (month===1 ? inp.oneTimeExtra : 0) + inp.monthlyExtra +
+                          (month===1 || month%12===1 ? inp.yearlyExtra : 0) +
+                          (inp.newInstalment > 0 && inp.strategy === 'lower'
+                              ? Math.max(0, inp.newInstalment - standardRata2) : 0);
+            const totalCap = Math.min(capFromRata + extra, bal2);
+            yInt2 += interest; yCap2 += totalCap; bal2 -= totalCap;
+            if (bal2 > 0.01) {
+                const rem = N - month > 0 ? N - month : 1;
+                if (inp.strategy === 'lower') standardRata2 = annuity(bal2, r, rem);
+            }
+            if (month % 12 === 0 || bal2 <= 0.01) {
+                cumCap2 += yCap2; cumInt2 += yInt2;
+                capNadp.push(Math.round(cumCap2));
+                intNadp.push(Math.round(cumInt2));
+                yCap2 = 0; yInt2 = 0;
+            }
+            month++;
         }
-        if (month % 12 === 0 || bal2 <= 0.01) {
-            cumCap2 += yCap2; cumInt2 += yInt2;
-            capNadp.push(Math.round(cumCap2));
-            intNadp.push(Math.round(cumInt2));
-            yCap2 = 0; yInt2 = 0;
-        }
-        month++;
     }
 
-    // Zapisz wszystkie dane globalnie
-    chartDataGlobal = { baseBalances, nadpBalances, labels, capBase, intBase, capNadp, intNadp };
+    chartDataGlobal = { baseBalances, nadpBalances, labels, capBase, intBase, capNadp, intNadp, hasNadplaty };
 
-    // Resetuj przełącznik na "Saldo" i pokaż właściwy wykres
-    document.getElementById('btnChartBalance').classList.add('active');
-    document.getElementById('btnChartInterest').classList.remove('active');
-    document.getElementById('chartTitle').textContent = '📈 Wykres spadku salda kredytu';
-    document.getElementById('balanceChartWrapper').style.display = 'block';
-    document.getElementById('donutWrapper').style.display = 'none';
+    // Przełącznik zawsze widoczny
+    document.querySelector('.chart-toggle').style.display = 'flex';
 
-    drawBalanceChart(baseBalances, nadpBalances, labels);
+    // Domyślnie zawsze kółka
+    document.getElementById('btnChartBalance').classList.remove('active');
+    document.getElementById('btnChartInterest').classList.add('active');
+    document.getElementById('chartTitle').textContent = '🏦 Kapitał vs Odsetki — co trafia do Ciebie, co do banku';
+    document.getElementById('balanceChartWrapper').style.display = 'none';
+    document.getElementById('donutWrapper').style.display = 'block';
+
+    drawBalanceChart(baseBalances, nadpBalances, labels, hasNadplaty);
+    drawInterestChart(chartDataGlobal);
 }
 
-function drawBalanceChart(baseBalances, nadpBalances, labels) {
+function drawBalanceChart(baseBalances, nadpBalances, labels, hasNadplaty) {
     document.getElementById('chartWrapper').style.display = 'block';
-    const ctx = document.getElementById('balanceChart').getContext('2d');
-    if (balanceChartInstance) balanceChartInstance.destroy();
+    const ctx = document.getElementById('balanceChart').getContext('2d');    if (balanceChartInstance) balanceChartInstance.destroy();
+
+    const datasets = [
+        {
+            label: hasNadplaty ? 'Bez nadpłat' : 'Saldo kredytu',
+            data: baseBalances,
+            borderColor: hasNadplaty ? '#e05252' : '#2c3e8c',
+            backgroundColor: hasNadplaty ? 'rgba(224,82,82,0.08)' : 'rgba(44,62,140,0.08)',
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: true,
+            tension: 0.3
+        }
+    ];
+
+    if (hasNadplaty && nadpBalances) {
+        datasets.push({
+            label: 'Z nadpłatami',
+            data: nadpBalances,
+            borderColor: '#27ae60',
+            backgroundColor: 'rgba(39,174,96,0.10)',
+            borderWidth: 2.5,
+            pointRadius: 0,
+            fill: true,
+            tension: 0.3
+        });
+    }
 
     balanceChartInstance = new Chart(ctx, {
         type: 'line',
-        data: {
-            labels: labels,
-            datasets: [
-                {
-                    label: 'Bez nadpłat',
-                    data: baseBalances,
-                    borderColor: '#e05252',
-                    backgroundColor: 'rgba(224,82,82,0.08)',
-                    borderWidth: 2,
-                    pointRadius: 0,
-                    fill: true,
-                    tension: 0.3
-                },
-                {
-                    label: 'Z nadpłatami',
-                    data: nadpBalances,
-                    borderColor: '#27ae60',
-                    backgroundColor: 'rgba(39,174,96,0.10)',
-                    borderWidth: 2.5,
-                    pointRadius: 0,
-                    fill: true,
-                    tension: 0.3
-                }
-            ]
-        },
+        data: { labels, datasets },
         options: {
             responsive: true,
             animation: { duration: 900, easing: 'easeInOutQuart' },
