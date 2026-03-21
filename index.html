@@ -390,7 +390,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             <span>Obserwuj na Facebooku</span>
         </a>
-        <span>Autor: Tomasz Lisiecki (2026) v11.3</span>
+        <span>Autor: Tomasz Lisiecki (2026) v11.8</span>
     </div>
     <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
         Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
@@ -996,20 +996,23 @@ function calculate() {
     const effectiveRate = (data.newRate > 0) ? data.newRate : data.interestRate;
     const r = (effectiveRate / 100) / 12;
 
-    // Bazowa rata BEZ żadnych zmian (do liczenia oszczędności i różnicy)
+    // Bazowa rata — zawsze przy oryginalnym oprocentowaniu
+    // totalCostBase = co zapłaciłbyś gdybyś nic nie zrobił
+    // totalPaid     = co zapłacisz z wszystkimi zmianami (newRate + nadpłaty)
+    // Różnica = łączna oszczędność ze wszystkich działań jednocześnie
     const rOrig         = (data.interestRate / 100) / 12;
-    const baseRata      = annuity(data.loanAmount, rOrig, N);
+    const rBase         = rOrig;
+    const baseRata      = annuity(data.loanAmount, rBase, N);
     const baseMonths    = N;
     const MAX_MONTHS    = 360;
 
-    // totalCostBase — liczymy pełną symulację bez limitu MAX_MONTHS
-    // żeby objąć kredyty z N > 360
+    // totalCostBase — koszt bez żadnych zmian (oryginalne oprocentowanie, bez nadpłat)
     let totalCostBase = 0;
     {
         let b = data.loanAmount;
         let m = 1;
         while (b > 0.01 && m <= N + 12) {
-            const i = b * rOrig;
+            const i = b * rBase;
             const cap = baseRata - i;
             if (cap >= b) {
                 totalCostBase += b + i;
@@ -1026,9 +1029,11 @@ function calculate() {
     let balance = data.loanAmount;
 
     // Wykryj czy rata jest za niska
-    const minViableRata = balance * r * 1.001;
-    const isNegAmort = data.newInstalment > 0 && data.newInstalment <= minViableRata;
-    const isLowRata  = data.newInstalment > 0 && data.newInstalment < baseRata && data.newInstalment > minViableRata;
+    // Rata referencyjna do ostrzeżeń — po refinansowaniu jeśli podano newRate
+    const refRata        = (data.newRate > 0) ? annuity(data.loanAmount, r, N) : baseRata;
+    const minViableRata  = balance * r * 1.001;
+    const isNegAmort     = data.newInstalment > 0 && data.newInstalment <= minViableRata;
+    const isLowRata      = data.newInstalment > 0 && data.newInstalment < refRata && data.newInstalment > minViableRata;
 
     let htmlRows      = '';
     monthlyRowsHtml   = '';
@@ -1062,7 +1067,7 @@ function calculate() {
     // Dane do wykresu — saldo co rok
     const chartLabels = ['Start'];
     const chartNadp   = [data.loanAmount];
-    // Bazowa linia (bez nadpłat) — przelicz osobno
+    // Bazowa linia wykresu — zawsze oryginalne oprocentowanie
     const chartBase   = [data.loanAmount];
     let baseBalChart  = data.loanAmount;
     for (let y = 1; y <= Math.ceil(N / 12); y++) {
@@ -1073,7 +1078,6 @@ function calculate() {
         chartBase.push(Math.round(baseBalChart));
         chartLabels.push('Rok ' + y);
     }
-
     while (balance > 0.01 && month <= MAX_MONTHS) {
         const interest   = balance * r;
         let capFromRata  = standardRata - interest;
@@ -1207,7 +1211,7 @@ function calculate() {
     }
 
     const diff       = totalCostBase - totalPaid;
-    const isLoss     = diff < 0;
+    const isLoss     = diff < -0.01; // drobny bufor na błędy zmiennoprzecinkowe
     const finalOszcz = Math.abs(diff);
     const monthsUsed = month - 1;
 
@@ -1261,7 +1265,7 @@ function calculate() {
     // Oszczędność lub strata
     const savingsEl   = document.getElementById('resSavings');
     const savingsCard = savingsEl.closest('.savings-card');
-    if (isLoss || isLowRata) {
+    if (isLoss || (isLowRata && diff < -0.01)) {
         savingsCard.style.background = 'linear-gradient(135deg, #c0392b 0%, #e05252 100%)';
         savingsCard.querySelector('.s-label').textContent = '📉 Strata';
     } else {
@@ -1547,7 +1551,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v11.3  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v11.8  |  <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f5819a9894868fdb999c869c90969e9cdbc5c5c2b59298949c99db969a98">[email&#160;protected]</a>', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1630,7 +1634,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v11.3 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v11.8 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -1918,13 +1922,15 @@ function drawChart(baseBalances, nadpBalances, labels, hasNadplaty) {
     const inp = globalInputs;
     const rOrig = inp.interestRate / 100 / 12;
     const N = inp.monthsLeft;
-    const baseRata = annuity(inp.loanAmount, rOrig, N);
+    // Baza wykresów kołowych — zawsze oryginalne oprocentowanie
+    const rBase = rOrig;
+    const baseRata = annuity(inp.loanAmount, rBase, N);
 
-    // Bez nadpłat — narastający kapitał i odsetki do pełnej spłaty
+    // Bez nadpłat — narastający kapitał i odsetki do pełnej spłaty (bazując na rBase)
     let capBase = [], intBase = [], cumCap = 0, cumInt = 0, bal = inp.loanAmount;
     let yCap = 0, yInt = 0, m = 1;
     while (bal > 0.01 && m <= N + 12) {
-        const i = bal * rOrig, cap = Math.min(baseRata - i, bal);
+        const i = bal * rBase, cap = Math.min(baseRata - i, bal);
         yInt += i; yCap += cap; bal -= cap;
         if (m % 12 === 0 || bal <= 0.01) {
             cumCap += yCap; cumInt += yInt;
