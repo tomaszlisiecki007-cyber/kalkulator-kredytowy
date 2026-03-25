@@ -10,18 +10,18 @@
 <meta property="og:description" content="Oblicz ile możesz zaoszczędzić na swoim kredycie w 2 minuty.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://nadplacam.com.pl/">
-<meta property="og:image" content="https://nadplacam.com.pl/podglad-strony.jpg">
+<meta property="og:image" content="https://nadplacam.com.pl/baner_maly.webp">
+<meta property="og:image:alt" content="Kalkulator nadpłaty kredytu hipotecznego - nadplacam.com.pl">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:type" content="image/jpg">
+<meta property="og:image:type" content="image/webp">
 <meta property="og:locale" content="pl_PL">
 <meta property="og:site_name" content="nadplacam.com.pl">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Kalkulator Nadpłaty Kredytu – nadplacam.com.pl">
 <meta name="twitter:description" content="Oblicz ile zaoszczędzisz nadpłacając kredyt. Bezpłatna analiza.">
-<meta name="twitter:image" content="https://nadplacam.com.pl/podglad-strony.jpg">
+<meta name="twitter:image" content="https://nadplacam.com.pl/baner_maly.webp">
     <link rel="canonical" href="https://nadplacam.com.pl/">
-    <link rel="preload" as="image" href="baner_maly.jpg" fetchpriority="high">
     <link rel="icon" type="image/x-icon" href="favicon.ico">
     <link rel="icon" type="image/png" sizes="96x96" href="favicon-96x96.png">
     <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
@@ -249,22 +249,8 @@
 <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-    <!-- jsPDF ładowany leniwie przy pierwszym kliknięciu PDF -->
-    <script>
-    var _jspdfLoaded = false;
-    function loadJsPDF(callback) {
-        if (_jspdfLoaded) { callback(); return; }
-        var s1 = document.createElement('script');
-        s1.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-        s1.onload = function() {
-            var s2 = document.createElement('script');
-            s2.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
-            s2.onload = function() { _jspdfLoaded = true; callback(); };
-            document.head.appendChild(s2);
-        };
-        document.head.appendChild(s1);
-    }
-    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
@@ -610,11 +596,14 @@
 <body>
 <div id="tipFloating"></div>
 <div style="background:#f8f9fa; text-align:center; line-height:0; padding:0; margin:0;">
-    <img src="baner_maly.jpg"
-         alt="Kalkulator nadpłaty kredytu hipotecznego - darmowa analiza Tomasz Lisiecki"
-         width="1100" height="220"
-         style="width:100%; max-width:1100px; display:inline-block; height:auto;"
-         fetchpriority="high">
+    <picture>
+        <source srcset="baner_maly.webp" type="image/webp">
+        <img src="baner_maly.jpg"
+             alt="Kalkulator nadpłaty kredytu hipotecznego - darmowa analiza Tomasz Lisiecki"
+             width="1100" height="230"
+             loading="lazy"
+             style="width:100%; max-width:1100px; display:inline-block; height:auto;">
+    </picture>
 </div>
 <div class="container">
 
@@ -624,7 +613,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             <span>Obserwuj na Facebooku</span>
         </a>
-        <span>Autor: Tomasz Lisiecki (2026) v12.2</span>
+        <span>Autor: Tomasz Lisiecki (2026) v12.3</span>
     </div>
     <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
         Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
@@ -776,7 +765,7 @@
 
         <!-- Toggle + Kawa pod wykresem -->
         <div class="results-bar" id="viewToggle">
-            <a href="https://buymeacoffee.com/nadplacam" target="_blank" class="bmc-btn" onclick="if(typeof gtag!=='undefined') gtag('event','bmc_click',{});">
+            <a href="https://buymeacoffee.com/nadplacam" target="_blank" class="bmc-btn">
                 <span class="bmc-icon">☕</span>
                 <span class="bmc-text">
                     <span class="bmc-top">Udało się zaoszczędzić!</span>
@@ -908,7 +897,7 @@
             <!-- Przyciski -->
             <div class="export-btns" style="display:grid; grid-template-columns: 1fr 1fr; gap:15px; margin-bottom:10px;">
                 <button class="btn btn-mail" style="margin:0;" onclick="sendToTomasz()">📧 Wyślij do analizy</button>
-                <button class="btn btn-pdf" style="margin:0;" onclick="loadJsPDF(generatePDF)">📄 Pobierz Raport PDF</button>
+                <button class="btn btn-pdf" style="margin:0;" onclick="generatePDF()">📄 Pobierz Raport PDF</button>
             </div>
 
             <!-- Zgoda RODO z checkboxem -->
@@ -1009,15 +998,15 @@
 
             <div class="faq-group-label">Podstawy nadpłaty</div>
             <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy nadpłata kredytu hipotecznego się opłaca?</h3><div class="faq-a">W większości przypadków tak. Każda nadpłata zmniejsza saldo zadłużenia, od którego bank nalicza odsetki. Dzięki temu kolejne raty zawierają mniej odsetek, a więcej kapitału. Nawet niewielka nadpłata co miesiąc może skrócić kredyt o kilka lat i pozwolić zaoszczędzić dziesiątki tysięcy złotych.</div></div>
-            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy nadpłata kredytu zmniejsza odsetki od razu?</h3><div class="faq-a">Tak. Odsetki w kredycie hipotecznym są naliczane od aktualnego salda zadłużenia. Jeśli dokonasz nadpłaty, saldo spada natychmiast — więc od kolejnego dnia bank nalicza odsetki od niższej kwoty.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy nadpłata kredytu zmniejsza odsetki od razu?</h3><div class="faq-a">Tak. Odsetki w kredycie hipotecznym są naliczane od aktualnego salda zadłużenia. Jeśli dokonasz nadpłaty, saldo spada natychmiast — więc od kolejnego dnia bank nalicza odsetki od niższej kwoty.<br><br>Zalecamy jednak nadpłacanie jak najszybciej, po zaksięgowaniu spłaty Twojej raty — są banki, które księgują nadpłatę w pierwszej kolejności na spłatę odsetek. Aby tego uniknąć, nadpłacaj zanim odsetki za kolejny miesiąc znacząco urosną.</div></div>
             <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy można nadpłacać kredyt hipoteczny w dowolnym momencie?</h3><div class="faq-a">Tak. Zgodnie z polskim prawem kredytobiorca ma prawo do wcześniejszej spłaty całości lub części kredytu hipotecznego w dowolnym momencie. W niektórych bankach przez pierwsze 3 lata może obowiązywać prowizja za nadpłatę — maksymalnie do 3% nadpłacanej kwoty.</div></div>
             <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy bank może odmówić nadpłaty kredytu?</h3><div class="faq-a">Nie. Bank nie może odmówić przyjęcia nadpłaty kredytu. Może jedynie pobrać prowizję za wcześniejszą spłatę, jeśli przewiduje to umowa i mieści się w limitach określonych przez ustawę.</div></div>
 
             <div class="faq-group-label">Rata czy okres kredytowania?</div>
-            <div class="faq-item"><h3 class="faq-q" tabindex="0">Co bardziej się opłaca: skrócenie okresu kredytu czy zmniejszenie raty?</h3><div class="faq-a">Z punktu widzenia matematyki finansowej skrócenie okresu kredytowania daje większe oszczędności na odsetkach — kapitał spłacany jest szybciej. Zmniejszenie raty daje jednak większą elastyczność budżetu domowego. Sprawdź obie opcje w kalkulatorze i porównaj wyniki dla swojego kredytu.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Co bardziej się opłaca: skrócenie okresu kredytu czy zmniejszenie raty?</h3><div class="faq-a">Z punktu widzenia matematyki finansowej skrócenie okresu kredytowania daje większe oszczędności na odsetkach — kapitał spłacany jest szybciej. Zmniejszenie raty daje jednak większą elastyczność budżetu domowego. Sprawdź obie opcje w kalkulatorze i porównaj wyniki dla swojego kredytu.<br><br><a href="strategia-progresywna.html" style="color:var(--gold); font-weight:700; text-decoration:underline;">📖 Czytaj więcej: Jaka jest najlepsza strategia nadpłat kredytu →</a></div></div>
             <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy nadpłata kredytu skraca okres spłaty automatycznie?</h3><div class="faq-a">To zależy od banku i wybranej opcji. W większości banków przy nadpłacie możesz wybrać skrócenie okresu kredytowania lub obniżenie raty. Jeśli nie wybierzesz opcji, bank często domyślnie obniża ratę. Zawsze warto sprawdzić regulamin lub zadzwonić na infolinię.</div></div>
             <div class="faq-item"><h3 class="faq-q" tabindex="0">Ile można zaoszczędzić nadpłacając kredyt hipoteczny?</h3><div class="faq-a">To zależy od kwoty kredytu, oprocentowania i momentu nadpłaty. Przykładowo przy kredycie 400 000 zł na 25 lat z oprocentowaniem 7% skrócenie okresu spłaty o 5 lat może oznaczać oszczędność nawet 80 000–100 000 zł na odsetkach. Wpisz swoje dane w kalkulator powyżej i sprawdź dokładną kwotę.</div></div>
-            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy zmniejszenie raty daje realne oszczędności?</h3><div class="faq-a">Zmniejszenie raty samo w sobie oszczędza mniej niż skrócenie okresu, ale zastosowane jako strategia progresywna — gdzie co miesiąc dopłacasz różnicę do stałej kwoty — daje identyczne oszczędności co skrócenie, zachowując przy tym elastyczność. To jeden z bardziej niedocenianych sposobów na nadpłacanie kredytu hipotecznego.</div></div>
+            <div class="faq-item"><h3 class="faq-q" tabindex="0">Czy zmniejszenie raty daje realne oszczędności?</h3><div class="faq-a">Zmniejszenie raty samo w sobie oszczędza mniej niż skrócenie okresu, ale zastosowane jako strategia progresywna — gdzie co miesiąc dopłacasz różnicę do stałej kwoty — daje identyczne oszczędności co skrócenie, zachowując przy tym elastyczność. To jeden z bardziej niedocenianych sposobów na nadpłacanie kredytu hipotecznego.<br><br><a href="strategia-progresywna.html" style="color:var(--gold); font-weight:700; text-decoration:underline;">📖 Czytaj więcej: Jaka jest najlepsza strategia nadpłat kredytu →</a></div></div>
 
             <div class="faq-group-label">Opłacalność i moment nadpłaty</div>
             <div class="faq-item"><h3 class="faq-q" tabindex="0">Kiedy najlepiej nadpłacić kredyt hipoteczny?</h3><div class="faq-a">Większość banków kieruje nadpłatę bezpośrednio na kapitał, ale część banków najpierw rozlicza z nadpłaty narosłe odsetki — dopiero reszta trafia na kapitał. Żeby uniknąć niepotrzebnych kosztów, przyjmij bezpieczną zasadę: nadpłacaj dzień po zaksięgowaniu raty. W tym momencie odsetki za miniony miesiąc są już rozliczone i cała nadpłata trafia na kapitał.</div></div>
@@ -1104,7 +1093,7 @@
             Dane będą przechowywane przez okres niezbędny do udzielenia odpowiedzi na zapytanie i przeprowadzenia analizy, a po tym czasie mogą być przetwarzane przez okres przedawnienia ewentualnych roszczeń.</p>
 
             <p style="margin-bottom:0;"><strong>9. Kontakt</strong><br>
-            W sprawach związanych z ochroną danych osobowych możesz skontaktować się z Administratorem pod adresem: <a href="/cdn-cgi/l/email-protection#31455e5c50424b1f5d58425854525a581f01010671565c50585d1f525e5c" style="color:var(--primary);"><span class="__cf_email__" data-cfemail="01756e6c60727b2f6d68726864626a682f31313641666c60686d2f626e6c">[email&#160;protected]</span></a>.</p>
+            W sprawach związanych z ochroną danych osobowych możesz skontaktować się z Administratorem pod adresem: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="83f7eceee2f0f9adefeaf0eae6e0e8eaadb3b3b4c3e4eee2eaefade0ecee">[email&#160;protected]</a>.</p>
         </div>
         <div style="position:sticky; bottom:0; background:#fff; border-top:1px solid var(--border); padding:14px 24px; border-radius:0 0 16px 16px; text-align:center;">
             <button onclick="document.getElementById('privacyModal').style.display='none';" style="background:linear-gradient(135deg,var(--primary),#1a4fa0); color:#fff; border:none; border-radius:8px; padding:10px 36px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.92rem; cursor:pointer;">Zamknij</button>
@@ -1112,7 +1101,7 @@
     </div>
 </div>
 
-<script>
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 let globalResults = {};
 let globalInputs  = {};
 let tableRows     = [];
@@ -1619,7 +1608,7 @@ function showRefinanceAlert(userRate, loanAmount, monthsLeft) {
         <div class="refi-alert ${cssClass}">
             <div class="refi-alert-title">${title}</div>
             <div class="refi-alert-body">${body}</div>
-            <a href="#eksport" class="refi-btn" onclick="event.preventDefault(); smoothScrollTo(document.getElementById('eksport')); if(typeof gtag!=='undefined') gtag('event','refi_cta_click',{strefa: isStrong ? 'zdecydowany' : 'zachecajacy'});">
+            <a href="#eksport" class="refi-btn" onclick="event.preventDefault(); smoothScrollTo(document.getElementById('eksport'));">
                 Sprawdź czy możesz płacić mniej →
             </a>
         </div>`;
@@ -1642,10 +1631,6 @@ let monthlyRowsHtml = '';
 
 function setView(view) {
     currentView = view;
-    // GA4 — view toggle
-    if (typeof gtag !== 'undefined') {
-        gtag('event', 'view_toggle', { widok: view });
-    }
     document.getElementById('btnRoczny').classList.toggle('active', view === 'roczny');
     document.getElementById('btnMiesieczny').classList.toggle('active', view === 'miesieczny');
     document.getElementById('thOkres').textContent = view === 'roczny' ? 'Rok' : 'Miesiąc';
@@ -1744,14 +1729,6 @@ async function sendToTomasz() {
         });
 
         if (response.status === 200) {
-            // GA4 — email sent
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'email_sent', {
-                    bank: formData.bank,
-                    ma_telefon: formData.telefon !== 'Nie podano' ? 'tak' : 'nie',
-                    ma_wiadomosc: formData.wiadomosc !== '(brak wiadomości)' ? 'tak' : 'nie'
-                });
-            }
             const modal = document.getElementById('thankYouModal');
             modal.style.display = 'flex';
             modal.addEventListener('click', function(e) {
@@ -1771,14 +1748,6 @@ async function sendToTomasz() {
 /* ===================== PDF ===================== */
 function generatePDF() {
     if (!tableRows.length) { alert('Najpierw przelicz harmonogram!'); return; }
-    // GA4 — PDF download
-    if (typeof gtag !== 'undefined') {
-        gtag('event', 'pdf_download', {
-            bank: document.getElementById('bankName').value.trim() || 'nie podano',
-            strategia: globalInputs.strategy || 'brak',
-            widok: currentView
-        });
-    }
 
     const { jsPDF } = window.jspdf;
     const doc = new jsPDF({ unit: 'mm', format: 'a4', orientation: 'portrait' });
@@ -1805,7 +1774,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v12.2  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v12.3  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1888,7 +1857,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v12.2 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v12.3 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -2084,10 +2053,6 @@ let balanceChartInstance = null;
 let chartDataGlobal = {}; // przechowuje dane obu wykresów
 
 function switchChart(type) {
-    // GA4 — chart toggle
-    if (typeof gtag !== 'undefined') {
-        gtag('event', 'chart_toggle', { typ_wykresu: type });
-    }
     document.getElementById('btnChartBalance').classList.toggle('active',  type === 'balance');
     document.getElementById('btnChartInterest').classList.toggle('active', type === 'interest');
     const lineWrap  = document.getElementById('balanceChartWrapper');
@@ -2460,10 +2425,6 @@ document.querySelectorAll('.faq-q').forEach(h3 => {
         if (!isOpen) {
             h3.classList.add('open');
             answer.classList.add('open');
-            // GA4 — FAQ open
-            if (typeof gtag !== 'undefined') {
-                gtag('event', 'faq_open', { pytanie: h3.textContent.trim().substring(0, 100) });
-            }
         }
     });
     // Dostępność klawiatury
