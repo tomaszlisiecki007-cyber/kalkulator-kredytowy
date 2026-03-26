@@ -141,7 +141,10 @@
             h1 { font-size: 1.35rem; }
             .compare-grid { grid-template-columns: 1fr; }
             .cta-box { padding: 20px 16px; }
+            .example-table { font-size: 0.72rem; }
+            .example-table th, .example-table td { padding: 6px 8px; }
         }
+        .example-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     </style>
 </head>
 <body>
@@ -156,7 +159,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             Obserwuj na Facebooku
         </a>
-        <span>Autor: Tomasz Lisiecki (2026) v12.3</span>
+        <span>Autor: Tomasz Lisiecki (2026) v12.6</span>
     </div>
 
     <h1>Jaka jest najlepsza strategia nadpłat kredytu hipotecznego?</h1>
@@ -204,7 +207,7 @@
     <h2>Przykład: kredyt 500 000 zł, 7%, 30 lat</h2>
     <p>Przyjmijmy konkretne liczby, żeby zobaczyć jak to działa w praktyce:</p>
 
-    <table class="example-table">
+    <div class="example-table-wrapper"><table class="example-table">
         <thead>
             <tr>
                 <th>Parametr</th>
@@ -249,7 +252,7 @@
                 <td><strong>poniżej 3 000 zł</strong></td>
             </tr>
         </tbody>
-    </table>
+    </table></div>
 
     <div class="highlight-box">
         <p>Wpłacając zaledwie <strong>339,66 zł więcej miesięcznie</strong> (3 500 zł zamiast 3 160,34 zł), oszczędzasz:</p>

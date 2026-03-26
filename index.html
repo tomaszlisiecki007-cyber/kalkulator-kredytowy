@@ -247,12 +247,14 @@
 
 <meta name="robots" content="index, follow">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet"></noscript>
     <style>
         :root {
             --primary: #0d2c6e;
@@ -595,9 +597,13 @@
 <body>
 <div id="tipFloating"></div>
 <div style="background:#f8f9fa; text-align:center; line-height:0; padding:0; margin:0;">
-    <img src="baner_maly.jpg"
-         alt="Kalkulator nadpłaty kredytu hipotecznego - darmowa analiza Tomasz Lisiecki"
-         style="width:100%; max-width:1100px; display:inline-block; height:auto;">
+    <picture>
+      <source srcset="baner_maly.webp" type="image/webp">
+      <img src="baner_maly.jpg"
+           alt="Kalkulator nadpłaty kredytu hipotecznego - darmowa analiza Tomasz Lisiecki"
+           width="1200" height="630" fetchpriority="high"
+           style="width:100%; max-width:1100px; display:inline-block; height:auto;">
+    </picture>
 </div>
 <div class="container">
 
@@ -607,7 +613,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             <span>Obserwuj na Facebooku</span>
         </a>
-        <span>Autor: Tomasz Lisiecki (2026) v12.5</span>
+        <span>Autor: Tomasz Lisiecki (2026) v12.6</span>
     </div>
     <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
         Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
@@ -1093,7 +1099,7 @@
             Dane będą przechowywane przez okres niezbędny do udzielenia odpowiedzi na zapytanie i przeprowadzenia analizy, a po tym czasie mogą być przetwarzane przez okres przedawnienia ewentualnych roszczeń.</p>
 
             <p style="margin-bottom:0;"><strong>9. Kontakt</strong><br>
-            W sprawach związanych z ochroną danych osobowych możesz skontaktować się z Administratorem pod adresem: <a href="/cdn-cgi/l/email-protection#0672696b67757c286a6f756f63656d6f2836363146616b676f6a2865696b" style="color:var(--primary);"><span class="__cf_email__" data-cfemail="04706b6965777e2a686d776d61676f6d2a343433446369656d682a676b69">[email&#160;protected]</span></a>.</p>
+            W sprawach związanych z ochroną danych osobowych możesz skontaktować się z Administratorem pod adresem: <a href="/cdn-cgi/l/email-protection#f0849f9d91838ade9c99839995939b99dec0c0c7b0979d91999cde939f9d" style="color:var(--primary);"><span class="__cf_email__" data-cfemail="e0948f8d81939ace8c89938985838b89ced0d0d7a0878d81898cce838f8d">[email&#160;protected]</span></a>.</p>
         </div>
         <div style="position:sticky; bottom:0; background:#fff; border-top:1px solid var(--border); padding:14px 24px; border-radius:0 0 16px 16px; text-align:center;">
             <button onclick="document.getElementById('privacyModal').style.display='none';" style="background:linear-gradient(135deg,var(--primary),#1a4fa0); color:#fff; border:none; border-radius:8px; padding:10px 36px; font-family:'Montserrat',sans-serif; font-weight:700; font-size:0.92rem; cursor:pointer;">Zamknij</button>
@@ -1774,7 +1780,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v12.5  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v12.6  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1857,7 +1863,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v12.5 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v12.6 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
@@ -2279,7 +2285,7 @@ function reorderToggleForMobile() {
 }
 
 </script>
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 /* ===== EFEKT 1 — animowany licznik ===== */
 function animateCounter(elId, targetValue, formatter, duration) {
     const el = document.getElementById(elId);
