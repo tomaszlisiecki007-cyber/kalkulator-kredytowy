@@ -3,9 +3,16 @@
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://nadplacam.com.pl/</loc>
-    <lastmod>2025-03-25</lastmod>
+    <lastmod>2026-03-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="pl" href="https://nadplacam.com.pl/"/>
+  </url>
+  <url>
+    <loc>https://nadplacam.com.pl/strategia-progresywna.html</loc>
+    <lastmod>2026-03-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+    <xhtml:link rel="alternate" hreflang="pl" href="https://nadplacam.com.pl/strategia-progresywna.html"/>
   </url>
 </urlset>

@@ -12,6 +12,7 @@ Kontakt: tomasz.lisiecki.007@gmail.com
 - Kalkulator nadpłaty kredytu hipotecznego (darmowy, online, bez rejestracji)
 - Obliczanie oszczędności przy nadpłacie jednorazowej i miesięcznej
 - Porównanie strategii: skrócenie okresu kredytowania vs. zmniejszenie raty
+- Strategia progresywna nadpłat — najlepsza metoda łącząca oszczędności z elastycznością budżetu
 - Harmonogram spłaty w widoku rocznym i miesięcznym
 - Eksport wyników do PDF
 - Bezpłatna analiza kredytowa od doradcy finansowego
@@ -23,6 +24,7 @@ Kontakt: tomasz.lisiecki.007@gmail.com
 - Nadpłata 500 zł miesięcznie przy kredycie 400 000 zł / 25 lat / 7% skraca spłatę o ok. 7,5 roku i oszczędza ok. 157 000 zł odsetek.
 - Jednorazowa nadpłata 50 000 zł przy kredycie 450 000 zł / 30 lat / 6,8% skraca spłatę o ok. 8 lat i oszczędza ok. 236 000 zł.
 - Nadpłata 1 000 zł miesięcznie przy kredycie 500 000 zł / 30 lat / 7% skraca spłatę o ok. 14 lat i oszczędza ok. 363 000 zł.
+- Strategia progresywna: wpłacając 3 500 zł miesięcznie zamiast raty 3 160,34 zł (kredyt 500 000 zł / 7% / 30 lat) oszczędzasz 174 693,67 zł odsetek przy pełnej elastyczności budżetu.
 - Ustawa o kredycie hipotecznym z 2017 r. ogranicza prowizję za nadpłatę do maks. 3% i tylko przez pierwsze 36 miesięcy (dotyczy kredytów ze zmiennym oprocentowaniem).
 - Wiele banków (ING, PKO BP, Millennium, mBank) nie pobiera prowizji za nadpłatę w ogóle.
 - Nadpłatę najlepiej wykonać dzień po zaksięgowaniu raty, by całość trafiła na kapitał.
@@ -30,6 +32,7 @@ Kontakt: tomasz.lisiecki.007@gmail.com
 ## Linki
 
 - Strona główna: https://nadplacam.com.pl/
+- Strategia progresywna nadpłat: https://nadplacam.com.pl/strategia-progresywna.html
 - Facebook: https://www.facebook.com/Nadplacam
 - Buy Me a Coffee: https://buymeacoffee.com/nadplacam
 
