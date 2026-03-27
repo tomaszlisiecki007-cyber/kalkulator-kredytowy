@@ -137,8 +137,10 @@
         html { overflow-x: hidden; }
         body { font-family: 'Open Sans', 'Segoe UI', sans-serif; background-color: var(--bg); padding: 20px; color: var(--text-main); margin: 0; max-width: 100vw; overflow-x: hidden; }
         .container { max-width: 1100px; margin: auto; background: var(--surface); padding: 30px; border-radius: 14px; box-shadow: 0 6px 32px rgba(13,44,110,0.10); border-top: 4px solid var(--gold); }
+        h2.section-heading { border-bottom: 2px solid var(--gold); padding-bottom: 8px; margin-top: 25px; font-size: 1.05rem; color: var(--primary); font-family: 'Montserrat', sans-serif; font-weight: 700; text-align: left; letter-spacing: normal; margin-bottom: 0; }
         h2 { text-align: center; color: var(--primary); margin-bottom: 20px; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 1.6rem; letter-spacing: -0.5px; }
-        h3 { border-bottom: 2px solid var(--gold); padding-bottom: 8px; margin-top: 25px; font-size: 1.05rem; color: var(--primary); font-family: 'Montserrat', sans-serif; font-weight: 700; }
+        h2.section-heading { text-align: left; font-size: 1.05rem; font-weight: 700; letter-spacing: normal; margin-bottom: 0; border-bottom: 2px solid var(--gold); padding-bottom: 8px; margin-top: 25px; }
+        h3 { border-bottom: 1px solid var(--border); padding-bottom: 6px; margin-top: 18px; font-size: 0.92rem; color: var(--primary); font-family: 'Montserrat', sans-serif; font-weight: 600; }
         .section-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 15px; margin-bottom: 15px; }
         .section-grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; margin-bottom: 15px; }
         .section-grid-1 { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 20px; }
@@ -247,7 +249,7 @@
         .card-sub { font-size: 0.68rem; font-weight: 600; margin-top: 4px; font-family: 'Montserrat', sans-serif; }
 
         .export-section { background: linear-gradient(135deg, #f4f7ff 0%, #eef2fc 100%); padding: 25px; border-radius: 12px; border: 1.5px solid var(--border); border-left: 4px solid var(--gold); margin-top: 30px; }
-        .export-section h3 { color: var(--primary); border-bottom-color: var(--gold); }
+        .export-section h2.section-heading { color: var(--primary); border-bottom-color: var(--gold); }
         /* SEO Article Accordion */
         .seo-section { margin-top: 36px; background: #fff; border-radius: 12px; border: 1.5px solid var(--border); overflow: hidden; }
         .seo-item { border-bottom: 1px solid var(--border); }
@@ -493,13 +495,13 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073C24 5.405 18.627 0 12 0S0 5.405 0 12.073C0 18.1 4.388 23.094 10.125 24v-8.437H7.078v-3.49h3.047V9.41c0-3.025 1.792-4.697 4.533-4.697 1.312 0 2.686.235 2.686.235v2.97h-1.513c-1.491 0-1.956.93-1.956 1.874v2.25h3.328l-.532 3.49h-2.796V24C19.612 23.094 24 18.1 24 12.073z"/></svg>
             <span>Obserwuj na Facebooku</span>
         </a>
-        <span>Autor: Tomasz Lisiecki (2026) v12.6</span>
+        <span>Autor: Tomasz Lisiecki (2026) v12.7</span>
     </div>
     <p style="font-family:'Open Sans',sans-serif; font-size:0.92rem; color:var(--text-muted); line-height:1.7; margin:10px 0 20px;">
         Sprawdź ile możesz zaoszczędzić nadpłacając kredyt hipoteczny. Oblicz skrócenie okresu kredytowania lub zmniejszenie raty — podaj kwotę kredytu, oprocentowanie oraz planowaną nadpłatę, aby zobaczyć jak zmieni się całkowity koszt kredytu.
     </p>
 
-    <h3>1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h3>
+    <h2 class="section-heading">1. Dane Kredytu <span class="tip" data-tip="Kapitał pozostały do spłaty, oprocentowanie Twojego kredytu oraz ilość rat pozostałych do spłaty, znajdziesz w harmonogramie Twojego kredytu, na stronie Twojego banku lub w bankowości mobilnej">?</span></h2>
     <div class="section-grid">
         <div class="input-group"><label>Kapitał do spłaty (zł)</label><input type="text" id="loanAmount" value="300 000" inputmode="decimal" autocomplete="off"></div>
         <div class="input-group"><label style="display:flex;align-items:center;gap:4px;">Oprocentowanie (%) <span class="tip" data-tip="Wpisz całkowite oprocentowanie jakie bank stosuje do wyliczania Twojej raty. Składa się ono zazwyczaj z części zmiennej (np. WIBOR 3M lub WIBOR 6M) oraz stałej marży banku. Niektóre umowy zawierają też składkę ubezpieczeniową wliczoną w oprocentowanie — sprawdź w swojej umowie.">?</span></label><input type="text" inputmode="decimal" id="interestRate" value="7.5"></div>
@@ -522,7 +524,7 @@
         <div class="input-group"><label style="display:flex;align-items:center;">Twój wiek <span class="tip" data-tip="Podawanie wieku nie jest obowiązkowe, ale pomoże Ci zobrazować sobie ile będziesz mieć lat jak spłacisz kredyt">?</span></label><input type="text" inputmode="numeric" id="currentAge" value="30"></div>
     </div>
 
-    <h3>2. Plan Nadpłat i Scenariusze</h3>
+    <h2 class="section-heading">2. Plan Nadpłat i Scenariusze</h2>
 
     <!-- Wiersz 1: pięć opcji nadpłat -->
     <div class="section-grid-5">
@@ -751,7 +753,7 @@
 
         <!-- ===== EKSPORT ===== -->
         <div class="export-section" id="eksport">
-            <h3>3. Eksport i Bezpłatna Analiza <span class="tip tip-wide" data-tip="Masz możliwość wysłania danych o Twoim kredycie do certyfikowanego doradcy kredytowego. Nie płacisz mu żadnego wynagrodzenia. Jeśli znajdziemy dla Ciebie tańszy kredyt, to wynagrodzenie doradcy zapłaci nowy bank, a koszty kredytu będą takie same jak przy kredycie zaciągniętym bezpośrednio w tym banku – tak stanowi polskie prawo. Możesz tylko zyskać i nie musisz podejmować żadnych decyzji" style="width:18px;height:18px;font-size:11px;">?</span></h3>
+            <h2 class="section-heading">3. Eksport i Bezpłatna Analiza <span class="tip tip-wide" data-tip="Masz możliwość wysłania danych o Twoim kredycie do certyfikowanego doradcy kredytowego. Nie płacisz mu żadnego wynagrodzenia. Jeśli znajdziemy dla Ciebie tańszy kredyt, to wynagrodzenie doradcy zapłaci nowy bank, a koszty kredytu będą takie same jak przy kredycie zaciągniętym bezpośrednio w tym banku – tak stanowi polskie prawo. Możesz tylko zyskać i nie musisz podejmować żadnych decyzji" style="width:18px;height:18px;font-size:11px;">?</span></h3>
             <p style="color:var(--gold); font-weight:700; font-family:'Montserrat',sans-serif; margin-bottom:18px;">Sprawdzimy czy istnieje dla Ciebie tańszy kredyt i za darmo Cię o tym poinformujemy.</p>
 
             <!-- 3 pola: Bank, Email, Telefon -->
@@ -1660,7 +1662,7 @@ function generatePDF() {
     doc.text('Kalkulator Kredytowy', W / 2, 9, { align: 'center' });
     doc.setFontSize(8);
     doc.setFont('helvetica', 'normal');
-    doc.text('Autor: Tomasz Lisiecki (2026) v12.6  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
+    doc.text('Autor: Tomasz Lisiecki (2026) v12.7  |  tomasz.lisiecki.007@gmail.com', W / 2, 16, { align: 'center' });
 
     let y = 30;
 
@@ -1743,7 +1745,7 @@ function generatePDF() {
             doc.setFontSize(7);
             doc.setTextColor(...C_GRAY);
             doc.text(
-                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v12.6 - Tomasz Lisiecki`,
+                `Strona ${pg} / ${total}   |   Kalkulator Kredytowy v12.7 - Tomasz Lisiecki`,
                 W / 2,
                 doc.internal.pageSize.getHeight() - 6,
                 { align: 'center' }
